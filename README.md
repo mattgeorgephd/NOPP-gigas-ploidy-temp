@@ -11,3 +11,4 @@ The following experiments took place at the University of Washington and the Pt.
 1. [Manuscript](https://docs.google.com/document/d/1XM3lNTzLySROcJbUl2UZN-uC9SWQNTkhkTfVNU8qeDs/edit)
 2. [ATPase sample list](https://docs.google.com/spreadsheets/d/17wL7I8ovj4AsVIYA5RFf_NMKOkmUSy_QZiMd3CzPRlM/edit?usp=sharing)
 3. [Citrate Synthase sample list](https://docs.google.com/spreadsheets/d/1_8vj1T2yd3Cd6FhpHUA-QPrzZVGvqAXz1wseTCH7Ihw/edit?usp=sharing)
+4. [Histology analysis](https://github.com/RobertsLab/resources/issues/1308)
