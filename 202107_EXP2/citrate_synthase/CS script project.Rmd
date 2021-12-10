@@ -1,0 +1,184 @@
+---
+title: "CS_assay"
+output: pdf_document
+---
+# Make new standard curve
+```{r}
+
+
+```
+
+
+```{r}
+#BSA content
+protein_test<-read.csv(file="/Users/oliviacattau/Documents/data/BSA_Nov22_mantle+gill.csv")
+A<-protein_test$Absorbance...570..1.0s...A.
+protein<-(A*2500)-1700
+protein_test<-cbind(protein_test, protein)
+protein_test<-protein_test[protein_test$protein >= 0,]
+M1= subset(protein_test, protein_test$label=='M_1')
+M2= subset(protein_test, protein_test$label=='M_2')
+G1= subset(protein_test, protein_test$label=='G_1')
+G2= subset(protein_test, protein_test$label=='G_2')
+M_1<-mean(M1$protein)
+M_2<-mean(M2$protein)
+G_1<-mean(G1$protein)
+G_2<-mean(G2$protein)
+protein_list<-c(M_1, M_2, G_1, G_2)
+tissue_label<-c("mantle_1", "mantle_2", "gill_1", "gill_2")
+protein_content<-as.table(cbind(tissue_label, protein_list))
+print(protein_content)
+#CS content
+CS_Nov22<-read.csv(file="/Users/oliviacattau/Documents/data/CS_Nov22.csv")
+CS_Nov22<-CS_Nov22[!(CS_Nov22$Well=="B06" | CS_Nov22$Well=="B03"),]
+A<-CS_Nov22$Absorbance...405..0.1s...A.
+blank=subset(CS_Nov22, CS_Nov22$label==0)
+zero<-mean(blank$A)
+new_A<-A-0.0664
+CS_Nov22<-cbind(CS_Nov22, new_A)
+M1= subset(CS_Nov22, CS_Nov22$label=='m1')
+M2= subset(CS_Nov22, CS_Nov22$label=='m2')
+G1= subset(CS_Nov22, CS_Nov22$label=='g1')
+G2= subset(CS_Nov22, CS_Nov22$label=='g2')
+CS_tissue<-rbind(M1, M2, G1, G2)
+#plot data
+library(ggplot2)
+GSH<-ggplot(data=CS_tissue)+geom_point(aes(x=as.factor(Time), y=new_A, color=label))+theme_bw()
+GSH
+time_0<-subset(CS_tissue,CS_tissue$Repeat==1)
+time_30<-subset(CS_tissue, CS_tissue$Repeat==30)
+time_0$delta<-time_30$new_A-time_0$new_A
+standard_CS<-read.csv(file="/Users/oliviacattau/Documents/data/standard_curve_small.csv")
+time_0$nmol<-21*time_0$delta-0.73
+standard_cs_plot<-ggplot(data=standard_CS,(aes(x=New_A, y=GSH.well)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~x)+xlab("OD")+ylab("GSH")+theme_bw()+stat_regline_equation(label.x=1, label.y=8)
+standard_cs_plot
+
+B<-21*time_0$delta-0.73
+V<-50 #uL
+D<-1
+time<-27 #min
+SampleCSactivity<-B/(time*V)*D
+time_0$CSactivity<-SampleCSactivity #(nmol/min/uL)
+Final_Table<-time_0[-c(2,3,6,8),]
+Final_Table<-Final_Table[-c(1:6, 10)]
+Final_Table<-cbind(Final_Table, protein_list, tissue_label)
+print(Final_Table)
+write.csv(Final_Table, file="/Users/oliviacattau/Documents/analysis/CSactivityNov22.csv")
+```
+
+
+```{r}
+A<-standards$Absorbance...570..1.0s...A.
+Final<-as.numeric(standards$label)
+standard_model<-lm(Final~poly(A, 3))
+summary(standard_model)
+standard_equation<-paste("y=",coef(standard_model)[[1]], "+", coef(standard_model)[[2]], "*x +", coef(standard_model)[[3]],"*x^2 +", coef(standard_model)[[4]], "*x^3 ")
+standard_equation
+```
+
+```{r}
+#11.9.21 inspecting BSA data from 11.8.21 lab work
+library(ggplot2)
+library(ggpubr)
+bsa_1<-read.csv(file="/Users/oliviacattau/Documents/data/bsa_11.8.21_5ul.csv")
+standards<-(bsa_1[-c(4:10, 17:22, 29:34),])
+linear_standards<-(bsa_1[c(2,3,4,12,15,16,24,26,27,28,36),])
+standard_plot<-ggplot(data=standards,(aes(x=as.numeric(label), y=A)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 3) )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=125, label.y=1)
+
+standard_plot
+
+reverse_plot<-ggplot(data=standards,(aes(x=A, y=as.numeric(label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=1, label.y=500)
+
+reverse_plot
+
+linear_plot<-ggplot(data=linear_standards,(aes(x=as.numeric(label), y=linear_standards$Absorbance...570..1.0s...A.)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 3) )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=125, label.y=1)
+
+linear_plot
+
+reverse_linear_plot<-ggplot(data=linear_standards,(aes(x=linear_standards$Absorbance...570..1.0s...A., y=as.numeric(label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=0.8, label.y=1000)
+  
+
+standard_plot+ geom_hline(yintercept=1.0587383, linetype="dashed", color="red")+geom_hline(yintercept=1.3828051, linetype="dashed", color="green")#red=gill
+```
+
+
+```{r}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+Wells<-as.data.frame(split(BSA$`Absorbance @ 570 (1.0s) (A)`, BSA$Well))
+averages<-as.data.frame(colMeans(Wells[sapply(Wells, is.numeric)]))
+list(averages)
+Well_Names<-BSA$Well[1:24]
+new_data<-cbind(Well_Names, averages)
+blank<-new_data[c(22,24),]
+null<-mean(blank$`colMeans(Wells[sapply(Wells, is.numeric)])`)
+print(null)
+new_data$A<-(new_data$`colMeans(Wells[sapply(Wells, is.numeric)])`-null)
+new_data<-new_data[-c(23),]
+Final<-c(2000, 2000, 2000, 1500, 1500, 1500, 1000, 1000, 1000, 750, 750, 750, 500, 500, 500, 250, 250, 250, 125, 125, 125, 0, 0)
+standards<-cbind(new_data, Final)
+ggplot(data=standards,(aes(x=Final, y=A)))+geom_point()+geom_smooth(method="lm", se=FALSE)+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()
+standards_BSA<-standards[-c(1:6,23),]
+ggplot(data=standards_BSA,(aes(x=Final, y=A)))+geom_point()+geom_smooth(method="lm", se=FALSE)+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()
+```
+
+
+
+```{r}
+blank_1<-subset(dataframe, dataframe$Well=='B10')
+blank_2<-subset(dataframe, dataframe$Well=='B11')
+blank_3<-subset(dataframe, dataframe$Well=='B12')
+blank<-rbind(blank_1, blank_2, blank_3)
+null<-mean(blank$`Absorbance @ 570 (1.0s) (A)`)
+mutate(BSA, A = BSA$`Absorbance @ 570 (1.0s) (A)`-null)
+head(null)
+```
+
+
+
+```{r setup, include=FALSE}
+#organize data
+S1= subset(CS_1, CS_1$`Well #`=='A1')
+S2= subset(CS_1, CS_1$`Well #`=='B1')
+S3= subset(CS_1, CS_1$`Well #`=='C1')
+S4= subset(CS_1, CS_1$`Well #`=='D1')
+S5= subset(CS_1, CS_1$`Well #`=='E1')
+S6= subset(CS_1, CS_1$`Well #`=='F1')
+B1= subset(CS_1, CS_1$`Well #`=='G1')
+B2= subset(CS_1, CS_1$`Well #`=='H1')
+B3= subset(CS_1, CS_1$`Well #`=='A2')
+P1= subset(CS_1, CS_1$`Well #`=='B2')
+P2= subset(CS_1, CS_1$`Well #`=='C2')
+P3= subset(CS_1, CS_1$`Well #`=='D2')
+AG1_50= subset(CS_1, CS_1$`Well #`=='E2')
+AG1_20= subset(CS_1, CS_1$`Well #`=='F2')
+AG2_50= subset(CS_1, CS_1$`Well #`=='H2')
+AG2_20= subset(CS_1, CS_1$`Well #`=='A3')
+BG1_50= subset(CS_1, CS_1$`Well #`=='C3')
+BG1_20= subset(CS_1, CS_1$`Well #`=='D3')
+BG1_10= subset(CS_1, CS_1$`Well #`=='E3')
+BG1_50= subset(CS_1, CS_1$`Well #`=='F3')
+BG1_20= subset(CS_1, CS_1$`Well #`=='G3')
+BG1_10= subset(CS_1, CS_1$`Well #`=='H3')
+CG1_50= subset(CS_1, CS_1$`Well #`=='A4')
+CG1_20= subset(CS_1, CS_1$`Well #`=='B4')
+CG2_50= subset(CS_1, CS_1$`Well #`=='D4')
+CG2_20= subset(CS_1, CS_1$`Well #`=='E4')
+CG2_10= subset(CS_1, CS_1$`Well #`=='F4')
+AM1_50= subset(CS_1, CS_1$`Well #`=='G4')
+AM2_50= subset(CS_1, CS_1$`Well #`=='B5')
+AM2_20= subset(CS_1, CS_1$`Well #`=='C5')
+BM1_50= subset(CS_1, CS_1$`Well #`=='E5')
+BM1_20= subset(CS_1, CS_1$`Well #`=='F5')
+BM1_10= subset(CS_1, CS_1$`Well #`=='G5')
+BM2_50= subset(CS_1, CS_1$`Well #`=='H5')
+BM2_10= subset(CS_1, CS_1$`Well #`=='B6')
+CM1_50= subset(CS_1, CS_1$`Well #`=='C6')
+CM1_20= subset(CS_1, CS_1$`Well #`=='D6')
+CM1_10= subset(CS_1, CS_1$`Well #`=='E6')
+CM2_50= subset(CS_1, CS_1$`Well #`=='F6')
+CM2_20= subset(CS_1, CS_1$`Well #`=='G6')
+CM2_10= subset(CS_1, CS_1$`Well #`=='H6')
+```
+
