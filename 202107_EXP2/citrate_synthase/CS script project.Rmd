@@ -2,7 +2,7 @@
 title: "CS_assay"
 output: pdf_document
 ---
-# Make new standard curve
+# Make new standard curve for new data (12/6/21)
 ```{r}
 bsa<-read.csv(file="https://gannet.fish.washington.edu/gigas/data/BSA_12.6.21_results.csv")
 #12.10.21 inspecting data from 12.6.21 test run
@@ -28,26 +28,39 @@ protein_content<-2300*A-1300 #with no correction
 library(tidyr)
 library(reshape2)
 #clean bsa file
-xdata<-(bsa[-c(1:17, 24:40, 47:63),])
-xdata$A<-xdata$Absorbance...570..1.0s...A.
+standards<-c(1:3, 49:51, 97:99)
+xdata<-(bsa[-standards,])
+xdata$A<-xdata$`Absorbance @ 570 (1.0s) (A)`
 calc.protein.content<-function(xdata) {
-  protein<-2400*xdata$A-1300
+  protein<-2300*xdata$A-1300
   A<-xdata$A
   names<-xdata$label
   return(list(label=names, absorbance=A, protein=protein))
 }
 final_bsa<-as.data.frame(calc.protein.content(xdata))
+final_bsa<-final_bsa[!final_bsa$label=="BUBBLES",]
 protein_results_vector<-as.data.frame(tapply(final_bsa$protein, final_bsa$label, mean))
 protein_results_vector$protein<-protein_results_vector$`tapply(final_bsa$protein, final_bsa$label, mean)`
 protein_results_vector<-protein_results_vector[-c(1)]
-weights<-c(12.1, 17.2) #mg
-volume<-c(350,350) #uL
-BSA_total<-cbind(protein_results_vector, volume, weights)
+
+
+weights<-c(28.9,25,17.5,20.5,22.5,18.3,21.1,12.1,17.2,13.6, 18.6, 23.5, 10.1) #mg
+length(weights)
+volume<-c(300,300,300,300,300,300,300,350,350,350,350,350,350) #uL
+concentration<-weights/volume #mg/uL
+BSA_total<-cbind(protein_results_vector, volume, weights, concentration)
+BSA_total<-subset(BSA_total, protein <= 1000)
+```
+#plotting BSA data
+```{r}
+library(ggplot2)
+ggplot(BSA_total, aes(x=protein, y=weights, label=row.names(BSA_total)))+geom_point()+theme_bw()+geom_text(aes(label=row.names(BSA_total), hjust=1, vjust=1))
+
 ```
 
 
 ```{r}
-#BSA content
+#BSA content from 11.22.21
 protein_test<-read.csv(file="/Users/oliviacattau/Documents/data/BSA_Nov22_mantle+gill.csv")
 A<-protein_test$Absorbance...570..1.0s...A.
 protein<-(A*2500)-1700
