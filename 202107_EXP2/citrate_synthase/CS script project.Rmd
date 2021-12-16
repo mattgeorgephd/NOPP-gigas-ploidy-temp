@@ -50,6 +50,7 @@ volume<-c(300,300,300,300,300,300,300,350,350,350,350,350,350) #uL
 concentration<-weights/volume #mg/uL
 BSA_total<-cbind(protein_results_vector, volume, weights, concentration)
 BSA_total<-subset(BSA_total, protein <= 1000)
+write.csv(BSA_total, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/BSA_protein_final_12.16.21.csv")
 ```
 #plotting BSA data
 ```{r}
