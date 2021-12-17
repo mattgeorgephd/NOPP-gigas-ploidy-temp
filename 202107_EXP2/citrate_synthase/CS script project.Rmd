@@ -2,7 +2,48 @@
 title: "CS_assay"
 output: pdf_document
 ---
-# Make new standard curve for new data (12/6/21)
+# Make new CS standard curve for new data (12/14/21)
+```{r}
+cs<-read.csv(file="https://gannet.fish.washington.edu/gigas/data/CS_plate2_12.14.21.csv")
+#attach labels
+wells<-c(0, 8, 16, 24, 32, 40, "PC_2", "PC_10", "PC_20", "A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2", "B3", "B3", "B3", "B4", "B4", "B4", "C1", "C1", "C1", "C2", "C2", "C2", "D2", "D2", "D2", "D3", "D3", "D3", "A3", "A3", "A3")
+cs$label2<-rep(wells, 30)
+cs$A<-cs$Absorbance...405..0.1s...A.
+standards<-c(0,8,16,24,32,40)
+cs_standards<-subset(cs, label2 == standards)
+#view data
+quickview<-ggplot(data=cs)+geom_point(aes(x=Repeat, y=A, color=label2))+theme_bw()+geom_smooth(aes(x=Repeat, y=A, color=label2), method="lm", se=FALSE, formula=y~x^3)
+quickview
+#remove outliers
+cs_outliers_removed<-cs_standards[(cs_standards$label2 != 8),] #remove anything not equal to 8
+small<-subset(cs_outliers_removed, cs_outliers_removed$Repeat==30)
+large<-subset(cs_outliers_removed, cs_outliers_removed$Repeat==1)
+OD_standards<-large$A-small$A
+cs_standards<-cbind(cs_outliers_removed, OD_standards)
+reverse_plot<-ggplot(data=cs_standards,(aes(x=A, y=as.numeric(label2))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=40)+ylab("GSH standards")
+reverse_plot
+#get equation
+#y=41*A-0.6
+#redo CS activity test, last data seems weird
+```
+
+#Get CS data
+```{r}
+time_0<-subset(cs, cs$Repeat==1)
+time_30<-subset(cs, cs$Repeat==30) #pick maximum data point
+OD<-time_30$A-time_0$A
+CS_total<-cbind(cs, OD)
+#CS_total$nmol<-21*OD-0.73 from 12.6.21 dataset
+pos_con<-c("PC_2", "PC_10", "PC_20")
+positive<-subset(cs, label2 == pos_con)
+#view positive control data
+quickview2<-ggplot(data=positive, aes(x=positive$Repeat, y=positive$A, color=positive$label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
+quickview2
+removed<-c("A1", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D2", "D3")
+cs_outliers_removed<-subset(cs, label2 == removed)
+dataview2<-ggplot(data=cs_outliers_removed, aes(x=Repeat, y=A,color=label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y ~ poly(x, 2))
+```
+# Make new BSA standard curve for new data (12/6/21)
 ```{r}
 bsa<-read.csv(file="https://gannet.fish.washington.edu/gigas/data/BSA_12.6.21_results.csv")
 #12.10.21 inspecting data from 12.6.21 test run
@@ -56,7 +97,6 @@ write.csv(BSA_total, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploid
 ```{r}
 library(ggplot2)
 ggplot(BSA_total, aes(x=protein, y=weights, label=row.names(BSA_total)))+geom_point()+theme_bw()+geom_text(aes(label=row.names(BSA_total), hjust=1, vjust=1))
-
 ```
 
 
