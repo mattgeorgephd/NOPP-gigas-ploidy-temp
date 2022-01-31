@@ -15,6 +15,7 @@ library(readxl)
 library(ggplot2)
 library(stringr)
 library(scales)
+library(tidyverse)
 
 
 ## Set ggplot theme
@@ -42,14 +43,14 @@ my_theme <- theme(line              = element_line(size=1.5),
 current_path <- getActiveDocumentContext()$path
 # setwd(dirname(current_path )); setwd('feeding_rate'); getwd()
 
-FR_plot     <- read_excel("mortality.xlsx", sheet = "plot", col_names = TRUE)
+FR_plot     <- read_excel("mortality.xlsx", sheet = "plot2", col_names = TRUE)
 trt_list    <- read_excel("mortality.xlsx", sheet = "trt_list", col_names = TRUE)
 FR_plot$trt <- factor(FR_plot$trt,levels=trt_list$trt_list,ordered=TRUE)
 
 # lims <- as.POSIXct(strptime(c("2021-07-13 07:00","2021-07-13 14:00"), format = "%Y-%m-%d %H:%M"))
 
 FR_plot_control <- FR_plot %>% filter(trt == "D-control" | trt == "T-control")
-FR_plot_heated  <- FR_plot %>% filter(trt == "D-control" | trt == "T-control" | trt == "D-heat_only" | trt == "T-heat_only")
+FR_plot_heated  <- FR_plot %>% filter(trt == "D-heat_only" | trt == "T-heat_only" | trt == "D-heat_desiccation" | trt == "T-heat_desiccation")
 # HEAT_plot_heat    <- HEAT_plot %>% filter(trt == "heat_only" | trt == "desiccation")
 
 p1 <- ggplot(data=FR_plot_control,aes(x=day,y=survival,color=trt)) +
@@ -63,11 +64,11 @@ p1 <- ggplot(data=FR_plot_control,aes(x=day,y=survival,color=trt)) +
 
 p1
 
-p2 <- ggplot(data=FR_plot_heated,aes(x=day,y=survival,color=trt)) +
+p2 <- ggplot(data=FR_plot_heated,aes(x=day,y=mortality,color=trt)) +
         geom_line(size=1.2,aes(linetype=trt)) +
         scale_linetype_manual(values=c("solid","dotted","solid","dotted"))+
         scale_color_manual(values=c("royalblue1","royalblue2","orangered1","orangered2")) +
-        scale_y_continuous(breaks = seq(0, 100, 10), limits = c(60,105)) +
+        scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0,42)) +
         scale_x_continuous(breaks = seq(-30,30,10) , limits = c(-32,32))+ 
         # scale_x_date(date_labels = "%b/%d") +
         my_theme
@@ -100,7 +101,7 @@ ggsave("mortality_heat.jpeg",
        plot   = p2,
        dpi    = 300,
        device = "jpeg",
-       width  = 8,
+       width  = 6,
        height = 5,
        units  = "in")
 

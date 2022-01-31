@@ -56,7 +56,7 @@ HEAT_plot_desiccation    <- HEAT_plot %>% filter(trt == "baseline" | trt == "des
 HEAT_plot_ideal          <- HEAT_plot %>% filter(include == "yes")
 
 bp1 <- ggplot(HEAT_plot_ideal, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=ploidy)) +
-        geom_boxplot(colour = "grey30", size = 0.8,outlier.colour="grey30", outlier.shape = 16,
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
                      outlier.size=1, notch=FALSE) +
         scale_fill_manual(values=trt_list$trt_colors[1:2]) +
         # geom_point() +
@@ -84,8 +84,8 @@ ggsave("BOXPLOT_ATPase_desiccation.png",
        plot   = bp1,
        dpi    = 600,
        device = "png",
-       width  = 6,
-       height = 6,
+       width  = 5,
+       height = 5,
        units  = "in")
 
 ggsave("BOXPLOT_SMR_timeseries_heated.jpeg",
