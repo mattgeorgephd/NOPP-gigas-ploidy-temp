@@ -47,18 +47,20 @@ trt_list <- read_excel("ATPase.xlsx", sheet = "trt_list", col_names = TRUE)
 HEAT_plot            <- read_excel("ATPase.xlsx", sheet = "ATPase", col_names = TRUE)
 HEAT_plot$trt        <- factor(HEAT_plot$trt, levels=c("baseline","control","heat","desiccation"), ordered=TRUE)
 HEAT_plot$ploidy     <- factor(HEAT_plot$ploidy, levels=c("D","T"),ordered=TRUE)
-HEAT_plot$timepoint  <- factor(HEAT_plot$timepoint, levels=c("-10","1","2","5","10"),ordered=TRUE)
+HEAT_plot$timepoint  <- factor(HEAT_plot$timepoint, levels=c("-10","1","2","5","6","10","11"),ordered=TRUE)
 HEAT_plot$trt_list   <- factor(HEAT_plot$trt_list,levels=trt_list$trt,ordered=TRUE)
 HEAT_plot$include    <- factor(HEAT_plot$include,levels=c("no","yes"),ordered=TRUE)
 
-HEAT_plot_control        <- HEAT_plot %>% filter(trt == "control")
+HEAT_plot_control        <- HEAT_plot %>% filter(include == "no")
 HEAT_plot_desiccation    <- HEAT_plot %>% filter(trt == "baseline" | trt == "desiccation")
 HEAT_plot_ideal          <- HEAT_plot %>% filter(include == "yes")
 
-bp1 <- ggplot(HEAT_plot_ideal, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=ploidy)) +
+
+bp1 <- ggplot(HEAT_plot_control, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=ploidy)) +
         geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
                      outlier.size=1, notch=FALSE) +
         scale_fill_manual(values=trt_list$trt_colors[1:2]) +
+        scale_y_continuous(breaks = seq(0, 7, 1), limits = c(0, 6.5)) +
         # geom_point() +
         # scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
         # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
@@ -66,12 +68,24 @@ bp1 <- ggplot(HEAT_plot_ideal, aes(x=timepoint, y=ATPase, group=as.factor(trt_li
 
 bp1
 
+
+bp2 <- ggplot(HEAT_plot_ideal, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE) +
+        scale_fill_manual(values=trt_list$trt_colors[]) +
+        # geom_point() +
+        scale_y_continuous(breaks = seq(0, 7, 1), limits = c(0, 6.5)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        my_theme
+
+bp2
+
 bp2 <- ggplot(HEAT_plot_desiccation, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=trt_list)) +
         geom_boxplot(colour = "grey30", size = 0.8,outlier.colour="grey30", outlier.shape = 16,
                      outlier.size=1, notch=FALSE) +
         scale_fill_manual(values=trt_list$trt_colors) +
         # geom_point() +
-        # scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+        scale_y_continuous(breaks = seq(0, 6, 1), limits = c(0, 6.5)) +
         # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
         my_theme
 
@@ -79,6 +93,7 @@ bp2
 
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('..'); setwd('plots'); getwd()
+
 
 ggsave("BOXPLOT_ATPase_desiccation.png",
        plot   = bp1,
@@ -88,12 +103,12 @@ ggsave("BOXPLOT_ATPase_desiccation.png",
        height = 5,
        units  = "in")
 
-ggsave("BOXPLOT_SMR_timeseries_heated.jpeg",
+ggsave("BOXPLOT_ATPase.jpeg",
        plot   = bp2,
        dpi    = 600,
        device = "jpeg",
        width  = 12,
-       height = 6,
+       height = 7,
        units  = "in")
 
 ###########################################################################################################################
@@ -137,7 +152,7 @@ p2
 
 
 current_path <- getActiveDocumentContext()$path
-setwd(dirname(current_path )); setwd('plots'); getwd()
+setwd(home); setwd('plots'); getwd()
 
 ggsave("LINEGRAPH_SMR_timeseries_heated.tiff",
        plot   = p1,
@@ -710,13 +725,6 @@ library(agricolae)
 library(nlme)
 
 
-## Import Data
-data             <- read_excel("WA_OA_stages.xlsx", sheet="threshold" , col_names = TRUE)
-data$trt         <- factor(data$trt,levels=c("400","700","1000","1600","1900","2200","2500"),ordered=TRUE)
-data$day         <- factor(data$day,levels=c("8","15","22","28","43","56","69"),ordered=TRUE)
-## Transform data
-
-
 x = HEAT_plot_ideal$ATPase
 # x = asin(sqrt((data$percentage)))
 qqnorm(x) # check for normality
@@ -734,13 +742,15 @@ if(result$p.value<0.05)     {
 shapiro.test(x)
 
 HEAT_plot_ideal$ATPase <- x
-HEAT_plot_ideal <- unite(HEAT_plot_ideal, combo, c(timepoint, ploidy))
-HEAT_plot_ideal$combo <- factor(HEAT_plot_ideal$combo)
 
 # Fit model
 library(car)
 ancova_model <- aov(ATPase ~ timepoint * ploidy, data = HEAT_plot_ideal)
 Anova(ancova_model, type="III") #summary
+
+# HEAT_plot_ideal <- unite(HEAT_plot_ideal, combo, c(timepoint, ploidy))
+# HEAT_plot_ideal$combo <- factor(HEAT_plot_ideal$combo)
+
 
 ancova_model <- aov(ATPase ~ combo, data = HEAT_plot_ideal)
 Anova(ancova_model, type="III") #summary
