@@ -12,3 +12,4 @@ The following experiments took place at the University of Washington and the Pt.
 2. [EXP2 ATPase sample list](https://docs.google.com/spreadsheets/d/17wL7I8ovj4AsVIYA5RFf_NMKOkmUSy_QZiMd3CzPRlM/edit?usp=sharing)
 3. [EXP2 Citrate Synthase sample list](https://docs.google.com/spreadsheets/d/1_8vj1T2yd3Cd6FhpHUA-QPrzZVGvqAXz1wseTCH7Ihw/edit?usp=sharing)
 4. [EXP2 Histology analysis](https://github.com/RobertsLab/resources/issues/1308)
+5. [EXP2 Taq-seq sample list](https://docs.google.com/spreadsheets/d/1KY6P25HEmrDeszph56OY7tI1vAOd2rXxQ8wfZtCM7g0/edit#gid=0)
