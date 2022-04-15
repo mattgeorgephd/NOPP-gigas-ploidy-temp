@@ -4,21 +4,26 @@ output: pdf_document
 ---
 # Make new CS standard curve for new data (3/22/2022)
 ```{r}
-CS<-read_excel("https://github.com/mattgeorgephd/NOPP-gigas-ploidy-temp/blob/main/202107_EXP2/citrate_synthase/Raw%20Data/3.21.22%20Cs%20assay.xls")
+CS_1<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/3.21.22%20Cs%20assay%20standards.csv")
 #attach labels
 #wells<-c(0, 8, 16, 24, 32, 40, "PC_2", "PC_10", "PC_20", "A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2", "B3", "B3", "B3", "B4", "B4", "B4", "C1", "C1", "C1", "C2", "C2", "C2", "D2", "D2", "D2", "D3", "D3", "D3", "A3", "A3", "A3")
 wells<-c(0,0,0, 8, 8, 8, 16, 16, 16, 24, 24, 24, 32, 32, 32, 40, 40, 40, "pos", "pos", "pos", "R41", "R41", "R41", "R41", "R41", "M44", "M44", "M44", "M44", "M44", "R43", "R43", "R43", "R43", "R43", "BACK" , "BACK", "BACK")
+CS<-CS_1[c(1:9)]
+CS<-CS[-c(586),]
 CS$Label<-rep(wells, 15)
 CS$A<-CS$`Absorbance @ 405 (0.1s) (A)`
 #extract standards
-cs_standards<-CS[c(1:18),]
+cs_standards<-CS[c(1:14),] #removed outliers
+standards<-as.numeric(c(0,0,0,8,8,8,16,16,16,24,24,24,32,32))
+cs_standards$Label<-standards
 #view data
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
 #standards
-quickview<-ggplot(data=cs_standards)+geom_point(aes(x=Label, y=`NEW A`))+theme_bw()+geom_smooth(aes(x=Label, y=A), method="lm", se=FALSE, formula=y~x^3)+scale_x_discrete(breaks=c(0,8,16,24,32,40))
-quickview
+standard_plot<-ggplot(data=cs_standards,(aes(x=NEW.A, y=Label)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 1) )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=0.25, label.y=20)
+#extract equation from chart
+#y=0.27+21x
 #data
 samples<-c('M44', 'R43', 'R41')
 positive<-subset(CS, Label == samples)
@@ -40,27 +45,16 @@ initial<-initial[c(8, 10, 11),] #this will change each time
 deltaOD<-final$meanA-initial$meanA
 results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 #Calculate Delta T
+#y=0.27+21x
 t<-55 #min
-```
-
-#extract CS content 
-```{r}
-#CS content
-results<-21*time_0$delta-0.73
-standard_cs_plot<-ggplot(data=standard_CS,(aes(x=New_A, y=GSH.well)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~x)+xlab("OD")+ylab("GSH")+theme_bw()+stat_regline_equation(label.x=1, label.y=8)
-standard_cs_plot
-
-B<-21*time_0$delta-0.73
-V<-50 #uL
-D<-1
-time<-27 #min
-SampleCSactivity<-B/(time*V)*D
-time_0$CSactivity<-SampleCSactivity #(nmol/min/uL)
-Final_Table<-time_0[-c(2,3,6,8),]
-Final_Table<-Final_Table[-c(1:6, 10)]
-Final_Table<-cbind(Final_Table, protein_list, tissue_label)
-print(Final_Table)
-write.csv(Final_Table, file="/Users/oliviacattau/Documents/analysis/CSactivityNov22.csv")
+m<-21
+b<-0.27
+GSH<-(m*deltaOD)+b
+V<-350 #uL from procedure 
+D<-1 #dilution coefficient, should be 1 since we did not dilute
+#get BSA data 
+CS<-
+results<-mutate(initial, OD=deltaOD, GSH=GSH) #OD is the delta OD for the samples
 ```
 
 # Make new BSA standard curve for new data (12/6/21)
