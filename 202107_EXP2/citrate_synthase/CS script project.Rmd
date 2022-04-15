@@ -65,7 +65,12 @@ A<-bsa_standards_2 %>%
 A_samples<-A[c(9,10,11),]
 protein_content<-(3000*A_samples$meanA)-620 #with no correction
 weights<-c(10.8,19.1, 12.2) #from CS sample list 
-BSA_results<-mutate(A_samples, protein_content, weights)
+V1<-350 #uL
+standardization<-weights/V1 #mg/uL
+P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
+BSA_results<-mutate(A_samples, protein_content, weights, standardization, protein_standardization)
+
+
 ######Calculate Final Values
 t<-55 #min
 m<-21
@@ -73,37 +78,8 @@ b<-0.27
 GSH<-(m*deltaOD)+b 
 V<-50 #uL from procedure 
 D<-1 #dilution coefficient, should be 1 since we did not dilute
-CS<-
-results<-mutate(initial, OD=deltaOD, GSH=GSH) #OD is the delta OD for the samples
+CS_activity<-(GSH/(t*V))*D/P
+results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity  ) #OD is the delta OD for the samples
 ```
 
-# extract protein content
-```{r}
-library(tidyr)
-library(reshape2)
-#clean bsa file
-standards<-c(1:3, 49:51, 97:99)
-xdata<-(bsa[-standards,])
-xdata$A<-xdata$`Absorbance @ 570 (1.0s) (A)`
-calc.protein.content<-function(xdata) {
-  protein<-2300*xdata$A-1300
-  A<-xdata$A
-  names<-xdata$label
-  return(list(label=names, absorbance=A, protein=protein))
-}
-final_bsa<-as.data.frame(calc.protein.content(xdata))
-final_bsa<-final_bsa[!final_bsa$label=="BUBBLES",]
-protein_results_vector<-as.data.frame(tapply(final_bsa$protein, final_bsa$label, mean))
-protein_results_vector$protein<-protein_results_vector$`tapply(final_bsa$protein, final_bsa$label, mean)`
-protein_results_vector<-protein_results_vector[-c(1)]
-
-
-weights<-c(28.9,25,17.5,20.5,22.5,18.3,21.1,12.1,17.2,13.6, 18.6, 23.5, 10.1) #mg
-length(weights)
-volume<-c(300,300,300,300,300,300,300,350,350,350,350,350,350) #uL
-concentration<-weights/volume #mg/uL
-BSA_total<-cbind(protein_results_vector, volume, weights, concentration)
-BSA_total<-subset(BSA_total, protein <= 1000)
-write.csv(BSA_total, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/BSA_protein_final_12.16.21.csv")
-```
 
