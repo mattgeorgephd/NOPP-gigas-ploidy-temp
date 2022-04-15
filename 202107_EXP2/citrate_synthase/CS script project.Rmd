@@ -4,6 +4,7 @@ output: pdf_document
 ---
 # Make new CS standard curve for new data (3/22/2022)
 ```{r}
+CS<-read_excel("https://github.com/mattgeorgephd/NOPP-gigas-ploidy-temp/blob/main/202107_EXP2/citrate_synthase/Raw%20Data/3.21.22%20Cs%20assay.xls")
 #attach labels
 #wells<-c(0, 8, 16, 24, 32, 40, "PC_2", "PC_10", "PC_20", "A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2", "B3", "B3", "B3", "B4", "B4", "B4", "C1", "C1", "C1", "C2", "C2", "C2", "D2", "D2", "D2", "D3", "D3", "D3", "A3", "A3", "A3")
 wells<-c(0,0,0, 8, 8, 8, 16, 16, 16, 24, 24, 24, 32, 32, 32, 40, 40, 40, "pos", "pos", "pos", "R41", "R41", "R41", "R41", "R41", "M44", "M44", "M44", "M44", "M44", "R43", "R43", "R43", "R43", "R43", "BACK" , "BACK", "BACK")
