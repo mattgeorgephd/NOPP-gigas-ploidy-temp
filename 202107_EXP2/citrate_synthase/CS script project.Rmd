@@ -28,17 +28,17 @@ standard_plot<-ggplot(data=cs_standards,(aes(x=NEW.A, y=Label)))+geom_point()+ge
 samples<-c('M44', 'R43', 'R41')
 positive<-subset(CS, Label == samples)
 #view data
-quickview2<-ggplot(data=positive, aes(x=Repeat, y=A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
+quickview2<-ggplot(data=positive, aes(x=Repeat, y=NEW.A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
 quickview2
 ####get CS results
 time_0<-subset(CS, CS$Repeat==1)
 time_50<-subset(CS, CS$Repeat==15) #pick maximum data point
 initial<-time_0 %>% 
   group_by(Label) %>%
-  summarise(meanA = mean(`NEW A`))
+  summarise(meanA = mean(`NEW.A`))
 final<-time_50 %>% 
   group_by(Label) %>%
-  summarise(meanA = mean(`NEW A`))
+  summarise(meanA = mean(`NEW.A`))
 #####Calculate Delta OD
 final<-final[c(8, 10,11),] #this will change each time
 initial<-initial[c(8, 10, 11),] #this will change each time
@@ -68,8 +68,8 @@ weights<-c(10.8,19.1, 12.2) #from CS sample list
 V1<-350 #uL
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
-BSA_results<-mutate(A_samples, protein_content, weights, standardization, protein_standardization)
-
+# BSA_results<-mutate(A_samples, protein_content, weights, standardization, protein_standardization)
+BSA_results<-mutate(A_samples, protein_content, weights, standardization)
 
 ######Calculate Final Values
 t<-55 #min
