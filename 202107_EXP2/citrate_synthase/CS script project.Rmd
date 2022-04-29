@@ -7,7 +7,8 @@ output: pdf_document
 CS_1<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/3.21.22%20Cs%20assay%20standards.csv")
 #attach labels
 #wells<-c(0, 8, 16, 24, 32, 40, "PC_2", "PC_10", "PC_20", "A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2", "B3", "B3", "B3", "B4", "B4", "B4", "C1", "C1", "C1", "C2", "C2", "C2", "D2", "D2", "D2", "D3", "D3", "D3", "A3", "A3", "A3")
-wells<-c(0,0,0, 8, 8, 8, 16, 16, 16, 24, 24, 24, 32, 32, 32, 40, 40, 40, "pos", "pos", "pos", "R41", "R41", "R41", "R41", "R41", "M44", "M44", "M44", "M44", "M44", "R43", "R43", "R43", "R43", "R43", "BACK" , "BACK", "BACK")
+#wells<-c(0,0,0, 8, 8, 8, 16, 16, 16, 24, 24, 24, 32, 32, 32, 40, 40, 40, "pos", "pos", "pos", "R41", "R41", "R41", "R41", "R41", "M44", "M44", "M44", "M44", "M44", "R43", "R43", "R43", "R43", "R43", "BACK" , "BACK", "BACK")
+wells<-c(0, 8, 16, 24, 32, 40, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", "POS", "POS", "POS", "BCKGRD", "BCKGRD", "BCKGRD")
 CS<-CS_1[c(1:9)] #clean data
 CS<-CS[-c(586),] #clean data
 CS$Label<-rep(wells, 15) #label all replicates
