@@ -76,8 +76,9 @@ A<-bsa %>%
   summarise(meanA = mean(A))
 A_samples<-A[-c(1:8, 24),]
 protein_content<-(2800*A_samples$meanA)-2300 #with no correction
-sample_list<-read.csv("")
-weights<-c() #from CS sample list 
+sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
+joined<-inner_join(sample_list, A_samples, by="Label") #from CS sample list 
+weights<-joined$Label 
 V1<-350 #uL
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
