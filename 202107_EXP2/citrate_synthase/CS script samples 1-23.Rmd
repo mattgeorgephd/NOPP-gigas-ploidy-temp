@@ -6,12 +6,10 @@ output: pdf_document
 ```{r}
 CS_1<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/3.22.22%20CS%20activity%201-23.csv")
 #attach labels
-#wells<-c(0, 8, 16, 24, 32, 40, "PC_2", "PC_10", "PC_20", "A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2", "B3", "B3", "B3", "B4", "B4", "B4", "C1", "C1", "C1", "C2", "C2", "C2", "D2", "D2", "D2", "D3", "D3", "D3", "A3", "A3", "A3")
-#wells<-c(0,0,0, 8, 8, 8, 16, 16, 16, 24, 24, 24, 32, 32, 32, 40, 40, 40, "pos", "pos", "pos", "R41", "R41", "R41", "R41", "R41", "M44", "M44", "M44", "M44", "M44", "R43", "R43", "R43", "R43", "R43", "BACK" , "BACK", "BACK")
 wells<-c(0, 8, 16, 24, 32, 40, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", "POS", "POS", "POS", "BCKGRD", "BCKGRD", "BCKGRD")
+CS<-CS_1[-c(811,812),] #clean data
 names(CS)[7]<-'Label'
 names(CS)[6]<-'A'
-CS<-CS_1[-c(811,812),] #clean data
 CS$Label<-rep(wells, 10) #label all replicates
 #extract standards
 cs_standards<-CS[c(2:6),] #removed outliers
@@ -33,10 +31,11 @@ quickview
 #based on controls, I would subtract Repeat 10 values from Repeat 5 values without subtracting 0s from dataset
 ####Extract Data
 samples<-c("R46", "M89", "M41", "D55", "D56", "X42", "T62", "T59", "D58",   "R50",  "R42",  "R48",  "T56",  "X44",  "R47", "N45", "N44", "X43", "M47",  "T58", "N46", "T61", "D59")
-mydata<-filter(CS, CS$Label==samples)
+mydata<-filter(CS, CS$Label %in% samples)
 #view data
-quickview2<-ggplot(data=positive, aes(x=mydata, y=A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
+quickview2<-ggplot(data=mydata, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1))
 quickview2
+
 ####get CS results
 time_i<-subset(CS, CS$Repeat==4)
 time_f<-subset(CS, CS$Repeat==10) #pick maximum data point
@@ -70,15 +69,15 @@ reverse_plot
 #y=-2300 +2800x
 
 #extract equation from plot
-samples<-bsa_standards_2[c(9:77),]
+samples<-bsa[c(9:77),]
 A<-bsa %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
-A_samples<-A[-c(1:8, 24),]
+A_samples<-A[-c(1:8, 32),]
 protein_content<-(2800*A_samples$meanA)-2300 #with no correction
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
 joined<-inner_join(sample_list, A_samples, by="Label") #from CS sample list 
-weights<-joined$Label 
+weights<-joined$Weights 
 V1<-350 #uL
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
@@ -95,6 +94,11 @@ V<-50 #uL from procedure
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 CS_activity<-(GSH/(t*V))*D/P
 results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity  ) #OD is the delta OD for the samples
+#write.csv(results, file = "/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_23.csv")
+ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
+names(ploidy)[1]<-'Label'
+results_joined<-inner_join(results, ploidy , by="Label") #from CS sample list 
+final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 ```
 
 
