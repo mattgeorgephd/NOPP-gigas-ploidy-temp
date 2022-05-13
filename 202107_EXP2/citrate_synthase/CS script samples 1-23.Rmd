@@ -76,12 +76,12 @@ A<-bsa %>%
 A_samples<-A[-c(1:8, 32),]
 protein_content<-(2800*A_samples$meanA)-2300 #with no correction
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
-joined<-inner_join(sample_list, A_samples, by="Label") #from CS sample list 
+joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
 weights<-joined$Weights 
 V1<-350 #uL
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
-#BSA_results<-mutate(A_samples, protein_content, weights, standardization, protein_standardization)
+
 BSA_results<-mutate(A_samples, protein_content, weights, standardization)
 
 ######Calculate Final Values
@@ -94,11 +94,17 @@ V<-50 #uL from procedure
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 CS_activity<-(GSH/(t*V))*D/P
 results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity  ) #OD is the delta OD for the samples
-#write.csv(results, file = "/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_23.csv")
+
 ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
 names(ploidy)[1]<-'Label'
+
+treatment<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/treatments.csv")
+trt<-treatment[c(1:72),]
+names(trt)[2]<-'Label'
 results_joined<-inner_join(results, ploidy , by="Label") #from CS sample list 
-final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+results_joined<-inner_join(results_joined, trt, by="Label")
+
+final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 ```
 
 
