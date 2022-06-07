@@ -54,7 +54,7 @@ HEAT_plot$include    <- factor(HEAT_plot$include,levels=c("no","yes"),ordered=TR
 HEAT_plot_control        <- HEAT_plot %>% filter(include == "no")
 HEAT_plot_desiccation    <- HEAT_plot %>% filter(trt == "baseline" | trt == "desiccation")
 HEAT_plot_ideal          <- HEAT_plot %>% filter(include == "yes")
-
+HEAT_plot_des_T         <- HEAT_plot %>% filter(des == "yes")
 
 bp1 <- ggplot(HEAT_plot_control, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=ploidy)) +
         geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
@@ -91,6 +91,18 @@ bp2 <- ggplot(HEAT_plot_desiccation, aes(x=timepoint, y=ATPase, group=as.factor(
 
 bp2
 
+
+bp3 <- ggplot(HEAT_plot_des_T, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=trt_list)) +
+  geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+               outlier.size=1, notch=FALSE) +
+  scale_fill_manual(values=trt_list$trt_colors[c(2,4,6,8,10)]) +
+  # geom_point() +
+  scale_y_continuous(breaks = seq(0, 6, 1), limits = c(0, 6.5)) +
+  # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+  my_theme
+
+bp3
+
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('..'); setwd('plots'); getwd()
 
@@ -109,6 +121,14 @@ ggsave("BOXPLOT_ATPase.jpeg",
        device = "jpeg",
        width  = 12,
        height = 7,
+       units  = "in")
+
+ggsave("BOXPLOT_ATP_timeseries_dess_T.jpeg",
+       plot   = bp3,
+       dpi    = 600,
+       device = "jpeg",
+       width  = 6,
+       height = 5,
        units  = "in")
 
 ###########################################################################################################################
