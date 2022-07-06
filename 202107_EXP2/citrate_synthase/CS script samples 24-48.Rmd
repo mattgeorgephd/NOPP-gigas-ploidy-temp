@@ -1,5 +1,7 @@
 ---
-title: "CS_assay"
+title: "CS script samples 24-48"
+author: "Olivia Cattau"
+date: '2022-07-06'
 output: pdf_document
 ---
 # Make new CS standard curve for new data (3/22/2022)
@@ -45,7 +47,8 @@ quickview2<-ggplot(data=mydata, aes(x=Repeat, y=A, color=(Label)))+geom_point()+
 quickview2
 quickview3<-ggplot(data=mydata2, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1))
 quickview3
-####get CS results
+
+###Get CS results
 time_i<-subset(CS, CS$Repeat==4)
 time_f<-subset(CS, CS$Repeat==10) #pick maximum data point
 initial<-time_i %>% 
@@ -116,4 +119,8 @@ results_joined<-inner_join(results_joined, trt, by="Label")
 final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 ```
 
+
+
+
+```
 
