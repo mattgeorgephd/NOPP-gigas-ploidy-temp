@@ -36,7 +36,7 @@ controls<-c(0,'BCKGRD', 'POS')
 controls2<-subset(CS, Label == controls)
 quickview<-ggplot(data=controls2, aes(x=Repeat, y=A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
 quickview
-#based on controls, I would subtract Repeat 10 values from Repeat 5 values without subtracting 0s from dataset
+#based on controls, I would subtract Repeat 10 values from Repeat 1 values without subtracting 0s from dataset
 ####Extract Data
 samples<-c("R46", "M89", "M41", "D55", "D56", "X42", "T62", "T59", "D58",   "R50",  "R42",  "R48",  "T56",  "X44",  "R47", "N45", "N44", "X43", "M47",  "T58", "N46", "T61", "D59")
 mydata<-filter(CS, CS$Label %in% samples)
@@ -48,9 +48,9 @@ quickview2
 quickview3<-ggplot(data=mydata2, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1))
 quickview3
 
-###Get CS results
-time_i<-subset(CS, CS$Repeat==4)
-time_f<-subset(CS, CS$Repeat==10) #pick maximum data point
+###Get CS results###
+time_i<-subset(CS_2, CS_2$Repeat==1)
+time_f<-subset(CS_2, CS_2$Repeat==10) #pick maximum data point
 initial<-time_i %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
@@ -58,34 +58,28 @@ final<-time_f %>%
   group_by(Label) %>%
   summarise(meanA = mean(A))
 #####Calculate Delta OD
-final<-final[-c(1:7, 18),] #this will change each time
-initial<-initial[-c(1:7, 18),] #this will change each time
+final<-final[-c(2),] #this will change each time
+initial<-initial[-c(2),] #this will change each time
 deltaOD<-final$meanA-initial$meanA
 results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 
 
 ####get BSA data#####
 
-bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA%201-23%203.22.csv")
+bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA%203.22.22%2024-48.csv")
 names(bsa)[6]<-'A'
-wells<-c(2000, 1500, 1000, 750, 500, 250, 125, 0, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)
+w<-c("N42", "N42", "N42", "T55", "T55", "T55", "M48", "M48", "M48", "X47", "X47", "X47", "X47", "X47", "X47", "N43", "N43", "N43", "M90",	"M90",	"M90", "R58", "R58", "R58", "R60", "R60", "R60", "R78", "R78", "R78", "N49", "N49", "N49", "M42", "M42", "M42", "N59","N59", "N59", "N57", "N57", "N57", "M49", "M49", "M49", "D54", "D54", "D54", "T57", "T57", "T57", "X45", "X45", "X45", "N41", "N41", "N41", "X48", "X48", "X48", "M43", "M43", "M43", "X41", "X41", "X41",  "M46", "M46", "M46", "N47", "N47", "N47", "R62", "R62", "R62", "empty", "empty", "empty")
 
-bsa$Label<-rep(wells, 3)
+bsa$Label<-rep(w, 3)
 
-bsa_standards<-bsa[c(1:8),]
-#make plot
-
-reverse_plot<-ggplot(data=bsa_standards,(aes(x=A, y=as.numeric(Label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=500)+ylab("ug/mL")
-
-reverse_plot
+#reverse_plot (from samples 1-23)
 #y=-2300 +2800x
 
 #extract equation from plot
-samples<-bsa[c(9:77),]
 A<-bsa %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
-A_samples<-A[-c(1:8, 32),]
+A_samples<-A[-c(2),]
 protein_content<-(2800*A_samples$meanA)-2300 #with no correction
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
 joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
@@ -96,7 +90,7 @@ P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal 
 
 BSA_results<-mutate(A_samples, protein_content, weights, standardization)
 
-######Calculate Final Values
+######Calculate Final Values 
 #y=4.1 +83x (CS activity)
 t<-45 #min
 m<-83
