@@ -1,27 +1,28 @@
 ---
-title: "CS script samples 24-48"
+title: "CS script samples 49-72"
 author: "Olivia Cattau"
-date: '2022-07-06'
+date: '2022-07-08'
 output: pdf_document
 ---
+
 # Make new CS standard curve for new data (3/22/2022)
 ```{r}
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
 CS_1<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/3.22.22%20CS%20activity%201-23.csv") #standards, and samples 1-23 only
-CS_2<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/CS%20activity%2024-48.csv") #samples 24-48 only 
+CS_3<-read.csv("/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/CS activity 3.22.22 49-72.csv") #samples 49 to 72 only 
 #attach labels
 wells<-c(0, 8, 16, 24, 32, 40, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", "POS", "POS", "POS", "BCKGRD", "BCKGRD", "BCKGRD")
-wells2<-c("N42", "N42", "N42", "T55", "T55", "T55", "M48", "M48", "M48", "X47", "X47", "X47", "N43", "N43", "N43", "M90",	"M90",	"M90", "R58", "R58", "R58", "R60", "R60", "R60", "R78", "R78", "R78", "N49", "N49", "N49", "M42", "M42", "M42", "N59","N59", "N59", "N57", "N57", "N57", "M49", "M49", "M49", "D54", "D54", "D54", "T57", "T57", "T57", "X45", "X45", "X45", "N41", "N41", "N41", "X48", "X48", "X48", "M43", "M43", "M43", "X41", "X41", "X41",  "M46", "M46", "M46", "N47", "N47", "N47", "R62", "R62", "R62", "empty")
+wells3<-c("N58", "N58", "N58", "R53", "R53", "R53", "R56", "R56", "R56", "N48", "N48", "N48", "N51", "N51", "N51", "N54", "N54", "N54", "R51", "R51", "R51", "N56", "N56", "N56", "R57", "R57", "R57", "N53", "N53", "N53", "N57", "N57", "N57", "X46", "X46", "X46", "N52", "N52", "N52", "R54", "R54", "R54", "R59", "R59", "R59", "N50", "N50", "N50", NA, NA, NA, "R52", "R52", "R52", "N55", "N55", "N55", "M45", "M45", "M45", "empty" )
 CS<-CS_1[-c(811,812),] #clean data
 names(CS)[7]<-'Label'
 names(CS)[6]<-'A'
-CS_2['Label'] <- NA
-names(CS_2)[7]<-'Label'
-names(CS_2)[6]<-'A'
+CS_3['Label'] <- NA
+names(CS_3)[7]<-'Label'
+names(CS_3)[6]<-'A'
 CS$Label<-rep(wells, 10) #label all replicates
-CS_2$Label<-rep(wells2, 10)
+CS_3$Label<-rep(wells3, 12) #note rep=12 not 10
 #extract standards
 cs_standards<-CS[c(2:6),] #removed outliers
 standards<-as.numeric(c(8, 16, 24, 32, 40)) #relabel
@@ -36,21 +37,17 @@ controls<-c(0,'BCKGRD', 'POS')
 controls2<-subset(CS, Label == controls)
 quickview<-ggplot(data=controls2, aes(x=Repeat, y=A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
 quickview
-#based on controls, I would subtract Repeat 10 values from Repeat 1 values without subtracting 0s from dataset
+#based on controls, I would subtract Repeat 12 values from Repeat 1 values without subtracting 0s from dataset
 ####Extract Data
-samples<-c("R46", "M89", "M41", "D55", "D56", "X42", "T62", "T59", "D58",   "R50",  "R42",  "R48",  "T56",  "X44",  "R47", "N45", "N44", "X43", "M47",  "T58", "N46", "T61", "D59")
-mydata<-filter(CS, CS$Label %in% samples)
-samples2<-c("N42", "T55", "M48", "X47", "N43",	"M90", "R58", "R60", "R78", "N49", "M42", "N59", "N57", "M49", "D54", "T57", "X45", "N41", "X48",  "M43", "X41", "M46",  "N47", "R62", "empty")
-mydata2<-filter(CS_2, CS_2$Label %in% samples2)
+samples3<-c("N58", "R53","R56",  "N48",  "N51",  "N54",  "R51", "N56",  "R57", "N53", "N57", "X46", "N52", "R54", "R59", "N50", "R52", "N55", "M45", "empty")
+mydata3<-filter(CS_3, CS_3$Label %in% samples3)
 #view data
-quickview2<-ggplot(data=mydata, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1))
-quickview2
-quickview3<-ggplot(data=mydata2, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1))
-quickview3
+quickview4<-ggplot(data=mydata3, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 12, by=1))
+quickview4
 
 ###Get CS results###
-time_i<-subset(CS_2, CS_2$Repeat==1)
-time_f<-subset(CS_2, CS_2$Repeat==10) #pick maximum data point
+time_i<-subset(CS_3, CS_3$Repeat==1)
+time_f<-subset(CS_3, CS_3$Repeat==12) #pick maximum data point
 initial<-time_i %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
@@ -58,18 +55,17 @@ final<-time_f %>%
   group_by(Label) %>%
   summarise(meanA = mean(A))
 #####Calculate Delta OD
-final<-final[-c(2),] #this will change each time
-initial<-initial[-c(2),] #this will change each time
+final<-final[-c(1, 21),] #this will change each time
+initial<-initial[-c(1, 21),] #this will change each time
 deltaOD<-final$meanA-initial$meanA
 results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 
 
 ####get BSA data#####
 
-bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA%203.22.22%2024-48.csv")
+bsa<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/BSA 3.22.22 49-70.csv")
 names(bsa)[6]<-'A'
-w<-c("N42", "N42", "N42", "T55", "T55", "T55", "M48", "M48", "M48", "X47", "X47", "X47", "X47", "X47", "X47", "N43", "N43", "N43", "M90",	"M90",	"M90", "R58", "R58", "R58", "R60", "R60", "R60", "R78", "R78", "R78", "N49", "N49", "N49", "M42", "M42", "M42", "N59","N59", "N59", "N57", "N57", "N57", "M49", "M49", "M49", "D54", "D54", "D54", "T57", "T57", "T57", "X45", "X45", "X45", "N41", "N41", "N41", "X48", "X48", "X48", "M43", "M43", "M43", "X41", "X41", "X41",  "M46", "M46", "M46", "N47", "N47", "N47", "R62", "R62", "R62", "empty", "empty", "empty")
-
+w<-c("N58", "N58", "N58", "R53", "R53", "R53", "N48", "N48", "N48", "N51", "N51", "N51", "N54", "N54", "N54", "N51", "N51", "N51", "N56", "N56", "N56", "R57", "R57", "R57", "N53", "N53", "N53", "N57", "N57", "N57", "X46", "X46", "X46", "N52", "N52", "N52", "R56", "R56", "R56", "R54", "R54", "R54", "R59", "R59", "R59", "N50", "N50", "N50", "R55", "R55", "R55", "R52", "R52", "R52", "N55", "N55", "N55", "M45", "M45", "M45", "empty", "empty", "empty")
 bsa$Label<-rep(w, 3)
 
 #reverse_plot (from samples 1-23)
@@ -79,7 +75,7 @@ bsa$Label<-rep(w, 3)
 A<-bsa %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
-A_samples<-A[-c(2),]
+A_samples<-A[-c(1),]
 protein_content<-(2800*A_samples$meanA)-2300 #with no correction
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
 joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
@@ -92,7 +88,7 @@ BSA_results<-mutate(A_samples, protein_content, weights, standardization)
 
 ######Calculate Final Values 
 #y=4.1 +83x (CS activity)
-t<-45 #min
+t<-50 #min
 m<-83
 b<-4.1
 GSH<-(m*deltaOD)+b 
@@ -113,4 +109,8 @@ results_joined<-inner_join(results_joined, trt, by="Label")
 final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 ```
 
+
+
+
+```
 
