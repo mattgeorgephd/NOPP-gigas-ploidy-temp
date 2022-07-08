@@ -19,6 +19,7 @@ protein_plot
 
 final_plot<-ggplot(data=results,(aes(x=weights, y=A, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 
-
+batch_plot<-ggplot(data=results, aes(x=P, y=A, color=(results$batch)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+batch_plot
 
 ```

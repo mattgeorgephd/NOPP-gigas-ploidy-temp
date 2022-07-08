@@ -42,7 +42,7 @@ samples3<-c("N58", "R53","R56",  "N48",  "N51",  "N54",  "R51", "N56",  "R57", "
 mydata3<-filter(CS_3, CS_3$Label %in% samples3)
 #view data
 quickview4<-ggplot(data=mydata3, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 12, by=1))
-quickview4
+quickview4 #looks great!
 
 ###Get CS results###
 time_i<-subset(CS_3, CS_3$Repeat==1)
