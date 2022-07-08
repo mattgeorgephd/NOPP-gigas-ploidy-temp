@@ -4,14 +4,13 @@ author: "Olivia Cattau"
 date: '2022-07-08'
 output: pdf_document
 ---
-
 # Make new CS standard curve for new data (3/22/2022)
 ```{r}
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
 CS_1<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/3.22.22%20CS%20activity%201-23.csv") #standards, and samples 1-23 only
-CS_3<-read.csv("/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/CS activity 3.22.22 49-72.csv") #samples 49 to 72 only 
+CS_3<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/CS%20activity%203.22.22%2049-72.csv") #samples 49 to 72 only 
 #attach labels
 wells<-c(0, 8, 16, 24, 32, 40, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", "POS", "POS", "POS", "BCKGRD", "BCKGRD", "BCKGRD")
 wells3<-c("N58", "N58", "N58", "R53", "R53", "R53", "R56", "R56", "R56", "N48", "N48", "N48", "N51", "N51", "N51", "N54", "N54", "N54", "R51", "R51", "R51", "N56", "N56", "N56", "R57", "R57", "R57", "N53", "N53", "N53", "N57", "N57", "N57", "X46", "X46", "X46", "N52", "N52", "N52", "R54", "R54", "R54", "R59", "R59", "R59", "N50", "N50", "N50", NA, NA, NA, "R52", "R52", "R52", "N55", "N55", "N55", "M45", "M45", "M45", "empty" )
@@ -63,7 +62,7 @@ results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 
 ####get BSA data#####
 
-bsa<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/BSA 3.22.22 49-70.csv")
+bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA%203.22.22%2049-70.csv")
 names(bsa)[6]<-'A'
 w<-c("N58", "N58", "N58", "R53", "R53", "R53", "N48", "N48", "N48", "N51", "N51", "N51", "N54", "N54", "N54", "N51", "N51", "N51", "N56", "N56", "N56", "R57", "R57", "R57", "N53", "N53", "N53", "N57", "N57", "N57", "X46", "X46", "X46", "N52", "N52", "N52", "R56", "R56", "R56", "R54", "R54", "R54", "R59", "R59", "R59", "N50", "N50", "N50", "R55", "R55", "R55", "R52", "R52", "R52", "N55", "N55", "N55", "M45", "M45", "M45", "empty", "empty", "empty")
 bsa$Label<-rep(w, 3)

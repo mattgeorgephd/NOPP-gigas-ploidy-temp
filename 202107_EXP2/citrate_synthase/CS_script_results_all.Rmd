@@ -1,0 +1,24 @@
+---
+title: "CS complete results"
+author: "Olivia Cattau"
+date: '2022-07-08'
+output: pdf_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+results<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_1-70.csv")
+
+names(results)[10]<-'A'
+names(results)[9]<-'P'
+
+protein_plot<-ggplot(data=results, aes(x=P, y=A, color=(ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+protein_plot
+
+final_plot<-ggplot(data=results,(aes(x=weights, y=A, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+
+
+
+```
