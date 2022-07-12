@@ -57,28 +57,28 @@ results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 
 ####get BSA data#####
 
-bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA%201-23%203.22.csv")
+bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA_7_11_22_20.csv")
 names(bsa)[6]<-'A'
-wells<-c(2000, 1500, 1000, 750, 500, 250, 125, 0, "R46", "R46", "R46", "M89", "M89", "M89", "M41", "M41", "M41", "D55", "D55", "D55", "D56", "D56", "D56", "X42", "X42", "X42", "T62", "T62", "T62", "T59", "T59", "T59", "D58", "D58", "D58", "R50", "R50", "R50", "R42", "R42", "R42", "R48", "R48", "R48", "T56", "T56", "T56", "X44", "X44", "X44", "R47", "R47", "R47", "N45", "N45", "N45", "N44", "N44", "N44", "X43", "X43", "X43", "M47", "M47", "M47", "T58", "T58", "T58", "N46", "N46", "N46", "T61", "T61", "T61", "D59", "D59", "D59", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)
+wells<-c(2000, 1500, 1000, 750, 500, 250, 125, 0, "N46", "N46", "N46", "N44", "N44", "N44", "M46", "M46", "M46", "T61", "T61", "T61", "N47", "N47", "N47", "R50", "R50", "R50", "N57", "N57", "N57", "R59", "R59", "R59", "X43", "X43", "X43", "D56", "D56", "D56", "N45", "N45", "N45", "M47", "M47", "M47", "N49", "N49", "N49", "D58", "D58", "D58", "T59", "T59", "T59", "R57", "R57", "R57", "N41", "N41", "N41", "R61", "R61", "R61")
 
 bsa$Label<-rep(wells, 3)
 
-bsa_standards<-bsa[c(1:8),]
+bsa_standards<-bsa[c(2:8),]
 #make plot
 
 reverse_plot<-ggplot(data=bsa_standards,(aes(x=A, y=as.numeric(Label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=500)+ylab("ug/mL")
 
 reverse_plot
-#y=-2300 +2800x
+#y=-1400 +2500x
 
 #extract equation from plot
-samples<-bsa[c(9:77),]
+samples<-bsa[c(9:62),]
 A<-bsa %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
-A_samples<-A[-c(1:8, 32),]
-protein_content<-(2800*A_samples$meanA)-2300 #with no correction
-sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
+A_samples<-A[-c(1:8),]
+protein_content<-(2500*A_samples$meanA)-1400 #with no correction
+#sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")#wrong weights, redo with correct weight list
 joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
 weights<-joined$Weights 
 V1<-350 #uL
