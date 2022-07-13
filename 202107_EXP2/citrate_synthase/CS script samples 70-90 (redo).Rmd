@@ -40,8 +40,8 @@ quickview3 #these results suck, I will re-do this entire batch
 
 
 ####get CS results
-time_i<-subset(CS, CS$Repeat==4)
-time_f<-subset(CS, CS$Repeat==10) #pick maximum data point
+time_i<-subset(CS_4, CS_4$Repeat==1)
+time_f<-subset(CS_4, CS_4$Repeat==4) #pick maximum data point
 initial<-time_i %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
@@ -49,8 +49,8 @@ final<-time_f %>%
   group_by(Label) %>%
   summarise(meanA = mean(A))
 #####Calculate Delta OD
-final<-final[-c(1:7, 18),] #this will change each time
-initial<-initial[-c(1:7, 18),] #this will change each time
+final<-final[-c(1:7, 12, 27),] #this will change each time
+initial<-initial[-c(1:7, 12, 27),] #this will change each time
 deltaOD<-final$meanA-initial$meanA
 results<-mutate(initial, OD=deltaOD) #OD is the delta OD for the samples
 
@@ -72,15 +72,17 @@ reverse_plot
 #y=-1400 +2500x
 
 #extract equation from plot
-samples<-bsa[c(9:62),]
+#samples<-bsa[c(9:62),]
 A<-bsa %>% 
   group_by(Label) %>%
   summarise(meanA = mean(A))
 A_samples<-A[-c(1:8),]
 protein_content<-(2500*A_samples$meanA)-1400 #with no correction
-#sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")#wrong weights, redo with correct weight list
+sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights_redos.csv") #this changed from last CS script, make sure this is the correct weight CSV
+names(sample_list)[1]<-'Label'
+names(sample_list)[2]<-'Weights'
 joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
-weights<-joined$Weights 
+weights<-as.numeric(joined$Weights[-c(25,29)]) 
 V1<-350 #uL
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
@@ -88,12 +90,12 @@ P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal 
 BSA_results<-mutate(A_samples, protein_content, weights, standardization)
 
 ######Calculate Final Values
-#y=4.1 +83x (CS activity)
-t<-45 #min
-m<-83
-b<-4.1
+#y=-0.48 +37x (CS activity)
+t<-15 #min
+m<-37
+b<--0.48
 GSH<-(m*deltaOD)+b 
-V<-50 #uL from procedure 
+V<-50 #uL from procedure (change only if <50uL in sample)
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 CS_activity<-(GSH/(t*V))*D/P
 results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity  ) #OD is the delta OD for the samples
