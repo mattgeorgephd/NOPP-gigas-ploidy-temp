@@ -1,0 +1,8 @@
+known,unknown,percent_unknown
+control_ploidy,40,36,0.473684210526316
+heat_ploidy,70,90,0.5625
+desiccation_ploidy,49,41,0.455555555555556
+diploid_heat,68,79,0.537414965986395
+diploid_desiccation,66,28,0.297872340425532
+triploid_heat,80,40,0.333333333333333
+triploid_desiccation,47,26,0.356164383561644

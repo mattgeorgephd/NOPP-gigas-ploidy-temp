@@ -1,0 +1,39 @@
+gene	log2FoldChange	description	
+LOC105325880	5.12973532	complement C1q-like protein 3	Immune
+LOC117686832	4.380558901	perlucin-like protein isoform X2	Biomineralization
+LOC117691676	3.043330405	C-type lectin mannose-binding isoform-like isoform X1	Metabolism
+LOC105347275	2.534739352	double homeobox protein B	Transcription
+LOC117683057	2.321183199	fibroleukin-like	Immune
+LOC105337372	2.317033352	C1q-related factor	Immune
+LOC105320431	2.16925301	histone H2A	Epigenetics
+LOC105343956	2.140422681	complement C1q-like protein 3	Metabolism
+LOC105320412	1.985926425	histone H2A	Epigenetics
+LOC105320418	1.935730976	histone H2A	Epigenetics
+LOC105324159	1.933948754	GTPase IMAP family member 4	Immune
+LOC105321903	1.920923543	failed axon connections homolog	
+LOC105320423	1.861742307	histone H2A	Epigenetics
+LOC117681874	1.829486357	complement C1q-like protein 4	
+LOC105320234	1.812218636	angiopoietin-4-like	
+LOC105334242	1.802271072	chondroitin sulfate synthase 2	
+LOC105330135	1.791909833	potassium voltage-gated channel protein Shaw	
+LOC105336969	1.743328161	superoxide dismutase [Cu-Zn]	
+LOC105318809	1.734414828	extracellular superoxide dismutase [Cu-Zn]	
+LOC105339551	1.713577627	transmembrane protein 179B	
+LOC105349013	1.712012136	superoxide dismutase [Cu-Zn]-like precursor	
+LOC105330674	1.708680833	complement C1q-like protein 2 isoform X1	
+LOC117682935	1.644434463	heavy metal-binding protein HIP-like	
+LOC105335514	1.593364005	ALX homeobox protein 1	
+LOC117680621	1.580569754	heavy metal-binding protein HIP-like	
+LOC105343223	1.568953605	heavy metal-binding protein HIP-like	
+LOC105335819	1.566545368	complement C1q-like protein 4	
+LOC117692817	1.520366581	putative nuclease HARBI1	
+LOC105338579	-1.550660921	collagen alpha-1(XII) chain	
+LOC105343725	-1.633358941	galactose-specific lectin nattectin	
+LOC117690222	-1.940542779	short-chain collagen C4-like	
+LOC105335978	-1.942359432	acetylcholine receptor subunit delta	
+LOC117684773	-1.943512338	probable endochitinase	
+LOC105338293	-2.129215422	tyrosine-protein kinase Fer	
+LOC105338263	-2.197642598	1-phosphatidylinositol 3-phosphate 5-kinase isoform X1	
+LOC105343654	-2.204324745	short-chain collagen C4-like	Structural
+LOC117687205	-2.377728149	P2X purinoceptor 7-like	Apoptosis
+LOC105342962	-3.115990965	perlucin-like protein	"Immune, Biomineralization"

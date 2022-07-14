@@ -1,0 +1,69 @@
+gene,log2FoldChange,description
+LOC105340504,3.94238610046485,sperm-specific protein PHI-2B/PHI-3-like
+LOC105324323,3.49122782512306,GTP-binding protein SAR1 isoform X1
+LOC105343216,3.35955872739698,heat shock protein 27
+LOC105329166,3.0806711478932,arginine kinase
+LOC105339793,3.06870620865013,protein PFC0760c
+LOC117691793,3.00553266057473,arginine kinase-like
+LOC105328062,2.97257831793399,baculoviral IAP repeat-containing protein 2
+LOC117689114,2.76406106100035,LOW QUALITY PROTEIN: uncharacterized protein LOC117689114
+LOC105319208,2.75094853278558,spliceosome RNA helicase DDX39B
+LOC105337716,2.7486601073352,transcription factor jun-B isoform X1
+LOC105318645,2.66558938949532,myb-like protein X isoform X1
+LOC105318831,2.66341684454055,epithelial membrane protein 3
+LOC117684408,2.44114573366141,F-box only protein 4-like
+LOC105337016,2.42663382230592,cyclic AMP-dependent transcription factor ATF-3
+LOC105327000,2.39664203213416,glutathione-specific gamma-glutamylcyclotransferase 1-like
+LOC105343643,2.32861348662315,complement C1q tumor necrosis factor-related protein 7
+LOC105343637,2.17814899239517,complement C1q tumor necrosis factor-related protein 2
+LOC105321218,2.04879159545319,F-box/LRR-repeat protein 6-like
+LOC117682356,2.02352322578309,ryncolin-4-like
+LOC105327001,1.99935021481987,glutathione-specific gamma-glutamylcyclotransferase 2
+LOC117680291,1.99465718945946,heat shock protein 83-like
+LOC105345989,1.99393407851901,heat shock protein 83-like
+LOC105330649,1.97755876491739,galaxin-like
+LOC105340370,1.88616674798612,78 kDa glucose-regulated protein precursor
+LOC105324156,1.7581894252846,calcitonin gene-related peptide type 1 receptor
+LOC105342083,1.75042624763826,spindle pole body component 110 isoform X1
+LOC105341070,1.67986641437644,DNA topoisomerase I, mitochondrial isoform X1
+LOC105341977,1.64197181775244,marginal zone B- and B1-cell-specific protein
+LOC105339313,1.6053795205299,LOW QUALITY PROTEIN: telomerase protein component 1
+LOC105337015,1.58674854050701,activating transcription factor 3
+LOC105345814,1.56396058415613,CCAAT/enhancer-binding protein beta
+LOC105328917,1.55857780790857,serine/threonine-protein kinase RIO3 isoform X2
+LOC117680475,1.5399147705091,eosinophil peroxidase-like
+LOC117681833,-1.50463736833323,lectin BRA-3-like
+LOC105319697,-1.55577521914665,sodium/calcium exchanger 3 isoform X3
+LOC105341922,-1.55589817297101,short-chain collagen C4
+LOC105342747,-1.55655002243473,ryncolin-1
+LOC117680327,-1.55995735232834,actin-85C-like isoform X1
+LOC105320302,-1.5662397163873,prolyl 4-hydroxylase subunit alpha-1
+LOC117689844,-1.59312298714696,microfibril-associated glycoprotein 4-like
+LOC117692235,-1.60471953745669,toll-like receptor 4
+LOC117681597,-1.61804220359175,sodium-coupled monocarboxylate transporter 1-like
+LOC105329127,-1.63357422797056,complement C1q tumor necrosis factor-related protein 3-like
+LOC105321102,-1.63651749546578,paired box protein Pax-6 isoform X1
+LOC117683156,-1.63802545719772,neuronal acetylcholine receptor subunit beta-2-like
+LOC117691511,-1.66863848609298,ryncolin-4-like
+LOC117690533,-1.7374653921663,serine/threonine-protein kinase TAO3-like
+LOC105327045,-1.74566258019615,microfibril-associated glycoprotein 4-like isoform X2
+LOC117692687,-1.75588846328214,salivary glue protein Sgs-3-like
+LOC109619118,-1.78580617871776,multiple epidermal growth factor-like domains protein 10
+LOC105318074,-1.78650899623593,perlucin-like protein
+LOC105318706,-1.80457747781419,basic salivary proline-rich protein 1 isoform X1
+LOC117692236,-1.81475005307525,toll-like receptor 4
+LOC105344085,-1.82456560128636,nucleolin isoform X1
+LOC117684773,-1.83342072981011,probable endochitinase
+LOC105345603,-1.83885926391217,peptidyl-prolyl cis-trans isomerase B isoform X2
+LOC105329128,-1.85973647426755,complement C1q tumor necrosis factor-related protein 3
+LOC105329085,-1.8859607971347,high mobility group-T protein
+LOC117690402,-1.93391769359053,putative nuclease HARBI1
+LOC105330102,-1.93546539598377,cytochrome P450 4F12
+LOC105324728,-1.98559635465525,cytochrome P450 2D20
+LOC117688118,-2.0771274674226,heavy metal-binding protein HIP-like isoform X2
+LOC105346570,-2.09784227063983,O-acyltransferase like protein
+LOC109617043,-2.20758001652595,heavy metal-binding protein HIP-like isoform X1
+LOC117688064,-2.29732182643418,cerebellin-3-like isoform X1
+LOC105338263,-2.57378677174973,1-phosphatidylinositol 3-phosphate 5-kinase isoform X1
+LOC117687908,-3.18901549486468,perlucin-like protein
+LOC105342962,-5.06643597044696,perlucin-like protein

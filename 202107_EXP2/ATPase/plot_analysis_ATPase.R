@@ -19,6 +19,7 @@ library(Johnson)
 library(agricolae)
 library(nlme)
 library(multcomp)
+library(rstatix)
 
 ## Set ggplot theme
 my_theme <- theme(line              = element_line(size=1.5),
@@ -54,7 +55,7 @@ HEAT_plot$include    <- factor(HEAT_plot$include,levels=c("no","yes"),ordered=TR
 HEAT_plot_control        <- HEAT_plot %>% filter(include == "no")
 HEAT_plot_desiccation    <- HEAT_plot %>% filter(trt == "baseline" | trt == "desiccation")
 HEAT_plot_ideal          <- HEAT_plot %>% filter(include == "yes")
-
+HEAT_plot_des_T         <- HEAT_plot %>% filter(des == "yes")
 
 bp1 <- ggplot(HEAT_plot_control, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=ploidy)) +
         geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
@@ -91,6 +92,18 @@ bp2 <- ggplot(HEAT_plot_desiccation, aes(x=timepoint, y=ATPase, group=as.factor(
 
 bp2
 
+
+bp3 <- ggplot(HEAT_plot_des_T, aes(x=timepoint, y=ATPase, group=as.factor(trt_list), fill=trt_list)) +
+  geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+               outlier.size=1, notch=FALSE) +
+  scale_fill_manual(values=trt_list$trt_colors[c(2,4,6,8,10)]) +
+  # geom_point() +
+  scale_y_continuous(breaks = seq(0, 6, 1), limits = c(0, 6.5)) +
+  # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+  my_theme
+
+bp3
+
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('..'); setwd('plots'); getwd()
 
@@ -110,6 +123,51 @@ ggsave("BOXPLOT_ATPase.jpeg",
        width  = 12,
        height = 7,
        units  = "in")
+
+ggsave("BOXPLOT_ATP_timeseries_dess_T.jpeg",
+       plot   = bp3,
+       dpi    = 600,
+       device = "jpeg",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+
+HEAT_plot_des  <- HEAT_plot %>% filter(des == "yes")
+HEAT_plot_heat  <- HEAT_plot %>% filter(heat == "yes")
+
+HEAT_plot_des <- HEAT_plot_des %>%
+  group_by(timepoint, ploidy) %>%
+  get_summary_stats(ATPase, type = "mean_se")
+
+HEAT_plot_heat <- HEAT_plot_heat %>%
+  group_by(timepoint, ploidy) %>%
+  get_summary_stats(ATPase, type = "mean_se")
+
+p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy)) +
+      geom_pointrange(aes(ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(size=1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      # scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      my_theme
+
+p1
+
+p2 <- ggplot() +
+  geom_pointrange(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+  geom_line(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "solid",size=1) +
+  geom_pointrange(data=HEAT_plot_des, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+  geom_line(data=HEAT_plot_des, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "dashed",size=1) +
+  # facet_wrap(~ID) +
+  scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+  # scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
+  # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+  my_theme
+
+p2
+
 
 ###########################################################################################################################
 ### [2] Linegraph - SMR vs. time by ploidy - heated

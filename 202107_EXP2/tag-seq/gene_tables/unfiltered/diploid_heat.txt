@@ -1,0 +1,96 @@
+gene,log2FoldChange,description
+LOC105326991,7.05742474637339,dentin sialophosphoprotein
+LOC105323395,5.47575508810791,dentin sialophosphoprotein-like
+LOC105346538,4.33758431526429,clumping factor A
+LOC105340504,3.78111628395425,sperm-specific protein PHI-2B/PHI-3-like
+LOC105324323,3.37242642911758,GTP-binding protein SAR1 isoform X1
+LOC105343216,3.27222356629066,heat shock protein 27
+LOC105346536,3.25155277314275,fibroin heavy chain isoform X1
+LOC117680491,3.06675360135463,mucin-2-like
+LOC105329166,2.95669093302078,arginine kinase
+LOC105339793,2.94653125419566,protein PFC0760c
+LOC117691793,2.88839625390132,arginine kinase-like
+LOC105335878,2.88304568812943,nacrein-like protein precursor
+LOC105328062,2.81399810571433,baculoviral IAP repeat-containing protein 2
+LOC105337716,2.80032162143301,transcription factor jun-B isoform X1
+LOC105333558,2.78503494495067,asparagine-rich protein isoform X3
+LOC117689114,2.66597748602049,LOW QUALITY PROTEIN: uncharacterized protein LOC117689114
+LOC105338672,2.64466638391677,electroneutral sodium bicarbonate exchanger 1 isoform X2
+LOC105319208,2.63813190165354,spliceosome RNA helicase DDX39B
+LOC105318645,2.56516144414611,myb-like protein X isoform X1
+LOC105318831,2.54979009815372,epithelial membrane protein 3
+LOC105348733,2.53500149080072,G2/mitotic-specific cyclin-A
+LOC105343643,2.51832012133351,complement C1q tumor necrosis factor-related protein 7
+LOC105343637,2.51397804177015,complement C1q tumor necrosis factor-related protein 2
+LOC105343641,2.38165688090629,adiponectin
+LOC105337016,2.3721146826371,cyclic AMP-dependent transcription factor ATF-3
+LOC117684408,2.35008591047849,F-box only protein 4-like
+LOC105329537,2.34970976534578,putative mediator of RNA polymerase II transcription subunit 26 isoform X1
+LOC105327000,2.25272476286189,glutathione-specific gamma-glutamylcyclotransferase 1-like
+LOC117681464,2.17346161784018,electroneutral sodium bicarbonate exchanger 1-like isoform X1
+LOC105342186,2.17193095695784,apolipophorins-like
+LOC105335268,2.09863481510118,EGF-like domain-containing protein 2 isoform X1
+LOC105340069,2.01322425108987,circumsporozoite protein
+LOC105345989,1.9776569901942,heat shock protein 83-like
+LOC117680291,1.97306547019145,heat shock protein 83-like
+LOC117682356,1.9156864569723,ryncolin-4-like
+LOC105321218,1.91393783321517,F-box/LRR-repeat protein 6-like
+LOC105327001,1.91302535980987,glutathione-specific gamma-glutamylcyclotransferase 2
+LOC105333462,1.91237151678109,nacrein-like protein
+LOC105341345,1.90824264523503,sodium-dependent phosphate transport protein 2B isoform X1
+LOC105330649,1.9078573115686,galaxin-like
+LOC105340370,1.83575436261756,78 kDa glucose-regulated protein precursor
+LOC105341070,1.8127670260269,DNA topoisomerase I, mitochondrial isoform X1
+LOC105345604,1.76229047515666,peptidyl-prolyl cis-trans isomerase B
+LOC105337015,1.73783952116099,activating transcription factor 3
+LOC105326557,1.71654504156694,myosin-9-like
+LOC105324156,1.70070326477281,calcitonin gene-related peptide type 1 receptor
+LOC117689060,1.70056063342845,myosin-11-like
+LOC105342083,1.68458338022836,spindle pole body component 110 isoform X1
+LOC105343651,1.67002857441984,multimerin-2
+LOC105345330,1.65832503224641,inner centromere protein
+LOC105341977,1.6327050100144,marginal zone B- and B1-cell-specific protein
+LOC105335286,1.60330861831138,EGF-like domain-containing protein 2
+LOC105332009,1.60022848740457,LOW QUALITY PROTEIN: lysozyme
+LOC105329610,1.59315081969495,FMRFamide receptor
+LOC105317394,1.59056727330388,cell division cycle-associated protein 3 isoform X1
+LOC105317353,1.58181520826406,armadillo repeat-containing protein 1
+LOC105334421,1.55087915584575,PCNA-associated factor
+LOC105339313,1.53311679169609,LOW QUALITY PROTEIN: telomerase protein component 1
+LOC105345814,1.52072681973114,CCAAT/enhancer-binding protein beta
+LOC105328917,1.50452866196182,serine/threonine-protein kinase RIO3 isoform X2
+LOC105334158,-1.55160530939114,nacrein-like protein
+LOC105347762,-1.56293688337179,kelch-like protein 10
+LOC105333234,-1.56487800587964,fibroleukin isoform X1
+LOC117686803,-1.56511690175146,C1q-related factor-like
+LOC105341922,-1.58627720781997,short-chain collagen C4
+LOC117681833,-1.5878496375616,lectin BRA-3-like
+LOC105320984,-1.59388104758589,collagen alpha-2(VIII) chain isoform X1
+LOC105319697,-1.6071337737913,sodium/calcium exchanger 3 isoform X3
+LOC105327045,-1.61125467216906,microfibril-associated glycoprotein 4-like isoform X2
+LOC117680587,-1.63085244606527,fucolectin-like
+LOC105342747,-1.64908835214861,ryncolin-1
+LOC117692236,-1.65403262180158,toll-like receptor 4
+LOC117692687,-1.65787137526726,salivary glue protein Sgs-3-like
+LOC105344085,-1.68609148446075,nucleolin isoform X1
+LOC117689844,-1.68954180701904,microfibril-associated glycoprotein 4-like
+LOC105345603,-1.72889681979118,peptidyl-prolyl cis-trans isomerase B isoform X2
+LOC105329127,-1.732389148324,complement C1q tumor necrosis factor-related protein 3-like
+LOC117691511,-1.73593898284879,ryncolin-4-like
+LOC105346570,-1.74090323061226,O-acyltransferase like protein
+LOC105329085,-1.752082070878,high mobility group-T protein
+LOC105324728,-1.7651683078548,cytochrome P450 2D20
+LOC117688633,-1.7757170438452,flocculation protein FLO11-like
+LOC117690533,-1.8378930789007,serine/threonine-protein kinase TAO3-like
+LOC105318706,-1.84149156636864,basic salivary proline-rich protein 1 isoform X1
+LOC105318074,-1.87091826498037,perlucin-like protein
+LOC117684773,-1.89962983796388,probable endochitinase
+LOC105330102,-1.90095961882727,cytochrome P450 4F12
+LOC105329128,-1.96262518674639,complement C1q tumor necrosis factor-related protein 3
+LOC117690402,-1.9644779971497,putative nuclease HARBI1
+LOC117688118,-2.10217680751087,heavy metal-binding protein HIP-like isoform X2
+LOC109617043,-2.29304149142333,heavy metal-binding protein HIP-like isoform X1
+LOC117688064,-2.32026101576484,cerebellin-3-like isoform X1
+LOC105338263,-2.56052670929814,1-phosphatidylinositol 3-phosphate 5-kinase isoform X1
+LOC117687908,-3.22197378661683,perlucin-like protein
+LOC105342962,-5.12092711216176,perlucin-like protein

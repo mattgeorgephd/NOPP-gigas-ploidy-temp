@@ -1,0 +1,7 @@
+"Gene.secondaryIdentifier","Gene.symbol","Gene.organism.name","Gene.pathways.identifier","Gene.pathways.name","Gene.pathways.dataSets.name"
+"","LOC105334242","Crassostrea gigas","crg00532","Glycosaminoglycan biosynthesis - chondroitin sulfate / dermatan sulfate - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"
+"","LOC105335978","Crassostrea gigas","crg04080","Neuroactive ligand-receptor interaction - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"
+"","LOC105338263","Crassostrea gigas","crg00562","Inositol phosphate metabolism - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"
+"","LOC105338263","Crassostrea gigas","crg04070","Phosphatidylinositol signaling system - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"
+"","LOC105338263","Crassostrea gigas","crg04145","Phagosome - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"
+"","LOC117688097","Crassostrea gigas","crg04137","Mitophagy - animal - Crassostrea gigas (Pacific oyster)","KEGG pathways data set"

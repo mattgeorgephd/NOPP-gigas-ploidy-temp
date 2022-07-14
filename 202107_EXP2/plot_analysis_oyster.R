@@ -19,6 +19,7 @@ library(Johnson)
 library(agricolae)
 library(nlme)
 library(multcomp)
+library(rstatix)
 
 ## Set ggplot theme
 my_theme <- theme(line              = element_line(size=1.5),
@@ -38,7 +39,6 @@ my_theme <- theme(line              = element_line(size=1.5),
                   legend.key        = element_blank()) # removes background of legend bullets
 
 
-
 ###########################################################################################################################
 ### [1] Boxplot - SMR vs. time by ploidy - heated, heated+desiccation
 
@@ -54,6 +54,13 @@ HEAT_plot$trt_list   <- factor(HEAT_plot$trt_list,levels=trt_list$trt_list,order
 
 HEAT_plot_control <- HEAT_plot %>% filter(trt == "control")
 HEAT_plot_heat    <- HEAT_plot %>% filter(trt == "heat_only" | trt == "desiccation")
+HEAT_plot_desiccation <- HEAT_plot %>% filter(trt == "desiccation" & ploidy == "T")
+
+
+HEAT_plot_desiccation %>%
+  group_by(timepoint) %>%
+  get_summary_stats(SMR, type = "mean_se")
+
 
 bp1 <- ggplot(HEAT_plot_control, aes(x=timepoint, y=SMR, group=as.factor(trt_list), fill=trt_list)) +
         geom_boxplot(colour = "grey30", size = 0.8,outlier.colour="grey30", outlier.shape = 16,
@@ -77,6 +84,19 @@ bp2 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=SMR, group=as.factor(trt_list),
 
 bp2
 
+bp3 <- ggplot(HEAT_plot_desiccation, aes(x=timepoint, y=SMR, group=as.factor(trt_list), fill=trt_list)) +
+  geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+               outlier.size=1, notch=FALSE) +
+  scale_fill_manual(values=trt_list$trt_colors[15:19]) +
+  # geom_point() +
+  scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+  # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+  my_theme
+
+bp3
+
+
+
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('..'); setwd('202107_EXP2/plots'); getwd()
 
@@ -97,6 +117,14 @@ ggsave("BOXPLOT_SMR_timeseries_heated.jpeg",
        height = 6,
        units  = "in")
 
+ggsave("BOXPLOT_SMR_timeseries_dess_T.jpeg",
+       plot   = bp3,
+       dpi    = 600,
+       device = "jpeg",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
 ###########################################################################################################################
 ### [2] Linegraph - SMR vs. time by ploidy - heated
 
@@ -114,45 +142,59 @@ HEAT_plot_control <- HEAT_plot %>% filter(trt == "control")
 HEAT_plot_heat    <- HEAT_plot %>% filter(trt == "heat_only")
 HEAT_plot_desi    <- HEAT_plot %>% filter(trt == "desiccation")
 
-p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=SMR, group=as.factor(ID), color=trt_list)) +
-      # geom_point() +
+
+HEAT_plot_heat <- HEAT_plot_heat %>%
+                  group_by(timepoint, ploidy) %>%
+                  get_summary_stats(SMR, type = "mean_se")
+
+HEAT_plot_desi <- HEAT_plot_desi %>%
+                  group_by(timepoint, ploidy) %>%
+                  get_summary_stats(SMR, type = "mean_se")
+
+
+p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy)) +
+      geom_pointrange(aes(ymin=mean-se,ymax=mean+se),size=1) +
       geom_line(size=1) +
       # facet_wrap(~ID) +
-      scale_color_manual(values=c(trt_list$trt_colors[5:9],trt_list$trt_colors[15:19])) +
-      scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
       # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
       my_theme
 
 p1
 
-p2 <- ggplot(HEAT_plot_desi, aes(x=timepoint, y=SMR, group=as.factor(ID), color=trt_list)) +
-      # geom_point() +
-      geom_line(size=1) +
+p2 <- ggplot() +
+      geom_pointrange(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "solid",size=1) +
+      geom_pointrange(data=HEAT_plot_desi, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(data=HEAT_plot_desi, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "dashed",size=1) +
       # facet_wrap(~ID) +
-      scale_color_manual(values=c(trt_list$trt_colors[10:14],trt_list$trt_colors[20:24])) +
-      scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
       # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
       my_theme
 
 p2
 
+p3 <- p1 + p2
+
 
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('plots'); getwd()
 
-ggsave("LINEGRAPH_SMR_timeseries_heated.tiff",
+ggsave("pointrange_SMR_timeseries_heated.png",
        plot   = p1,
        dpi    = 600,
-       device = "jpeg",
-       width  = 12,
+       device = "png",
+       width  = 9,
        height = 6,
        units  = "in")
 
-ggsave("LINEGRAPH_SMR_timeseries_desiccation.tiff",
+ggsave("pointrange_SMR_timeseries_desiccation.png",
        plot   = p2,
        dpi    = 600,
-       device = "jpeg",
-       width  = 12,
+       device = "png",
+       width  = 9,
        height = 6,
        units  = "in")
 
@@ -632,8 +674,11 @@ MR_plot$ploidy    <- factor(MR_plot$ploidy, levels=c("D","T"),ordered=TRUE)
 MR_plot$timepoint <- factor(MR_plot$timepoint, levels=c("-10","1","2","6","10"),ordered=TRUE)
 MR_plot$trt_list       <- factor(MR_plot$trt_list,levels=trt_list$trt_list,ordered=TRUE)
 
+
+HEAT_plot_desiccation
+
 ## Transform data
-x = MR_plot$SMR
+x = HEAT_plot_desiccation$SMR
 qqnorm(x) # check for normality
 qqline(x) # Draw the line
 result <- shapiro.test(x) # p-value fail = good, don't need transformation
@@ -648,14 +693,21 @@ if(result$p.value<0.05)     {
   print("transformed!",quote=FALSE)}
 shapiro.test(x)
 
-MR_plot$SMR <- x
+HEAT_plot_desiccation$SMR <- x
 
 # Statistical testings
 summary(aov(SMR ~ (ploidy*timepoint) + Error(factor(ID)), data = MR_plot))
+summary(aov(SMR ~ (timepoint) + Error(factor(ID)), data = HEAT_plot_desiccation))
+
 
 tx <- with(MR_plot, interaction(ploidy,timepoint))
 amod <- aov(SMR ~ tx, data=MR_plot)
 HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+tx <- with(HEAT_plot_desiccation, interaction(ploidy,timepoint))
+amod <- aov(SMR ~ tx, data=HEAT_plot_desiccation)
+HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
 
 # FR
 current_path <- getActiveDocumentContext()$path

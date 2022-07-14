@@ -1,0 +1,67 @@
+gene,log2FoldChange,description
+LOC117680673,7.72198068236774,heat shock protein 68-like
+LOC105348304,7.6633672639782,heat shock protein 68
+LOC105334510,7.62066119323161,heat shock protein 68
+LOC105348305,7.47930624328002,heat shock protein 68-like
+LOC105326991,6.27553633950371,dentin sialophosphoprotein
+LOC105346578,5.8922904610123,major egg antigen
+LOC105346536,5.51464816375382,fibroin heavy chain isoform X1
+LOC117691913,5.11702035490087,major egg antigen-like
+LOC105322484,5.00169574806354,heat shock protein 68-like
+LOC105323395,4.64538635083253,dentin sialophosphoprotein-like
+LOC105334234,4.48921984247038,heat shock protein 70 B2
+LOC105346538,3.96392362882558,clumping factor A
+LOC105343641,3.95429323935257,adiponectin
+LOC117680402,3.56158067570244,ataxin-2 homolog isoform X1
+LOC105343216,3.49218854675556,heat shock protein 27
+LOC105334580,3.25444920851946,BAG family molecular chaperone regulator 3
+LOC105334167,3.02890921594095,N66 matrix protein-like
+LOC105338672,2.9984359720789,electroneutral sodium bicarbonate exchanger 1 isoform X2
+LOC105318146,2.87533374333559,ganglioside GM2 activator
+LOC105348733,2.59372745612341,G2/mitotic-specific cyclin-A
+LOC105329206,2.57259760414533,alpha-1,2-mannosyltransferase ALG9
+LOC117681464,2.54465941281162,electroneutral sodium bicarbonate exchanger 1-like isoform X1
+LOC105336299,2.2767175100636,ribonucleoside-diphosphate reductase small chain
+LOC105335268,2.25753938456262,EGF-like domain-containing protein 2 isoform X1
+LOC105330701,2.22512277420338,cathepsin L1
+LOC105327001,2.14617887053628,glutathione-specific gamma-glutamylcyclotransferase 2
+LOC105340069,1.99428059489856,circumsporozoite protein
+LOC105346088,1.96090530619074,mammalian ependymin-related protein 1-like
+LOC105343637,1.94385034402371,complement C1q tumor necrosis factor-related protein 2
+LOC105328062,1.93551054477852,baculoviral IAP repeat-containing protein 2
+LOC105325416,1.922757200524,inactive rhomboid protein 2 isoform X2
+LOC105345330,1.82916180610303,inner centromere protein
+LOC105345604,1.78696638711675,peptidyl-prolyl cis-trans isomerase B
+LOC105329537,1.77656228969147,putative mediator of RNA polymerase II transcription subunit 26 isoform X1
+LOC105335878,1.75385561639486,nacrein-like protein precursor
+LOC105342186,1.74005049628882,apolipophorins-like
+LOC105346089,1.69334582156241,mammalian ependymin-related protein 1-like
+LOC105334034,1.67357929229035,baculoviral IAP repeat-containing protein 5
+LOC105326670,1.62496478457721,UPF0676 protein C1494.01-like
+LOC105339511,1.57475089929057,abnormal spindle-like microcephaly-associated protein homolog
+LOC105342747,-1.50847034465736,ryncolin-1
+LOC105344085,-1.55733899955137,nucleolin isoform X1
+LOC117683139,-1.56887557877385,complement C1q-like protein 4
+LOC117687443,-1.59882278980059,laccase-4-like
+LOC105346121,-1.62196952037844,putative nuclease HARBI1
+LOC117689883,-1.65079616383825,short-chain collagen C4-like
+LOC105336572,-1.67124371424107,cytochrome P450 2J2
+LOC105326341,-1.69107305732734,AAC-rich mRNA clone AAC4 protein-like
+LOC117681310,-1.73737739626231,perlucin-like protein
+LOC105345603,-1.78104522790031,peptidyl-prolyl cis-trans isomerase B isoform X2
+LOC117690402,-1.79674476509861,putative nuclease HARBI1
+LOC109617043,-1.80823295120502,heavy metal-binding protein HIP-like isoform X1
+LOC105333234,-1.85302819361695,fibroleukin isoform X1
+LOC105340181,-2.00877711766091,collagen alpha-1(VIII) chain-like
+LOC105338263,-2.13999787172874,1-phosphatidylinositol 3-phosphate 5-kinase isoform X1
+LOC105318074,-2.16920351852448,perlucin-like protein
+LOC117682594,-2.26901154867665,complement C1q tumor necrosis factor-related protein 3-like
+LOC105347119,-2.27030212233359,complement C1q tumor necrosis factor-related protein 3
+LOC117693057,-2.27625239285421,mucin-2-like
+LOC117680587,-2.41108252453423,fucolectin-like
+LOC117687908,-2.52907109900493,perlucin-like protein
+LOC105330078,-2.56086845164352,fucolectin
+LOC105329127,-2.63536207756492,complement C1q tumor necrosis factor-related protein 3-like
+LOC105345449,-2.65710634901035,fucolectin-7-like
+LOC105342962,-3.09966517609385,perlucin-like protein
+LOC105329128,-3.11123442455069,complement C1q tumor necrosis factor-related protein 3

@@ -1,0 +1,312 @@
+gene,log2FoldChange,description
+LOC105335843,5.87077157112889,myosin-3
+LOC105324285,4.64960840942565,patched domain-containing protein 3-like
+LOC105337690,4.5878888327634,atrial natriuretic peptide receptor 1
+LOC105337143,4.10748623058004,perlucin-like protein
+LOC105346178,4.04615209197585,acetylcholinesterase-like isoform X1
+LOC105341313,3.89758093829308,protein ALP1-like
+LOC117684541,3.83838652873125,heat shock protein 68-like
+LOC105320429,3.71233064643461,histone H3
+LOC105343542,3.65054094822065,alpha-mannosidase 2x-like
+LOC117682793,3.52782637818843,nucleolar protein dao-5-like isoform X1
+LOC117687453,3.50033065966642,alpha-mannosidase 2x-like
+LOC105321434,3.37007023551386,perlucin-like protein
+LOC105338289,3.33466590775408,bcl-2-associated transcription factor 1-like
+LOC105330135,3.29986384277949,potassium voltage-gated channel protein Shaw
+LOC117689418,3.28498317669976,translation initiation factor IF-2-like
+LOC105342592,3.21235775470542,sulfotransferase 1 family member D1
+LOC105329018,3.20086531156639,perlucin-like
+LOC105341995,3.10767736367379,neurotrypsin isoform X1
+LOC117689920,3.059178367732,P-selectin-like
+LOC105328933,3.02242430134298,low-density lipoprotein receptor-related protein 4
+LOC105323226,3.00053799867748,FK506-binding protein 2
+LOC117688384,2.97345779916001,multiple epidermal growth factor-like domains protein 10
+LOC105348616,2.9363803181779,protein mesh
+LOC105348613,2.9067186047158,ganglioside GM2 activator-like isoform X2
+LOC105338509,2.84387274204401,gonadotropin-releasing hormone II receptor
+LOC105330102,2.82038857801791,cytochrome P450 4F12
+LOC105338617,2.79418991466028,LOW QUALITY PROTEIN: rotatin
+LOC105324826,2.75841452417792,tyrosinase-like protein 1
+LOC105337262,2.73502017622321,multiple epidermal growth factor-like domains protein 6
+LOC117688484,2.73040094095436,fucolectin-1-like
+LOC105324728,2.72004519386967,cytochrome P450 2D20
+LOC105348202,2.70665253590833,DNA polymerase nu isoform X1
+LOC117692625,2.6621158438449,zinc finger protein 182-like
+LOC105318825,2.66163062579299,serine/arginine repetitive matrix protein 1 isoform X2
+LOC105343679,2.64604804344054,solute carrier family 22 member 15-like isoform X1
+LOC105341789,2.6330396920903,A disintegrin and metalloproteinase with thrombospondin motifs 6
+LOC117691482,2.60743910098524,perlucin-like isoform X2
+LOC117692398,2.600795025089,histone H4
+LOC105320234,2.59779764227246,angiopoietin-4-like
+LOC105336368,2.591397859553,protein PIF-like
+LOC105325465,2.57095003078056,stimulated by retinoic acid gene 6 protein-like
+LOC105317300,2.55944422792345,high choriolytic enzyme 1
+LOC117691654,2.55414852310516,perlucin-like protein
+LOC109621217,2.55098639822404,fibropellin-1
+LOC105336862,2.53905557311094,protein SpAN-like
+LOC117681100,2.5330615238911,von Willebrand factor D and EGF domain-containing protein-like
+LOC105337729,2.529712831898,protein Wnt-7b isoform X4
+LOC105330239,2.52676010221353,putative cuticle collagen 75
+LOC105320474,2.5233358819535,ecdysone receptor isoform X1
+LOC105318064,2.52128330440261,LOW QUALITY PROTEIN: alkaline phosphatase, tissue-nonspecific isozyme
+LOC105320731,2.51544356229049,cadherin-23
+LOC105344805,2.5135229672676,QRFP-like peptide receptor
+LOC117688518,2.49907291416501,fucolectin-5-like
+LOC105327693,2.45844374675574,transcription factor 15
+LOC117682693,2.45791689032208,multiple epidermal growth factor-like domains protein 10
+LOC105345562,2.45382776911332,multiple epidermal growth factor-like domains protein 11
+LOC105344624,2.42232285080363,dual 3',5'-cyclic-AMP and -GMP phosphodiesterase 11A isoform X2
+LOC105320489,2.41827763762287,formin-like protein 14
+LOC105319776,2.41764283991723,integumentary mucin C.1
+LOC117680333,2.4098929766911,protein FAM124A-like
+LOC105340334,2.39166366680715,thymidine kinase, cytosolic isoform X1
+LOC105338525,2.38889974513691,probable G-protein coupled receptor B0563.6
+LOC105336363,2.3868018985047,relaxin receptor 2
+LOC117691483,2.38615729569139,perlucin-like
+LOC105340623,2.38354442537499,solute carrier organic anion transporter family member 4A1 isoform X1
+LOC105327493,2.37524523878824,solute carrier organic anion transporter family member 4A1
+LOC105325538,2.36837943255173,caveolin-1
+LOC105340578,2.35427406360218,metabotropic glutamate receptor 3
+LOC117688485,2.35089405787826,fucolectin-1-like
+LOC117690522,2.33528143385622,brain tumor protein-like
+LOC105348538,2.33409012223019,sperm receptor for egg jelly
+LOC105332686,2.32901205979987,unconventional myosin-XVI isoform X2
+LOC105338785,2.31959210788087,transmembrane protein 65
+LOC105327609,2.31882129678995,cilia- and flagella-associated protein 300
+LOC105348432,2.3010462595683,kelch-like protein 12
+LOC117687299,2.29817809289987,myristoylated alanine-rich C-kinase substrate-like
+LOC105321801,2.29202522197402,multiple epidermal growth factor-like domains protein 11
+LOC105336312,2.28152608768687,tryptophan 5-hydroxylase 1
+LOC105336684,2.26873412183176,collagen alpha-4(VI) chain
+LOC105320024,2.26290295259738,kunitz-type serine protease inhibitor BmKTT-3-like
+LOC105317867,2.24654432423464,growth hormone secretagogue receptor type 1
+LOC105318776,2.24124843619472,organic cation transporter protein-like
+LOC117686979,2.23037293151805,salivary glue protein Sgs-3-like
+LOC105323056,2.22300227496604,temptin
+LOC105335573,2.21370682462699,probable alpha-ketoglutarate-dependent hypophosphite dioxygenase
+LOC105343702,2.21345201822125,sodium- and chloride-dependent glycine transporter 1
+LOC117692024,2.2106439509104,protein THYLAKOID RHODANESE-LIKE, chloroplastic-like
+LOC105330061,2.20388688463695,GRAM domain-containing protein 4 isoform X1
+LOC105338917,2.19935304903182,homeobox protein ceh-32
+LOC105321226,2.19439392673046,epidermal growth factor receptor isoform X1
+LOC105340562,2.19019898946168,C-X-C chemokine receptor type 2
+LOC105318999,2.18966732308133,WD repeat-containing protein 37 isoform X1
+LOC105347081,2.18941953480623,BTB/POZ domain-containing protein 17
+LOC105323253,2.18775450192036,FMRFamide receptor
+LOC105321903,2.17966650077992,failed axon connections homolog
+LOC105317762,2.17304055924311,paired mesoderm homeobox protein 2
+LOC105326042,2.16827968127992,substance-K receptor
+LOC117682108,2.16612867618317,paired mesoderm homeobox protein 2-like
+LOC117685548,2.14529137349198,putative nuclease HARBI1
+LOC105332147,2.13015120291346,latent-transforming growth factor beta-binding protein 2
+LOC105342692,2.12978176293329,methylthioribulose-1-phosphate dehydratase
+LOC105342723,2.12835254595011,meiosis 1 arrest protein isoform X1
+LOC105332601,2.12668912272352,motor neuron and pancreas homeobox protein 1
+LOC105327401,2.1266256076628,collagen alpha-1(XII) chain isoform X2
+LOC105318991,2.12513591836097,sushi, von Willebrand factor type A, EGF and pentraxin domain-containing protein 1-like
+LOC105340378,2.11960932553356,CD109 antigen isoform X5
+LOC105331186,2.11717760801016,tyrosinase-like protein 2
+LOC117682500,2.10970292074614,putative nuclease HARBI1
+LOC117690815,2.0843904627167,translation initiation factor IF-2-like isoform X1
+LOC105335241,2.08084623233344,LIM/homeobox protein Lhx3-like
+LOC105318208,2.07473365822782,glycine N-acyltransferase-like protein 3
+LOC117692806,2.0723244973413,atrial natriuretic peptide receptor 2-like
+LOC117687324,2.07110656001582,fucolectin-1-like
+LOC105322986,2.05948816183055,spidroin-1-like
+LOC105340204,2.05497933419225,5-hydroxytryptamine receptor 6-like
+LOC105320146,2.04625182659666,synaptotagmin-7
+LOC105321102,2.04026593276627,paired box protein Pax-6 isoform X1
+LOC105346330,2.03646287511218,growth hormone secretagogue receptor type 1
+LOC105340338,2.03115353062443,CB1 cannabinoid receptor-interacting protein 1
+LOC117689959,2.02723915167697,uromodulin-like
+LOC105319354,2.01509746900873,protein amnionless-like isoform X1
+LOC105339278,2.00221056998063,brain tumor protein
+LOC117692888,1.99658464548384,ATP-dependent DNA helicase Q-like SIM
+LOC105332085,1.99357343551084,FMRFamide receptor
+LOC117692687,1.99008584946217,salivary glue protein Sgs-3-like
+LOC117688377,1.98558497345389,angiopoietin-1 receptor-like
+LOC105323111,1.98529814990404,calcium-responsive transcription factor
+LOC105318527,1.98450722557406,L-galactose dehydrogenase
+LOC105345936,1.97454381321665,peroxiredoxin-5, mitochondrial
+LOC105317730,1.97255081477868,neurogenic locus notch homolog protein 1
+LOC117688291,1.97225233162049,integumentary mucin C.1-like
+LOC105345968,1.9720235544943,prostaglandin E2 receptor EP4 subtype
+LOC105326052,1.97165274046968,protein GDAP2 homolog isoform X1
+LOC105322681,1.96154762515366,barrier-to-autointegration factor
+LOC105329802,1.9610726975599,guanylate cyclase 32E-like isoform X1
+LOC105346541,1.94864131237079,calcitonin gene-related peptide type 1 receptor-like
+LOC109620163,1.94488245084241,cystatin-A
+LOC105328928,1.94448973005357,hydroxylysine kinase
+LOC105341850,1.93819297993404,protein FAM124A
+LOC105319646,1.93698477910132,C-type lectin domain family 4 member M isoform X7
+LOC105340065,1.93306105434617,aldo-keto reductase family 1 member A1
+LOC117683812,1.9301975182287,scavenger receptor class F member 2-like
+LOC105329837,1.92865912247338,putative nuclease HARBI1
+LOC105343950,1.92508481520588,basic salivary proline-rich protein 3 isoform X1
+LOC105319852,1.92473284147188,cytochrome P450 26A1
+LOC105341808,1.91656386584394,phosphatidylserine synthase 1 isoform X1
+LOC117690402,1.91238576830188,putative nuclease HARBI1
+LOC105336202,1.89941384281574,glycine receptor subunit alpha-2 isoform X1
+LOC105337184,1.89367277638764,neurogenic protein mastermind
+LOC105328315,1.89192147059649,succinate--hydroxymethylglutarate CoA-transferase
+LOC105322206,1.87866548707353,nuclear pore complex protein Nup50 isoform X1
+LOC117688115,1.87734831924199,multiple epidermal growth factor-like domains protein 10
+LOC105331869,1.87087424225407,putative ammonium transporter 1 isoform X1
+LOC117687154,1.8690425861751,peroxidase-like protein
+LOC105331097,1.86673569651555,dual oxidase
+LOC105322515,1.86609165611616,A-agglutinin anchorage subunit isoform X1
+LOC105325659,1.8658469672604,beta-lactamase-like
+LOC105338923,1.8653069241928,collagen alpha-1(I) chain
+LOC105332774,1.86240772283964,UDP-GalNAc:beta-1,3-N-acetylgalactosaminyltransferase 2
+LOC105348911,1.85532076885965,sulfotransferase 1E1-like
+LOC117689782,1.84897547612057,mitotic checkpoint serine/threonine-protein kinase BUB1-like isoform X2
+LOC105325346,1.84325799188279,transmembrane protein 26
+LOC105340166,1.84298633966157,mucin-5AC isoform X1
+LOC105340583,1.83587818474681,protocadherin Fat 4
+LOC117689243,1.82919493348242,peroxiredoxin-5, mitochondrial-like
+LOC105322237,1.82711643558775,vacuolar segregation protein PEP7
+LOC105328229,1.82521464026249,probable cytochrome P450 CYP44
+LOC117688418,1.82365311481263,zinc finger protein interacting with ribonucleoprotein K-like
+LOC105345408,1.82254428814142,quinone reductase-like
+LOC105336391,1.81278887239023,circadian locomoter output cycles protein kaput
+LOC105346846,1.81228695404198,sodium-coupled monocarboxylate transporter 1
+LOC105344571,1.81011163638255,protocadherin Fat 1
+LOC117687440,1.8063462535476,transcription intermediary factor 1-beta-like
+LOC105327436,1.80574519175248,universal stress protein PHOS34
+LOC105344450,1.80486373160826,sulfoquinovosidase
+LOC105329017,1.80224759770903,perlucin-like protein isoform X2
+LOC105337090,1.80116231173623,MAM and LDL-receptor class A domain-containing protein 1 isoform X1
+LOC117689921,1.79583716133157,free fatty acid receptor 4-like
+LOC105348679,1.79432049549313,sodium-coupled monocarboxylate transporter 1
+LOC105319145,1.79395153067625,perlucin
+LOC105325948,1.79030410968928,transient receptor potential cation channel subfamily M member-like 2
+LOC105348741,1.78760895651122,transmembrane protein 272
+LOC105328565,1.78552987840944,polyribonucleotide nucleotidyltransferase 1, mitochondrial
+LOC105345866,1.78098395754747,arylacetamide deacetylase
+LOC105323826,1.77902117837002,melanopsin-B-like
+LOC105335961,1.77756435967856,leucine-rich repeat-containing protein 46-like
+LOC105345364,1.77740194947691,sodium- and chloride-dependent creatine transporter 1 isoform X1
+LOC109619522,1.77672999975133,sarcoplasmic calcium-binding protein-like
+LOC105338916,1.77448820241835,collagen alpha-1(I) chain
+LOC105342774,1.77038210190461,collagen alpha-3(VI) chain isoform X1
+LOC105333868,1.76944370912042,carbonic anhydrase 14-like isoform X3
+LOC105318230,1.76770846772635,EF-hand calcium-binding domain-containing protein 6 isoform X1
+LOC117689848,1.76449511801246,ryncolin-1-like
+LOC109618896,1.76394556817139,multiple epidermal growth factor-like domains protein 10 isoform X1
+LOC105337170,1.76361485099752,BPTI/Kunitz domain-containing protein 5
+LOC105348706,1.76326982424157,vacuolar protein sorting-associated protein 18 homolog isoform X2
+LOC105337786,1.76173545363347,neuropeptide SIFamide receptor
+LOC105332049,1.76166536973282,C-terminal-binding protein 1
+LOC105339876,1.75413158129298,L-galactose dehydrogenase
+LOC117680550,1.74752780382569,dehydrogenase/reductase SDR family member 9-like
+LOC105346368,1.74452865003872,perlucin-like protein
+LOC117687861,1.74441166851722,collectin-12-like
+LOC105320875,1.73899702999808,fibropellin-1
+LOC105343006,1.72589340997676,transmembrane protein 179-like isoform X2
+LOC109619490,1.72370579761476,multiple epidermal growth factor-like domains protein 10
+LOC117687867,1.7226353343374,aggrecan core protein-like
+LOC105326043,1.71934323462284,substance-K receptor
+LOC105341779,1.71508095922401,neo-calmodulin
+LOC105332939,1.71165375527391,variant-silencing SET domain-containing protein-like
+LOC105320924,1.70667381028412,von Willebrand factor D and EGF domain-containing protein
+LOC105347919,1.70623308052427,sodium-coupled monocarboxylate transporter 1
+LOC105336755,1.7056614028549,neurogenic differentiation factor 6-A
+LOC105319935,1.69976756873821,buccalin-like
+LOC105339855,1.69947927089118,acyl-coenzyme A synthetase ACSM3, mitochondrial
+LOC105325689,1.69533481482616,low-density lipoprotein receptor-related protein 4-like isoform X2
+LOC105343070,1.69342856695482,cell death abnormality protein 1-like
+LOC105321008,1.69322889707253,multiple epidermal growth factor-like domains protein 10
+LOC117687787,1.68442829266805,protein ALP1-like
+LOC105332319,1.68442585325618,glutamate receptor ionotropic, kainate 2 isoform X2
+LOC105347159,1.67711364462463,beta-lactamase domain-containing protein 2-like
+LOC105333463,1.67546182154763,alkyl/aryl-sulfatase BDS1
+LOC105338943,1.65483482227168,contactin-2 isoform X1
+LOC105327615,1.64463889482495,MFS-type transporter SLC18B1 isoform X2
+LOC105330901,1.64284634944527,ethanolaminephosphotransferase 1-like
+LOC105321540,1.64137901435321,IgGFc-binding protein isoform X1
+LOC117688158,1.63803858391092,mothers against decapentaplegic homolog 3-like
+LOC105332130,1.63368592379182,prolyl-tRNA synthetase associated domain-containing protein 1
+LOC105317295,1.63271562907234,myb/SANT-like DNA-binding domain-containing protein 3
+LOC105335979,1.62553738946543,acetylcholine receptor subunit delta-like
+LOC105343572,1.62336987659688,chitin synthase chs-2 isoform X1
+LOC105326727,1.60883538403779,beta-1,3-galactosyltransferase 1-like
+LOC105343455,1.60469995361855,LOW QUALITY PROTEIN: SRR1-like protein
+LOC105318362,1.60334806159837,LOW QUALITY PROTEIN: mucin-19
+LOC117692815,1.60282424917132,collectin-12-like
+LOC105319420,1.60271716196548,glutamic acid-rich protein
+LOC105323179,1.60083002116627,growth hormone secretagogue receptor type 1
+LOC105332224,1.59805514049145,neuronal acetylcholine receptor subunit beta-3
+LOC105332773,1.59804658877809,zinc finger homeobox protein 4
+LOC105320056,1.58618300827283,neurogenic locus notch homolog protein 2 isoform X2
+LOC117680530,1.585640028237,plancitoxin-1-like
+LOC105331301,1.58542599981024,cadherin-99C
+LOC105324949,1.57992393389723,ras-related protein Rab-13
+LOC105330757,1.57807282030609,protein draper
+LOC105328225,1.57560371118158,isobutyryl-CoA dehydrogenase, mitochondrial
+LOC105336115,1.57513304487574,sialin
+LOC105346626,1.57189857053213,atrial natriuretic peptide receptor 1
+LOC117687741,1.56133984119533,serine-rich adhesin for platelets-like isoform X2
+LOC105317994,1.56114322691937,solute carrier family 49 member A3
+LOC105323290,1.55655362620668,putative L-cysteine desulfhydrase 1
+LOC105340880,1.55566752984433,dachshund homolog 1
+LOC105324738,1.55301678824778,peroxidase-like protein isoform X2
+LOC105336743,1.55097615888982,acetylcholine receptor subunit beta
+LOC105331756,1.54918154489525,apolipoprotein D
+LOC105334041,1.54752814250007,mitogen-activated protein kinase kinase kinase 4
+LOC105329457,1.54282998428205,adenine DNA glycosylase
+LOC117691016,1.54089912832542,polyadenylate-binding protein 4-like
+LOC105338848,1.54038411231654,multiple epidermal growth factor-like domains protein 10 isoform X2
+LOC105324426,1.53547084604629,prostaglandin E2 receptor EP4 subtype
+LOC105336976,1.53345920363277,actophorin
+LOC105327373,1.52776057430958,sodium/hydrogen exchanger 10 isoform X1
+LOC105327611,1.52660279261328,filamin-A
+LOC105320077,1.52542415882459,protein FAM221A-like
+LOC105320545,1.52503661679599,metaxin-2
+LOC117680557,1.51860160138122,multiple epidermal growth factor-like domains protein 10 isoform X2
+LOC117688543,1.50662043578482,multiple epidermal growth factor-like domains protein 10
+LOC105334338,1.50473103683937,glutathione S-transferase 1-like isoform X2
+LOC105332883,-1.50088842675456,targeting protein for Xklp2 homolog isoform X1
+LOC105332193,-1.51144892616438,actin, cytoplasmic
+LOC105340198,-1.53929638104445,chloride intracellular channel protein 4
+LOC105341931,-1.54412873815547,ras-related protein Rab-11A
+LOC117684442,-1.63477930541869,integumentary mucin C.1-like isoform X2
+LOC117686033,-1.6625110230079,sterile alpha motif domain-containing protein 9-like
+LOC105347974,-1.68767446873771,G2/mitotic-specific cyclin-B3
+LOC117684408,-1.69794567132132,F-box only protein 4-like
+LOC117686337,-1.71862952957503,ankyrin repeat domain-containing protein 17-like
+LOC105320186,-1.72400749768919,arylsulfatase B isoform X1
+LOC117692016,-1.73363859333341,putative nuclease HARBI1
+LOC105321189,-1.74134302477276,putative glutathione-specific gamma-glutamylcyclotransferase 2
+LOC105317809,-1.74880571341128,rho GTPase-activating protein 11B isoform X2
+LOC105333462,-1.80449569424643,nacrein-like protein
+LOC105346049,-1.80847922022689,von Willebrand factor A domain-containing protein 7
+LOC105336341,-1.83350483747676,pancreatic triacylglycerol lipase
+LOC105329537,-1.8562312675037,putative mediator of RNA polymerase II transcription subunit 26 isoform X1
+LOC117682171,-1.86235444936886,THAP domain-containing protein 1 B-like
+LOC105335268,-1.89937628071092,EGF-like domain-containing protein 2 isoform X1
+LOC105349185,-1.95091619926015,ADP-ribosylation factor
+LOC117684555,-1.95626399027253,ADP-ribosylation factor-like
+LOC105345604,-1.98448248325055,peptidyl-prolyl cis-trans isomerase B
+LOC105342186,-2.00578121672806,apolipophorins-like
+LOC105318645,-2.01550682506645,myb-like protein X isoform X1
+LOC117682356,-2.04786775156303,ryncolin-4-like
+LOC105339464,-2.09720536500483,leucine-rich repeat transmembrane neuronal protein 3
+LOC105324323,-2.16553878255457,GTP-binding protein SAR1 isoform X1
+LOC117681464,-2.19136797960503,electroneutral sodium bicarbonate exchanger 1-like isoform X1
+LOC105338672,-2.4027326179887,electroneutral sodium bicarbonate exchanger 1 isoform X2
+LOC105329166,-2.44129507979467,arginine kinase
+LOC117685405,-2.5033363761365,serine-rich adhesin for platelets-like
+LOC105330264,-2.51254456806638,piggyBac transposable element-derived protein 4-like
+LOC117680491,-2.55966296793069,mucin-2-like
+LOC105333558,-2.5930492842546,asparagine-rich protein isoform X3
+LOC109620632,-2.92302452433217,chitin synthase chs-2 isoform X2
+LOC105339793,-2.98167776552781,protein PFC0760c
+LOC117691793,-3.03042353929659,arginine kinase-like
+LOC105335878,-3.07632236887087,nacrein-like protein precursor
+LOC105348733,-3.52526100545437,G2/mitotic-specific cyclin-A
+LOC105336299,-3.68809150942766,ribonucleoside-diphosphate reductase small chain
+LOC105346536,-4.02293592452888,fibroin heavy chain isoform X1
+LOC105323395,-4.79637429013959,dentin sialophosphoprotein-like
+LOC105327445,-6.17252998314221,sperm-specific protein PHI-2B/PHI-3
+LOC105346538,-6.26446258867821,clumping factor A
+LOC105326991,-8.70505791259299,dentin sialophosphoprotein

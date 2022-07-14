@@ -49,9 +49,9 @@ FR_plot$trt <- factor(FR_plot$trt,levels=trt_list$trt_list,ordered=TRUE)
 
 # lims <- as.POSIXct(strptime(c("2021-07-13 07:00","2021-07-13 14:00"), format = "%Y-%m-%d %H:%M"))
 
-FR_plot_control <- FR_plot %>% filter(trt == "D-control" | trt == "T-control")
-FR_plot_heated  <- FR_plot %>% filter(trt == "D-heat_only" | trt == "T-heat_only" | trt == "D-heat_desiccation" | trt == "T-heat_desiccation")
-# HEAT_plot_heat    <- HEAT_plot %>% filter(trt == "heat_only" | trt == "desiccation")
+FR_plot_control   <- FR_plot %>% filter(trt == "D-control" | trt == "T-control")
+FR_plot_heated    <- FR_plot %>% filter(trt == "D-heat_only" | trt == "T-heat_only" | trt == "D-heat_desiccation" | trt == "T-heat_desiccation")
+FR_plot_des_T     <- FR_plot %>% filter(trt == "T-heat_desiccation" | trt == "D-control" | trt == "T-heat_only")
 
 p1 <- ggplot(data=FR_plot_control,aes(x=day,y=survival,color=trt)) +
             geom_line(size=1.2,aes(linetype=trt)) +
@@ -86,6 +86,17 @@ p3 <- ggplot(data=FR_plot,aes(x=day,y=survival,color=trt)) +
 
 p3
 
+p4 <- ggplot(data=FR_plot_des_T,aes(x=day,y=survival,color=trt)) +
+                geom_line(size=1.2,aes(linetype=trt)) +
+                scale_linetype_manual(values=c("solid","solid","twodash"))+
+                scale_color_manual(values=c("royalblue1","orangered1", "orangered3")) +
+                scale_y_continuous(breaks = seq(0, 100, 10), limits = c(60,105)) +
+                scale_x_continuous(breaks = seq(-30,30,10) , limits = c(-32,32))+ 
+                # scale_x_date(date_labels = "%b/%d") +
+                my_theme
+
+p4
+
 current_path <- getActiveDocumentContext()$path
 # setwd(dirname(current_path )); setwd('plots'); getwd()
 
@@ -110,6 +121,14 @@ ggsave("mortality_all.jpeg",
        dpi    = 300,
        device = "jpeg",
        width  = 8,
+       height = 5,
+       units  = "in")
+
+ggsave("mortality_desiccation.jpeg",
+       plot   = p4,
+       dpi    = 300,
+       device = "jpeg",
+       width  = 6,
        height = 5,
        units  = "in")
 
