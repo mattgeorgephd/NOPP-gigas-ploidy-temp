@@ -15,7 +15,7 @@ CS_6<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-
 CS_6['Label'] <- NA
 names(CS_6)[7]<-'Label'
 names(CS_6)[6]<-'A'
-wells<-c(0, 8, 16, 24, 32, 40, "pos","pos", "pos", "background", "background", "background", "X47", "X47", "X47", NA, "T61", "T61", NA, "X42", "X42", "N57", NA, "N57", NA, "X48", "X48", "R42", "R42", "R42", NA, "X43", "X43", "X44", "X44", "X44", "D55", NA, "D55", NA, "M47", "M47", "N44", "N44", "N44", NA, "D59", "D59", "R51", "R51", "R51", "T56", "T56", "T56", NA, "R60", "R60", "M41", "M41", "M41", "R46", "R46", "R46", "M89",	"M89",	"M89", NA, "T58", "T58", "R48", "R48", "R48", "T62", "T62", "T62") #NAs are where bubbles affected the results 
+wells<-c(0, 8, 16, 24, 32, 40, "pos","pos", "pos", "background", "background", "background", "X47", "X47", "X47", NA, "T61", "T61", NA, "X42", "X42", "N57", NA, "N57", NA, "X48", "X48", NA, "R42", "R42", NA, "X43", "X43", "X44", "X44", "X44", "D55", NA, "D55", NA, "M47", "M47", "N44", "N44", "N44", NA, "D59", "D59", "R51", "R51", "R51", "T56", "T56", "T56", NA, "R60", "R60", "M41", "M41", "M41", "R46", "R46", "R46", "M89",	"M89",	"M89", NA, "T58", "T58", "R48", "R48", "R48", "T62", "T62", "T62") #NAs are where bubbles affected the results 
 
 CS_6$Label<-rep(wells, 15) #note rep=15 
 
@@ -64,13 +64,13 @@ wells<-c(2000, 2000, 2000, 1500, 1500, 1500, 1000, 1000, 1000, 750, 750, 750, 50
 
 bsa$Label<-rep(wells, 3)
 
-bsa_standards<-bsa[c(3:24),]
+bsa_standards<-bsa[c(4:24),]
 #make plot
 
 reverse_plot<-ggplot(data=bsa_standards,(aes(x=A, y=as.numeric(Label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=500)+ylab("ug/mL")
 
 reverse_plot
-#y=-1900 +2900x
+#y=-1800 +2700x
 #extract equation from plot
 ##############################Calculate Results###############################
 A<-bsa %>% 
@@ -80,42 +80,30 @@ A<-bsa %>%
 A_samples<-A[-c(1:8),]  #remove standards 
 samples_BSA<-filter(A_samples, A_samples$Label %in% samples) #filter out bad data
 
-protein_content<-(2900*samples_BSA$meanA)-1900 #with no correction, y=-1900 +2900x
+protein_content<-(2700*samples_BSA$meanA)-1800 #with no correction, #y=-1800 +2700x
 
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights_redos.csv") #this changed from last CS script, make sure this is the correct weight CSV
 names(sample_list)[1]<-'Label'
-names(sample_list)[2]<-'Weights'
+names(sample_list)[3]<-'Weights'
 joined<-inner_join(samples_BSA, sample_list, by="Label") #from CS sample list 
-weights<-as.numeric(joined$Weights[-c(25,29)]) 
+weights<-as.numeric(joined$Weights) 
 V1<-350 #uL (added 350uL buffer to tube before homogenization) 
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
 
 BSA_results<-mutate(samples_BSA, protein_content, weights, standardization, P)
 
-BSA_10<-filter(BSA_results, BSA_results$Label %in% V10)
-BSA_20<-filter(BSA_results, BSA_results$Label %in% V20)
-
-######Calculate Final Values
-#y= 42x - 5.7 (CS activity)
+######Calculate Final CS Values
+#y= 42x - 5.7 (from CS activity plot)
 t<-50 #min
 m<-42
 b<--5.7
-GSH_10<-(m*deltaOD_10)+b 
-GSH_20<-(m*deltaOD_20)+b 
-V1<-10 #uL from procedure (for samples R61, R59, T59 only)
-V2<-20 #uL from procedure (for samples D56, N49, D58, R57, R50, N46, N41, N45, T61, M47)
+GSH<-(m*deltaOD)+b 
+V1<-50 #uL from procedure 
 D<-1 #dilution coefficient, should be 1 since we did not dilute
-CS_activity_10uL<-(GSH_10/(t*V1))*D/BSA_10$P
-CS_activity_20uL<-(GSH_20/(t*V2))*D/BSA_20$P
-####################### split data by Volume Used ************************
-weights_10<-filter(BSA_results, BSA_results$Label %in% V10)
-weights_20<-filter(BSA_results, BSA_results$Label %in% V20)
+CS_activity<-(GSH/(t*V1))*D/P
 
-######start here
-results_10uL<-mutate(initial_10, OD=deltaOD_10, GSH=GSH_10, weights=weights_10$weights, protein_content=BSA_10$protein_content, standardized=BSA_10$standardization, "Protein (mg/ul)"=BSA_10$P, "CS activity (nmol/(mg*min))"=CS_activity_10uL) #OD is the delta OD for the samples
-
-results_20uL<-mutate(initial_20, OD=deltaOD_20, GSH=GSH_20, weights=weights_20$weights, protein_content=BSA_20$protein_content,standardized=BSA_20$standardization, "Protein (mg/ul)"=BSA_20$P, "CS activity (nmol/(mg*min))"=CS_activity_20uL) #OD is the delta OD for the samples
+results<-mutate(initial, OD=deltaOD, GSH=GSH, weights=weights, protein_content=protein_content, standardized=standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity) #OD is the delta OD for the samples
 
 ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
 names(ploidy)[1]<-'Label'
@@ -124,13 +112,10 @@ treatment<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-g
 trt<-treatment[c(1:72),]
 names(trt)[2]<-'Label'
 
-####get final results 
-results_joined_10uL<-inner_join(results_10uL, ploidy , by="Label") #from CS sample list 
-results_joined_20uL<-inner_join(results_20uL, ploidy, by="Label")
+####tabulate final results table
+results_joined<-inner_join(results, ploidy , by="Label") #from CS sample list 
 
-stacked<-rbind(results_joined_10uL, results_joined_20uL)
-
-results_joined<-inner_join(stacked, trt, by="Label")
+results_joined<-inner_join(results_joined, trt, by="Label")
 
 final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 final_plot
