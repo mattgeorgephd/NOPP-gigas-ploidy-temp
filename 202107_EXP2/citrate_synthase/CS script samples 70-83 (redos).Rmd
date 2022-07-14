@@ -2,7 +2,7 @@
 title: "CS_assay"
 output: pdf_document
 ---
-# Make new CS standard curve for new data (7.12.2022)
+# Samples 70-82 from July 11-12th 2022 (redos from March 22nd)
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -15,6 +15,7 @@ names(CS_5)[6]<-'A'
 wells<-c(0, 8, 16, 24, 32, 40, "pos","pos", "pos", "background", "background", "background", "R61", "R61", "R61", "R59", "R59", NA, "T59", "T59", "T59", "D56", "D56", "D56", "N49", "N49", "N49", "D58", "D58", "D58", "R57", "R57", "R57", "R50", "R50", "R50", "N46", "N46", "N46", "N41", "N41", "N41", "N41", "N45", "N45", "N45", "T61", "T61", "T61", "M47", "M47", "M47")
 CS_5$Label<-rep(wells, 15) #note rep=15 
 
+# Make new CS standard curve for new data (7.12.2022)
 cs_standards<-CS_5[c(730:734),] #set standards and removed outliers
 standards<-as.numeric(c(8, 16, 24, 32, 40)) #relabel
 cs_standards$Label<-standards
@@ -37,7 +38,7 @@ mydata5<-filter(CS_5, CS_5$Label %in% samples)
 quickview5<-ggplot(data=mydata5, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 15, by=1))
 quickview5 #looks great!
 
-###Get CS results###
+##########################Get CS results######################
 time_i<-subset(CS_5, CS_5$Repeat==1)
 time_f<-subset(CS_5, CS_5$Repeat==15) #pick maximum data point
 initial<-time_i %>% 
@@ -50,7 +51,8 @@ final<-time_f %>%
 final<-final[-c(1:7, 15, 22),] #this will change each time
 initial<-initial[-c(1:7, 15, 22),] #this will change each time
 #split data into 10uL and 20uL sample volumes 
-###############(must be handled separately from here out)
+###############(must be handled separately from here out)#################
+#*****split volumes into V=10uL and V=20uL due to lack of reagent 
 V10<-c("R61", "R59", "T59")
 V20<-c("D56", "N49", "D58", "R57", "R50", "N46", "N41", "N45", "T61", "M47")
 final_10<-filter(final, final$Label %in% V10)
@@ -93,11 +95,11 @@ names(sample_list)[1]<-'Label'
 names(sample_list)[2]<-'Weights'
 joined<-inner_join(samples_BSA, sample_list, by="Label") #from CS sample list 
 weights<-as.numeric(joined$Weights[-c(25,29)]) 
-V1<-350 #uL
+V1<-350 #uL (added 350uL buffer to tube before homogenization) 
 standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
 
-BSA_results<-mutate(samples_BSA, protein_content, weights, standardization)
+BSA_results<-mutate(samples_BSA, protein_content, weights, standardization, P)
 
 BSA_10<-filter(BSA_results, BSA_results$Label %in% V10)
 BSA_20<-filter(BSA_results, BSA_results$Label %in% V20)
@@ -112,14 +114,16 @@ GSH_20<-(m*deltaOD_20)+b
 V1<-10 #uL from procedure (for samples R61, R59, T59 only)
 V2<-20 #uL from procedure (for samples D56, N49, D58, R57, R50, N46, N41, N45, T61, M47)
 D<-1 #dilution coefficient, should be 1 since we did not dilute
-CS_activity_10uL<-(GSH_10/(t*V1))*D/BSA_10$protein_content
-CS_activity_20uL<-(GSH_20/(t*V2))*D/BSA_20$protein_content
+CS_activity_10uL<-(GSH_10/(t*V1))*D/BSA_10$P
+CS_activity_20uL<-(GSH_20/(t*V2))*D/BSA_20$P
 ####################### split data by Volume Used ************************
 weights_10<-filter(BSA_results, BSA_results$Label %in% V10)
 weights_20<-filter(BSA_results, BSA_results$Label %in% V20)
 
-results_10uL<-mutate(initial_10, OD=deltaOD_10, GSH=GSH_10, weights=weights_10$weights, standardized=BSA_10$standardization, "Protein (mg/ul)"=BSA_10$protein_content, "CS activity (nmol/(mg*min))"=CS_activity_10uL) #OD is the delta OD for the samples
-results_20uL<-mutate(initial_20, OD=deltaOD_20, GSH=GSH_20, weights=weights_20$weights, standardized=BSA_20$standardization, "Protein (mg/ul)"=BSA_20$protein_content, "CS activity (nmol/(mg*min))"=CS_activity_20uL) #OD is the delta OD for the samples
+######start here
+results_10uL<-mutate(initial_10, OD=deltaOD_10, GSH=GSH_10, weights=weights_10$weights, protein_content=BSA_10$protein_content, standardized=BSA_10$standardization, "Protein (mg/ul)"=BSA_10$P, "CS activity (nmol/(mg*min))"=CS_activity_10uL) #OD is the delta OD for the samples
+
+results_20uL<-mutate(initial_20, OD=deltaOD_20, GSH=GSH_20, weights=weights_20$weights, protein_content=BSA_20$protein_content,standardized=BSA_20$standardization, "Protein (mg/ul)"=BSA_20$P, "CS activity (nmol/(mg*min))"=CS_activity_20uL) #OD is the delta OD for the samples
 
 ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
 names(ploidy)[1]<-'Label'
