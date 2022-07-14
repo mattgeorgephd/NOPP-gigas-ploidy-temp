@@ -1,0 +1,4 @@
+"Gene.secondaryIdentifier","Gene.symbol","Gene.primaryIdentifier","Gene.organism.name","Gene.goAnnotation.ontologyTerm.identifier","Gene.goAnnotation.ontologyTerm.name","Gene.goAnnotation.ontologyTerm.parents.identifier","Gene.goAnnotation.ontologyTerm.parents.name"
+"","LOC105344740","105344740","Crassostrea gigas","GO:0006955","immune response","GO:0002376","immune system process"
+"","LOC105344740","105344740","Crassostrea gigas","GO:0006955","immune response","GO:0006955","immune response"
+"","LOC105344740","105344740","Crassostrea gigas","GO:0006955","immune response","GO:0050896","response to stimulus"

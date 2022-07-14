@@ -1,0 +1,55 @@
+gene,log2FoldChange,description
+LOC105331252,4.34749226540412,perlucin-like protein
+LOC117693037,3.98197002708323,deleted in malignant brain tumors 1 protein-like
+LOC109618002,3.92736172181291,neuronal acetylcholine receptor subunit alpha-3-like
+LOC105320412,3.69934169881802,histone H2A
+LOC105320423,3.49835123020828,histone H2A
+LOC105320431,3.44944629488454,histone H2A
+LOC105320418,3.23996684358047,histone H2A
+LOC105334167,3.19454780401467,N66 matrix protein-like
+LOC105333914,2.95705276309909,prisilkin-39-like
+LOC117692625,2.9182020017319,zinc finger protein 182-like
+LOC105338907,2.77147743211699,myosin heavy chain, striated muscle isoform X4
+LOC105327767,2.5516537522229,zinc finger CCHC domain-containing protein 9
+LOC105343917,2.54184122138129,putative ferric-chelate reductase 1
+LOC105324285,2.33952250153999,patched domain-containing protein 3-like
+LOC105344057,2.2698143021184,nuclear receptor coactivator 6
+LOC117686835,2.08779423291024,perlucin-like protein
+LOC105348603,2.07515716952236,perlucin-like protein
+LOC105346536,2.02457405113049,fibroin heavy chain isoform X1
+LOC105320489,1.88992245405819,formin-like protein 14
+LOC117686834,1.87782053184296,perlucin-like protein isoform X1
+LOC105327611,1.86565786017476,filamin-A
+LOC105323913,1.84440409545604,translation initiation factor IF-2-like isoform X2
+LOC105319585,1.81381059006825,thrombospondin-type laminin G domain and EAR repeat-containing protein isoform X1
+LOC117687970,1.80189016617042,perlucin-like protein isoform X2
+LOC105341836,1.78285829691221,zinc finger BED domain-containing protein 4-like
+LOC117683634,1.76767963460934,sarcoplasmic calcium-binding protein-like
+LOC105329153,1.76765502158433,THAP domain-containing protein 1-like
+LOC109619522,1.7411277622166,sarcoplasmic calcium-binding protein-like
+LOC105328812,1.52674328038357,microfibril-associated glycoprotein 4 isoform X1
+LOC105321540,1.52435659081538,IgGFc-binding protein isoform X1
+LOC105338012,-1.65845590470221,tetraspanin-9-like
+LOC117684313,-1.6595779657524,latrophilin-like protein LAT-2
+LOC105338029,-1.66966915629945,synaptotagmin-4
+LOC105344173,-1.7179944191367,tuberin isoform X1
+LOC105332313,-1.72890834664853,LOW QUALITY PROTEIN: X-box-binding protein 1
+LOC105348911,-1.80666460736001,sulfotransferase 1E1-like
+LOC105327000,-1.83894834273236,glutathione-specific gamma-glutamylcyclotransferase 1-like
+LOC105318230,-1.86447795738532,EF-hand calcium-binding domain-containing protein 6 isoform X1
+LOC117691857,-1.89960229579212,protein lin-41-like
+LOC105336391,-1.93492073100563,circadian locomoter output cycles protein kaput
+LOC117682793,-1.96721451955934,nucleolar protein dao-5-like isoform X1
+LOC105341487,-2.10075239155317,coiled-coil domain-containing protein 13 isoform X2
+LOC105346726,-2.15459575733428,integrin beta-6
+LOC105328796,-2.16810189216962,maltase-glucoamylase, intestinal
+LOC105336119,-2.27917192511906,tripartite motif-containing 13-like
+LOC105318146,-2.32082569060715,ganglioside GM2 activator
+LOC105332540,-2.42888913302309,cytosolic iron-sulfur assembly component 2A
+LOC105318687,-2.58275120469145,fatty acid synthase
+LOC105346676,-2.63752875424379,mitotic apparatus protein p62 isoform X2
+LOC109620632,-2.68469765719432,chitin synthase chs-2 isoform X2
+LOC105348733,-3.24986859559968,G2/mitotic-specific cyclin-A
+LOC105336299,-3.41212637291376,ribonucleoside-diphosphate reductase small chain
+LOC117687969,-4.14895342144129,CD209 antigen-like protein E
+LOC105327445,-6.06940659899414,sperm-specific protein PHI-2B/PHI-3

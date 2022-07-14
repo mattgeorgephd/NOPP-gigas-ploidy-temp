@@ -1,0 +1,9 @@
+"count"
+"genes_before_filtering" 31371
+"genes_after_filtering" 24596
+"genes_dropped" 6775
+"DEGs_all-genes" 24596
+"DEG_unshrunken-p0.05_lfc1.5" 120
+"DEG_normal-lfc1.5" 15
+"DEG_apeglm-s0.005_lfc1.5" 95
+"DEG_ashr-p0.05_lfc1.5" 50

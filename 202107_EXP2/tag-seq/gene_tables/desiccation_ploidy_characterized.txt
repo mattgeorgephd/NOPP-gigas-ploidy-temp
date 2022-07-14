@@ -1,0 +1,50 @@
+gene,log2FoldChange,description
+LOC117690390,5.78695888093272,tripartite motif-containing protein 75-like
+LOC105331252,4.51469702214182,perlucin-like protein
+LOC105320412,4.05226769405568,histone H2A
+LOC109618002,4.01712008987957,neuronal acetylcholine receptor subunit alpha-3-like
+LOC117693037,3.81750700801349,deleted in malignant brain tumors 1 protein-like
+LOC105320423,3.7627517350769,histone H2A
+LOC105320431,3.70065153856163,histone H2A
+LOC105320418,3.49101863034091,histone H2A
+LOC105327767,2.97743338975637,zinc finger CCHC domain-containing protein 9
+LOC105343917,2.41663694053486,putative ferric-chelate reductase 1
+LOC105348603,2.31258407091586,perlucin-like protein
+LOC117686835,2.26789576784496,perlucin-like protein
+LOC117687970,2.15817772825835,perlucin-like protein isoform X2
+LOC117686834,2.08868552456757,perlucin-like protein isoform X1
+LOC105320489,1.98244166833328,formin-like protein 14
+LOC105324591,1.89543759876371,multiple epidermal growth factor-like domains protein 11 isoform X1
+LOC105328812,1.78452234790875,microfibril-associated glycoprotein 4 isoform X1
+LOC105329128,1.76936727735135,complement C1q tumor necrosis factor-related protein 3
+LOC117683634,1.75038909023707,sarcoplasmic calcium-binding protein-like
+LOC105341836,1.74588969011856,zinc finger BED domain-containing protein 4-like
+LOC105329127,1.69939772997614,complement C1q tumor necrosis factor-related protein 3-like
+LOC105337360,1.64329774304432,tripartite motif-containing protein 45 isoform X1
+LOC117682228,1.63532732228603,interaptin-like
+LOC105325698,1.61513866755456,low-density lipoprotein receptor-related protein 4 isoform X1
+LOC117690820,1.57755474245743,integrase/recombinase xerD homolog
+LOC105348387,-1.53023971430326,tyramine beta-hydroxylase
+LOC105344057,-1.5399133045622,nuclear receptor coactivator 6
+LOC117684313,-1.59424419128187,latrophilin-like protein LAT-2
+LOC105342404,-1.61566773650601,tyramine beta-hydroxylase
+LOC105340069,-1.62474743365918,circumsporozoite protein
+LOC117691504,-1.65397323509439,synapse differentiation-inducing gene protein 1-like
+LOC105345604,-1.65495990982419,peptidyl-prolyl cis-trans isomerase B
+LOC105341487,-1.89293337569319,coiled-coil domain-containing protein 13 isoform X2
+LOC105327000,-1.9489575820726,glutathione-specific gamma-glutamylcyclotransferase 1-like
+LOC105346726,-2.2789544821436,integrin beta-6
+LOC117681464,-2.42174480719496,electroneutral sodium bicarbonate exchanger 1-like isoform X1
+LOC105346676,-2.44341937760222,mitotic apparatus protein p62 isoform X2
+LOC105318146,-2.52429958103481,ganglioside GM2 activator
+LOC105338672,-2.65153090968263,electroneutral sodium bicarbonate exchanger 1 isoform X2
+LOC105329537,-2.95265513687302,putative mediator of RNA polymerase II transcription subunit 26 isoform X1
+LOC105334167,-3.06746739526096,N66 matrix protein-like
+LOC117680491,-3.14262428293941,mucin-2-like
+LOC105348733,-3.14794926921581,G2/mitotic-specific cyclin-A
+LOC105336299,-3.39789417190797,ribonucleoside-diphosphate reductase small chain
+LOC105323395,-3.60729981738587,dentin sialophosphoprotein-like
+LOC105346538,-5.74058124312316,clumping factor A
+LOC105327445,-5.97781916768869,sperm-specific protein PHI-2B/PHI-3
+LOC105346536,-6.37707418240816,fibroin heavy chain isoform X1
+LOC105326991,-6.71308330350683,dentin sialophosphoprotein

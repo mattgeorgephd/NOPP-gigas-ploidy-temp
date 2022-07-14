@@ -1,0 +1,48 @@
+gene,log2FoldChange,description
+LOC117680673,8.29054702561353,heat shock protein 68-like
+LOC105334510,8.24605730467876,heat shock protein 68
+LOC105348304,8.18680750531295,heat shock protein 68
+LOC105348305,8.1627948651453,heat shock protein 68-like
+LOC105322484,5.72979562650133,heat shock protein 68-like
+LOC105346578,5.25154185598061,major egg antigen
+LOC105334234,3.87044224705501,heat shock protein 70 B2
+LOC105334580,3.69455932038572,BAG family molecular chaperone regulator 3
+LOC105343216,3.42316696165177,heat shock protein 27
+LOC117691044,2.84729565322098,complement C1q tumor necrosis factor-related protein 3-like
+LOC105319646,2.23752984267837,C-type lectin domain family 4 member M isoform X7
+LOC105343641,2.19699393556508,adiponectin
+LOC105326670,2.15424960184312,UPF0676 protein C1494.01-like
+LOC105348306,2.12358034308871,transmembrane protein 234 homolog
+LOC105325416,1.8406264437598,inactive rhomboid protein 2 isoform X2
+LOC117680358,1.75973717583747,baculoviral IAP repeat-containing protein 2-like
+LOC105332086,1.75425188240438,small conductance calcium-activated potassium channel protein
+LOC105329206,1.74016899668133,alpha-1,2-mannosyltransferase ALG9
+LOC105337888,-1.51594189800827,protein shisa-5
+LOC105333234,-1.5557775349291,fibroleukin isoform X1
+LOC105335714,-1.55629415518121,lectin BRA-3 isoform X4
+LOC105318706,-1.66629309955388,basic salivary proline-rich protein 1 isoform X1
+LOC105343956,-1.69164292390322,complement C1q-like protein 3
+LOC105342748,-1.71206567396098,microfibril-associated glycoprotein 4
+LOC105337779,-1.73826420305094,microfibril-associated glycoprotein 4
+LOC117691193,-1.75175826103939,elongation factor 2-like
+LOC117682909,-1.75746977963222,heavy metal-binding protein HIP-like isoform X1
+LOC109617043,-1.77895891060483,heavy metal-binding protein HIP-like isoform X1
+LOC117682928,-1.84228059110177,heavy metal-binding protein HIP-like
+LOC117682917,-1.9016251890598,complement C1q tumor necrosis factor-related protein 2-like
+LOC105324495,-1.9626878020109,ATP-dependent RNA helicase eIF4A
+LOC105345449,-1.99397262498158,fucolectin-7-like
+LOC105332348,-2.00869463082225,perlucin-like protein isoform X1
+LOC105330939,-2.04971255698646,microfibril-associated glycoprotein 4-like
+LOC117690533,-2.0503264130337,serine/threonine-protein kinase TAO3-like
+LOC117681310,-2.06070082031677,perlucin-like protein
+LOC117682922,-2.12062714082918,complement C1q tumor necrosis factor-related protein 3-like
+LOC117682923,-2.15289952350659,complement C1q tumor necrosis factor-related protein 3-like
+LOC105343491,-2.34359883549744,complement C1q tumor necrosis factor-related protein 4
+LOC105320276,-2.38456725444923,translation initiation factor IF-2-like isoform X7
+LOC117686800,-2.39311890166395,cerebellin-3-like
+LOC105327827,-2.4024533969479,trichohyalin-like
+LOC117686803,-2.45266298200667,C1q-related factor-like
+LOC105318074,-2.49255505247658,perlucin-like protein
+LOC105320984,-2.66897746318553,collagen alpha-2(VIII) chain isoform X1
+LOC117680587,-2.93226531225512,fucolectin-like
+LOC105330078,-3.08218309827197,fucolectin

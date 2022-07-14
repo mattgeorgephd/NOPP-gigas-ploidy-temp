@@ -1,0 +1,649 @@
+---
+title: "4_single_gene_analysis"
+author: "Matt George; mngeorge@uw.edu"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries
+```{r load_libraries, inlcude = TRUE}
+
+## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
+# install.packages("BiocManager")
+# BiocManager::install("DESeq2")
+# BiocManager::install("vsn")
+# BiocManager::install("tidybulk")
+# BiocManager::install("goseq")
+# BiocManager::install("affycoretools")
+# BiocManager::install("EnhancedVolcano")
+# BiocManager::install("pcaExplorer")
+# BiocManager::install("apeglm")
+# BiocManager::install("PCAtools")
+
+
+# List of packages we want to install (run every time)
+load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","agricolae","multcomp","nlme","Johnson","jtrans","nortest")
+
+# Select only the packages that aren't currently installed (run every time)
+install.lib <- load.lib[!load.lib %in% installed.packages()]
+
+# And finally we install the missing packages, including their dependency.
+for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# After the installation process completes, we load all packages.
+sapply(load.lib,require,character=TRUE)
+                        
+```
+
+#Set ggplot theme
+```{r ggplot_theme, include=FALSE}
+
+my_theme <- theme(line              = element_line(size=1.5),
+                  rect              = element_rect(size=1.5),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  legend.key        = element_blank()) # removes background of legend bullets
+```
+
+#Load data
+```{r load_data, inlcude = TRUE}
+
+# Load LOCID to gene description tables, compare, find gigas and mito genes
+a1 <- read.delim("../data/GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt", header = TRUE)
+a1 <- a1 %>% filter(X..feature == "CDS")
+a1 <- a1[,c("symbol","name")]
+colnames(a1) <- c("LOCID","description")
+a1 <- distinct(a1, LOCID, .keep_all = TRUE)
+a2 <- read.delim("../data/LOCID_38222_Roslin_Gigas_mito.txt", header = TRUE)
+colnames(a2) <- c("LOCID","description")
+a3 <- anti_join(a2,a1, by="LOCID")
+a1$feature <- 'genome'
+a3$feature <- 'mito'
+LOCID_Roslin_gigas_gene_mito_table <- as.data.frame(rbind(a1,a3))
+LOCID_Roslin_gigas_gene_mito_table <- distinct(LOCID_Roslin_gigas_gene_mito_table, LOCID, .keep_all = TRUE)
+write.table(LOCID_Roslin_gigas_gene_mito_table, "../data/LOCID_Roslin_gigas_gene_mito.txt")
+rm(a1,a2,a3)
+
+# Import experimental design information
+trt_list <- read.csv("../data/treatments.csv", sep=',', header=TRUE, row.names = "ID")
+coldata <- trt_list[,c("ploidy","condition")]
+
+# Import gene_count_matrix
+cts <- as.matrix(read.csv("../data/20220608_gene_count_matrix.csv", sep=',', header=TRUE, row.names = "gene_id"))
+colnames(cts) <- row.names(trt_list) #!make sure column and row names for coldata and cts match
+all(colnames(cts) %in% rownames(coldata))
+
+# Factor independent variables
+coldata$ploidy <- factor(coldata$ploidy)
+coldata$condition <- factor(coldata$condition)
+coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
+
+# Remove bad samples
+# MuliQC report: N56, X44
+# Pheatmap: M43, N57, R53, R62, T62, X42, X44 
+coldata <- coldata[!(row.names(coldata) %in% c('N56', 'X44', 'M43', 'N57', 'R53', 'R62', 'T62', 'X42', 'X44')),]
+cts <- as.matrix(subset(cts, select=-c(N56, X44, M43, N57, R53, R62, T62, X42, X44)))
+coldata %>% count(group)
+all(colnames(cts) %in% rownames(coldata))
+
+# Reorder cts/coldata by group for easy visualization in pcaexplorer
+coldata <- coldata %>% arrange(group)
+col.order <- rownames(coldata)
+cts <- cts[,col.order]
+
+# Remove gene-LOC designation from LOC #
+rs <- (rownames(cts))
+rs <- strsplit(rs, split = "LOC")
+output <- matrix(ncol=1, nrow=length(rs))
+# colnames(output) <- c("x","y","z")
+for (i in 1:length(rs)){
+  LOC_number <- as.data.frame(rs[[i]])
+  add_val <- paste("LOC",LOC_number[3,1],sep="")
+  output[i,] <- add_val
+}
+rownames(cts) <- output
+
+```
+
+# Create output folders
+```{bash}
+pwd
+cd ..
+pwd
+
+mkdir single_gene_plots
+mkdir single_gene_plots/control_ploidy
+mkdir single_gene_plots/heat_ploidy
+mkdir single_gene_plots/desiccation_ploidy
+mkdir single_gene_plots/diploid_heat
+mkdir single_gene_plots/diploid_desiccation
+mkdir single_gene_plots/triploid_heat
+mkdir single_gene_plots/triploid_desiccation
+mkdir single_gene_plots/ATP_CS
+
+# samples included _ variable analyzed (when 1 specified, compared to control)
+mkdir single_gene_plots/control_ploidy/plots
+mkdir single_gene_plots/heat_ploidy/plots
+mkdir single_gene_plots/desiccation_ploidy/plots
+mkdir single_gene_plots/diploid_heat/plots
+mkdir single_gene_plots/diploid_desiccation/plots
+mkdir single_gene_plots/triploid_heat/plots
+mkdir single_gene_plots/triploid_desiccation/plots
+mkdir single_gene_plots/ATP_CS/plots
+
+mkdir single_gene_plots/control_ploidy/stats
+mkdir single_gene_plots/heat_ploidy/stats
+mkdir single_gene_plots/desiccation_ploidy/stats
+mkdir single_gene_plots/diploid_heat/stats
+mkdir single_gene_plots/diploid_desiccation/stats
+mkdir single_gene_plots/triploid_heat/stats
+mkdir single_gene_plots/triploid_desiccation/stats
+mkdir single_gene_plots/ATP_CS/stats
+
+```
+
+# ALL treatments, both ploidy
+```{r ALL:TRT:ploidy, warning=FALSE, include=TRUE}
+
+# Filter data
+coldata_trt <- coldata # %>% filter(group == "A" | group == "B")
+cts_trt     <- subset(cts, select=row.names(coldata_trt))
+
+# Calculate DESeq object
+dds <- DESeqDataSetFromMatrix(countData = cts_trt,
+                              colData = coldata_trt,
+                              design = ~ group)
+dds <- DESeq(dds)
+resultsNames(dds) # lists the coefficients
+normalized_counts <- counts(dds, normalized=TRUE)
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
+
+```
+
+# Load gene tables
+```{r} 
+
+control_ploidy        <- read.delim("../gene_tables/control_ploidy_characterized.txt",       sep = "," , header = TRUE) 
+heat_ploidy           <- read.delim("../gene_tables/heat_ploidy_characterized.txt",          sep = "," , header = TRUE) 
+desiccation_ploidy    <- read.delim("../gene_tables/desiccation_ploidy_characterized.txt",   sep = "," , header = TRUE) 
+diploid_heat          <- read.delim("../gene_tables/diploid_heat_characterized.txt",         sep = "," , header = TRUE) 
+diploid_desiccation   <- read.delim("../gene_tables/diploid_desiccation_characterized.txt",  sep = "," , header = TRUE) 
+triploid_heat         <- read.delim("../gene_tables/triploid_heat_characterized.txt",        sep = "," , header = TRUE)
+triploid_desiccation  <- read.delim("../gene_tables/triploid_desiccation_characterized.txt", sep = "," , header = TRUE)
+
+```
+
+
+# Plot single gene plots
+```{r message=TRUE, warning=TRUE, include=FALSE}
+
+# A - diploid; control
+# B - triploid; control
+# C - diploid; heat
+# D - triploid; heat
+# E - diploid; desiccation
+# F - triploid; desiccation
+
+# control_ploidy ---------------------------------------------------------------
+for (i in 1:nrow(control_ploidy)){
+  
+  lookup     <- control_ploidy$gene[i]
+  plot_title <- control_ploidy$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+  
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+
+      ggsave(filename = paste("../single_gene_plots/control_ploidy/plots/",round(control_ploidy$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/control_ploidy/stats/", round(control_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+
+# heat_ploidy ---------------------------------------------------------------
+for (i in 1:nrow(heat_ploidy)){
+  
+  lookup     <- heat_ploidy$gene[i]
+  plot_title <- heat_ploidy$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+  
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/heat_ploidy/plots/",round(heat_ploidy$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/heat_ploidy/stats/", round(heat_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+# desiccation_ploidy -----------------------------------------------------------
+for (i in 1:nrow(desiccation_ploidy)){
+  
+  lookup     <- desiccation_ploidy$gene[i]
+  plot_title <- desiccation_ploidy$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+  
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/desiccation_ploidy/plots/",round(desiccation_ploidy$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/desiccation_ploidy/stats/", round(desiccation_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+# diploid_heat ---------------------------------------------------------------
+for (i in 1:nrow(diploid_heat)){
+  
+  lookup     <- diploid_heat$gene[i]
+  plot_title <- diploid_heat$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+  
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/diploid_heat/plots/",round(diploid_heat$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/diploid_heat/stats/", round(diploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+# diploid_desiccation ----------------------------------------------------------
+for (i in 1:nrow(diploid_desiccation)){
+  
+  lookup     <- diploid_desiccation$gene[i]
+  plot_title <- diploid_desiccation$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+        
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/diploid_desiccation/plots/",round(diploid_desiccation$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/diploid_desiccation/stats/", round(diploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+# triploid_heat ---------------------------------------------------------------
+for (i in 1:nrow(triploid_heat)){
+  
+  lookup     <- triploid_heat$gene[i]
+  plot_title <- triploid_heat$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+        
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/triploid_heat/plots/",round(triploid_heat$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/triploid_heat/stats/", round(triploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+# triploid_desiccation ---------------------------------------------------------------
+for (i in 1:nrow(triploid_desiccation)){
+  
+  lookup     <- triploid_desiccation$gene[i]
+  plot_title <- triploid_desiccation$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+        
+      d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                    returnData=TRUE, normalized = TRUE)
+      
+      dp$condition <- dc$condition
+      
+      p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+                  geom_boxplot() +
+                  geom_point(position=position_jitter(w=0.1,h=0)) + 
+                  scale_y_log10() +
+                  ggtitle(plot_title) +
+                  my_theme
+      
+      # result <- shapiro.test(dp$count)
+      # if (result$p.value<0.05) {
+      #     x_johnson <- RE.Johnson(dp$count) # transform
+      #     x_transformed = x_johnson$transformed
+      #     dp$count <- x_transformed
+      # }
+      
+      tx <- with(dp, interaction(ploidy,condition))
+      amod <- aov(count ~ tx, data=dp)
+      stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
+      
+      ggsave(filename = paste("../single_gene_plots/triploid_desiccation/plots/",round(triploid_desiccation$log2FoldChange[i], 
+                                                                           digits = 2),"_",lookup,".png",sep=""),
+             plot   = p,
+             dpi    = 300,
+             device = "png",
+             width  = 5,
+             height = 5,
+             units  = "in")
+      
+      write.table(stat_output$groups, file = paste("../single_gene_plots/triploid_desiccation/stats/", round(triploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+
+```
+```{r message=TRUE, include=FALSE}
+# ATP & CS & heat ---------------------------------------------------------
+
+LOCID_cs <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("citrate synthase*"), description)))
+
+LOCID_ATP <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("ATP synthase*"), description)))
+
+LOCID_HEAT <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("heat shock*"), description)))
+
+LOCID_ATP_CS <- rbind(LOCID_ATP, LOCID_cs, LOCID_HEAT)
+
+for (i in 1:nrow(LOCID_ATP_CS)){
+  
+  lookup     <- LOCID_ATP_CS$LOCID[i]
+  plot_title <- LOCID_ATP_CS$description[i]
+  check_list <- data.frame(dds@rowRanges@partitioning@NAMES)
+  colnames(check_list) <- "LOCID"
+  
+  if (lookup %in% check_list$LOCID){
+  
+  d <- plotCounts(dds, gene=lookup, intgroup="group", 
+                returnData=TRUE, normalized = TRUE)
+  
+  dc <- plotCounts(dds, gene=lookup, intgroup="condition", 
+                returnData=TRUE, normalized = TRUE)
+  
+  dp <- plotCounts(dds, gene=lookup, intgroup="ploidy", 
+                returnData=TRUE, normalized = TRUE)
+  
+  dp$condition <- dc$condition
+  
+  p <- ggplot(data=d, aes(x = group, y = log2(count+1))) +
+              geom_boxplot() +
+              geom_point(position=position_jitter(w=0.1,h=0)) + 
+              scale_y_log10() +
+              ggtitle(plot_title) +
+              my_theme
+  
+  # result <- shapiro.test(dp$count)
+  # if (result$p.value<0.05) {
+  #     x_johnson <- RE.Johnson(dp$count) # transform
+  #     x_transformed = x_johnson$transformed
+  #     dp$count <- x_transformed
+  # }
+  
+  tx <- with(dp, interaction(ploidy,condition))
+  amod <- aov(count ~ tx, data=dp)
+  stat_output <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+  
+  ggsave(filename = paste("../single_gene_plots/ATP_CS/plots/",lookup,".png",sep=""),
+         plot   = p,
+         dpi    = 300,
+         device = "png",
+         width  = 5,
+         height = 5,
+         units  = "in")
+  
+  write.table(stat_output$groups, file = paste("../single_gene_plots/ATP_CS/stats/", lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  
+  
+  } else {print(paste("#NOT FOUND:", plot_title))}
+}
+
+```
+
+```{r}
+
+
+
+```
+

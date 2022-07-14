@@ -1,0 +1,105 @@
+gene,log2FoldChange,description
+LOC105348616,4.2915429652369,protein mesh
+LOC105335843,3.96460631331341,myosin-3
+LOC105337690,3.72862121872994,atrial natriuretic peptide receptor 1
+LOC105332850,3.48357023379772,2'-deoxynucleoside 5'-phosphate N-hydrolase 1-like
+LOC105325538,3.28412516146192,caveolin-1
+LOC105327693,3.23833185572371,transcription factor 15
+LOC117683127,3.13984792491924,multiple epidermal growth factor-like domains protein 10
+LOC105319646,2.830890850626,C-type lectin domain family 4 member M isoform X7
+LOC117691401,2.73223177810318,deleted in malignant brain tumors 1 protein-like
+LOC105317300,2.64108615276029,high choriolytic enzyme 1
+LOC105346178,2.63758297871736,acetylcholinesterase-like isoform X1
+LOC117688384,2.56675410122599,multiple epidermal growth factor-like domains protein 10
+LOC117680333,2.51844397947425,protein FAM124A-like
+LOC117692448,2.43104077371396,guanylate cyclase soluble subunit beta-2-like
+LOC105332313,2.27549076442452,LOW QUALITY PROTEIN: X-box-binding protein 1
+LOC105324826,2.26854555344801,tyrosinase-like protein 1
+LOC105318831,2.20372348321592,epithelial membrane protein 3
+LOC117688484,2.09837187218899,fucolectin-1-like
+LOC105342592,2.084463888684,sulfotransferase 1 family member D1
+LOC105332773,2.03295011404769,zinc finger homeobox protein 4
+LOC105329597,2.03243376528598,golgin subfamily A member 6-like protein 22
+LOC105343216,2.02930463525689,heat shock protein 27
+LOC105340562,2.00755460504343,C-X-C chemokine receptor type 2
+LOC105338617,1.93589620404665,LOW QUALITY PROTEIN: rotatin
+LOC105332086,1.85965674761589,small conductance calcium-activated potassium channel protein
+LOC105318230,1.85881903336786,EF-hand calcium-binding domain-containing protein 6 isoform X1
+LOC117689114,1.85740933354731,LOW QUALITY PROTEIN: uncharacterized protein LOC117689114
+LOC105333755,1.85442272223999,beta-1,4-galactosyltransferase 1-like isoform X1
+LOC105321434,1.85267388758816,perlucin-like protein
+LOC105319208,1.83453797472912,spliceosome RNA helicase DDX39B
+LOC105330143,1.82284572178366,alkaline phosphatase
+LOC105340370,1.80707314572678,78 kDa glucose-regulated protein precursor
+LOC105326670,1.80363743306571,UPF0676 protein C1494.01-like
+LOC117680291,1.7919343227461,heat shock protein 83-like
+LOC105344624,1.77790683100762,dual 3',5'-cyclic-AMP and -GMP phosphodiesterase 11A isoform X2
+LOC105345989,1.73350223120531,heat shock protein 83-like
+LOC105341850,1.7310004610769,protein FAM124A
+LOC105339278,1.71928798739861,brain tumor protein
+LOC117683812,1.67424444353045,scavenger receptor class F member 2-like
+LOC105325287,1.64457154370697,RNA-binding protein 1
+LOC117689959,1.64094001727893,uromodulin-like
+LOC105332601,1.63840561911813,motor neuron and pancreas homeobox protein 1
+LOC105327981,1.62696428338237,lectin
+LOC105348202,1.60847087382654,DNA polymerase nu isoform X1
+LOC117690522,1.59936578732513,brain tumor protein-like
+LOC105345866,1.56858049182076,arylacetamide deacetylase
+LOC105341388,1.54478356696867,protein disulfide-isomerase A6 isoform X1
+LOC117689847,-1.51255176981649,ryncolin-1-like
+LOC117682916,-1.51926614498772,complement C1q tumor necrosis factor-related protein 3-like isoform X2
+LOC105321257,-1.52358165571818,proline-rich transmembrane protein 1
+LOC105323188,-1.5320670166193,complement C1q tumor necrosis factor-related protein 3
+LOC105330674,-1.54935085690034,complement C1q-like protein 2 isoform X1
+LOC105317166,-1.5897900694154,collagen alpha-2(VIII) chain
+LOC117682938,-1.59768063308368,complement C1q tumor necrosis factor-related protein 2-like
+LOC105326443,-1.61093850165232,perlucin-like protein
+LOC105342079,-1.6219090366857,cell death abnormality protein 1 isoform X3
+LOC117687970,-1.64822511752362,perlucin-like protein isoform X2
+LOC105343956,-1.65251546782315,complement C1q-like protein 3
+LOC117690058,-1.66437608348843,complement C1q subcomponent subunit B-like
+LOC105335714,-1.67025666724898,lectin BRA-3 isoform X4
+LOC117680587,-1.71133764145234,fucolectin-like
+LOC105337888,-1.72490162793555,protein shisa-5
+LOC117682917,-1.74283140040261,complement C1q tumor necrosis factor-related protein 2-like
+LOC109617043,-1.74567984910729,heavy metal-binding protein HIP-like isoform X1
+LOC105320984,-1.76020548589071,collagen alpha-2(VIII) chain isoform X1
+LOC117685405,-1.76757609867615,serine-rich adhesin for platelets-like
+LOC105330078,-1.77991549295924,fucolectin
+LOC117683620,-1.78107403619052,short-chain collagen C4-like
+LOC105317162,-1.78162634415479,adenosylhomocysteinase A
+LOC117682928,-1.79693511582154,heavy metal-binding protein HIP-like
+LOC105344085,-1.80191457134582,nucleolin isoform X1
+LOC105333234,-1.83541668066086,fibroleukin isoform X1
+LOC117686800,-1.83908814268991,cerebellin-3-like
+LOC109617081,-1.84518470365926,lactose-binding lectin l-2-like
+LOC117689844,-1.87552346858647,microfibril-associated glycoprotein 4-like
+LOC105326414,-1.87630140638467,DBH-like monooxygenase protein 1 homolog
+LOC117686615,-1.8785698967873,complement C1q tumor necrosis factor-related protein 3-like
+LOC105318073,-1.88960499089392,perlucin-like protein
+LOC109617191,-1.89511386035869,fibrillin-2-like isoform X2
+LOC105329085,-1.89957024125849,high mobility group-T protein
+LOC117682909,-1.92418553200673,heavy metal-binding protein HIP-like isoform X1
+LOC105327827,-1.92604410604814,trichohyalin-like
+LOC105337779,-1.94280145332891,microfibril-associated glycoprotein 4
+LOC105329127,-1.97131349325868,complement C1q tumor necrosis factor-related protein 3-like
+LOC105346538,-1.98597946718586,clumping factor A
+LOC109620632,-1.98889375574048,chitin synthase chs-2 isoform X2
+LOC105342748,-2.05983529673568,microfibril-associated glycoprotein 4
+LOC117686803,-2.08499260676815,C1q-related factor-like
+LOC117681310,-2.14960144356385,perlucin-like protein
+LOC105327216,-2.18083463710074,complement C1q subcomponent subunit B-like
+LOC105330356,-2.19231980501231,ETS-related transcription factor Elf-5-like isoform X1
+LOC105320276,-2.33390139402714,translation initiation factor IF-2-like isoform X7
+LOC105329128,-2.36857060476873,complement C1q tumor necrosis factor-related protein 3
+LOC105330939,-2.38047244368701,microfibril-associated glycoprotein 4-like
+LOC105343491,-2.46038109637809,complement C1q tumor necrosis factor-related protein 4
+LOC117682922,-2.50591230718379,complement C1q tumor necrosis factor-related protein 3-like
+LOC105344746,-2.53159053275302,acetylcholine receptor subunit alpha-like
+LOC117682923,-2.53304999581219,complement C1q tumor necrosis factor-related protein 3-like
+LOC105318074,-2.67458466759204,perlucin-like protein
+LOC105332465,-2.78153371826325,ankyrin-1
+LOC117682921,-2.79635458188701,complement C1q tumor necrosis factor-related protein 3-like
+LOC105340530,-2.97765603783093,complement C1q tumor necrosis factor-related protein 3-like
+LOC105320320,-3.45394785619322,complement C1q-like protein 4 isoform X2
+LOC117686832,-4.12057317294999,perlucin-like protein isoform X2

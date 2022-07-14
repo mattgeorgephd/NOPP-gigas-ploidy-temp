@@ -19,6 +19,7 @@ library(Johnson)
 library(agricolae)
 library(nlme)
 library(multcomp)
+library(rstatix)
 
 ## Set ggplot theme
 my_theme <- theme(line              = element_line(size=1.5),
@@ -130,6 +131,43 @@ ggsave("BOXPLOT_ATP_timeseries_dess_T.jpeg",
        width  = 6,
        height = 5,
        units  = "in")
+
+
+HEAT_plot_des  <- HEAT_plot %>% filter(des == "yes")
+HEAT_plot_heat  <- HEAT_plot %>% filter(heat == "yes")
+
+HEAT_plot_des <- HEAT_plot_des %>%
+  group_by(timepoint, ploidy) %>%
+  get_summary_stats(ATPase, type = "mean_se")
+
+HEAT_plot_heat <- HEAT_plot_heat %>%
+  group_by(timepoint, ploidy) %>%
+  get_summary_stats(ATPase, type = "mean_se")
+
+p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy)) +
+      geom_pointrange(aes(ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(size=1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      # scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      my_theme
+
+p1
+
+p2 <- ggplot() +
+  geom_pointrange(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+  geom_line(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "solid",size=1) +
+  geom_pointrange(data=HEAT_plot_des, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+  geom_line(data=HEAT_plot_des, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "dashed",size=1) +
+  # facet_wrap(~ID) +
+  scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+  # scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
+  # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+  my_theme
+
+p2
+
 
 ###########################################################################################################################
 ### [2] Linegraph - SMR vs. time by ploidy - heated

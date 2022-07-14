@@ -19,6 +19,7 @@ library(Johnson)
 library(agricolae)
 library(nlme)
 library(multcomp)
+library(rstatix)
 
 ## Set ggplot theme
 my_theme <- theme(line              = element_line(size=1.5),
@@ -58,7 +59,7 @@ HEAT_plot_desiccation <- HEAT_plot %>% filter(trt == "desiccation" & ploidy == "
 
 HEAT_plot_desiccation %>%
   group_by(timepoint) %>%
-  get_summary_stats(SMR, type = "mean_sd")
+  get_summary_stats(SMR, type = "mean_se")
 
 
 bp1 <- ggplot(HEAT_plot_control, aes(x=timepoint, y=SMR, group=as.factor(trt_list), fill=trt_list)) +
@@ -141,45 +142,59 @@ HEAT_plot_control <- HEAT_plot %>% filter(trt == "control")
 HEAT_plot_heat    <- HEAT_plot %>% filter(trt == "heat_only")
 HEAT_plot_desi    <- HEAT_plot %>% filter(trt == "desiccation")
 
-p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=SMR, group=as.factor(ID), color=trt_list)) +
-      # geom_point() +
+
+HEAT_plot_heat <- HEAT_plot_heat %>%
+                  group_by(timepoint, ploidy) %>%
+                  get_summary_stats(SMR, type = "mean_se")
+
+HEAT_plot_desi <- HEAT_plot_desi %>%
+                  group_by(timepoint, ploidy) %>%
+                  get_summary_stats(SMR, type = "mean_se")
+
+
+p1 <- ggplot(HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy)) +
+      geom_pointrange(aes(ymin=mean-se,ymax=mean+se),size=1) +
       geom_line(size=1) +
       # facet_wrap(~ID) +
-      scale_color_manual(values=c(trt_list$trt_colors[5:9],trt_list$trt_colors[15:19])) +
-      scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
       # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
       my_theme
 
 p1
 
-p2 <- ggplot(HEAT_plot_desi, aes(x=timepoint, y=SMR, group=as.factor(ID), color=trt_list)) +
-      # geom_point() +
-      geom_line(size=1) +
+p2 <- ggplot() +
+      geom_pointrange(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(data=HEAT_plot_heat, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "solid",size=1) +
+      geom_pointrange(data=HEAT_plot_desi, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy, ymin=mean-se,ymax=mean+se),size=1) +
+      geom_line(data=HEAT_plot_desi, aes(x=timepoint, y=mean, group=as.factor(ploidy),color=ploidy), linetype = "dashed",size=1) +
       # facet_wrap(~ID) +
-      scale_color_manual(values=c(trt_list$trt_colors[10:14],trt_list$trt_colors[20:24])) +
-      scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.52)) +
+      scale_color_manual(values=c(trt_list$trt_colors[5],trt_list$trt_colors[15])) +
+      scale_y_continuous(breaks = seq(0, 0.4, 0.1), limits = c(0, 0.42)) +
       # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
       my_theme
 
 p2
 
+p3 <- p1 + p2
+
 
 current_path <- getActiveDocumentContext()$path
 setwd(dirname(current_path )); setwd('plots'); getwd()
 
-ggsave("LINEGRAPH_SMR_timeseries_heated.tiff",
+ggsave("pointrange_SMR_timeseries_heated.png",
        plot   = p1,
        dpi    = 600,
-       device = "jpeg",
-       width  = 12,
+       device = "png",
+       width  = 9,
        height = 6,
        units  = "in")
 
-ggsave("LINEGRAPH_SMR_timeseries_desiccation.tiff",
+ggsave("pointrange_SMR_timeseries_desiccation.png",
        plot   = p2,
        dpi    = 600,
-       device = "jpeg",
-       width  = 12,
+       device = "png",
+       width  = 9,
        height = 6,
        units  = "in")
 

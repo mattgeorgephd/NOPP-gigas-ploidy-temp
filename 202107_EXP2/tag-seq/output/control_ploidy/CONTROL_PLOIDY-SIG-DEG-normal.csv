@@ -1,0 +1,4 @@
+"gene" "baseMean" "log2FoldChange" "lfcSE" "stat" "pvalue" "padj" "description" "feature"
+"LOC117686832" 8.09785221681658 2.49107878370824 0.194221872434753 9.81392445564321 NA NA "perlucin-like protein isoform X2" "genome"
+"LOC117687807" 194.29321972485 -1.65097174808142 0.148131556843797 -7.19611520187748 NA NA "uncharacterized protein LOC117687807" "genome"
+"LOC105338263" 733.43695752418 -1.85989482961692 0.14605830063616 -8.72867083941195 NA NA "1-phosphatidylinositol 3-phosphate 5-kinase isoform X1" "genome"
