@@ -9,8 +9,27 @@ output: pdf_document
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
-results<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_1-70.csv")
 
+#build final table
+#plate 1 vs plate 5
+plate1<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_23.csv")
+
+plate5<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_105.csv")
+names(plate5)[8]<-'standardization'
+
+b<-"plate1"
+c<-"plate5"
+
+plate1$X<-rep(b, 23)
+plate5$X<-rep(c, 21)
+
+xxyyzz<-rbind(plate5, plate1)
+
+batch_plot<-ggplot(data=xxyyzz, aes(x=P, y=xxyyzz$meanA, color=(xxyyzz$X)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=xxyyzz$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+batch_plot #plate 5 is less variable, replace all plate 1 values with corresponding values in plate 5 except R47 (no duplicates)
+
+#results<-read.csv(file="")
+##############################################################################
 names(results)[10]<-'A'
 names(results)[9]<-'P'
 
