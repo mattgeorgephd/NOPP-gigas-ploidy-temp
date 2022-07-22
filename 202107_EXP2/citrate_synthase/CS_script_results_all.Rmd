@@ -10,7 +10,8 @@ library(ggplot2)
 library(dplyr)
 library(ggpubr)
 
-#build final table
+#testing duplicates vs originals
+################################
 #plate 1 vs plate 5
 plate1<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_23.csv")
 
@@ -25,20 +26,34 @@ plate5$X<-rep(c, 21)
 
 xxyyzz<-rbind(plate5, plate1)
 
-batch_plot<-ggplot(data=xxyyzz, aes(x=P, y=xxyyzz$meanA, color=(xxyyzz$X)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=xxyyzz$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+batch_plot<-ggplot(data=xxyyzz, aes(x=P, y=xxyyzz$meanA, color=(xxyyzz$X)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=xxyyzz$Label, nudge_x=0.005)+ ylab("A")
 batch_plot #plate 5 is less variable, replace all plate 1 values with corresponding values in plate 5 except R47 (no duplicates)
+############################################
+#testing duplicates from plates 2-4
+duplicates<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/duplicates_test.csv")
 
-#results<-read.csv(file="")
-##############################################################################
-names(results)[10]<-'A'
-names(results)[9]<-'P'
+duplicates$batch<-as.character(duplicates$batch)
 
-protein_plot<-ggplot(data=results, aes(x=P, y=A, color=(ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+batch_plot_2<-ggplot(data=duplicates, aes(x=duplicates$Protein..mg.ul., y=duplicates$meanA, color=(duplicates$batch)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y ~ poly(x, 1))+geom_text(label=duplicates$Label, nudge_x=0.005)+ ylab("A")
+batch_plot_2 #do not use any results from batch 2 or 3 due to positive slope, use results from 4 and 5, comment out line 36 to combine batches 
+
+protein_plot<-ggplot(data=duplicates, aes(x=P, y=duplicates$CS.activity..nmol..mg.min.., color=(ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=duplicates$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
 protein_plot
 
-final_plot<-ggplot(data=results,(aes(x=weights, y=A, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+final_plot<-ggplot(data=duplicates,(aes(x=weights, y=duplicates$CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 
-batch_plot<-ggplot(data=results, aes(x=P, y=A, color=(results$batch)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+
+##############################################################################
+#all results combined
+results<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_1-70.csv")
+names(results)[10]<-'CS'
+names(results)[9]<-'P'
+
+protein_plot<-ggplot(data=results, aes(x=P, y=meanA, color=(ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("A")
+protein_plot
+
+final_plot<-ggplot(data=results,(aes(x=weights, y=CS, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+
+batch_plot<-ggplot(data=results, aes(x=P, y=results$CS, color=(results$batch)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
 batch_plot
-
 ```
