@@ -45,7 +45,7 @@ final_plot<-ggplot(data=duplicates,(aes(x=weights, y=duplicates$CS.activity..nmo
 
 ##############################################################################
 #all results combined
-results<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_1-105.csv")
+results<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_all.csv")
 names(results)[10]<-'CS'
 names(results)[9]<-'P'
 
@@ -60,4 +60,22 @@ batch_plot
 
 qqnorm(results$meanA, pch = 1, frame = FALSE)
 qqline(results$meanA, col = "steelblue", lwd = 2)
+##################################################
+results_filtered<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_test.csv")
+
+names(results_filtered)[10]<-'CS'
+names(results_filtered)[9]<-'P'
+
+protein_plot<-ggplot(data=results_filtered, aes(x=P, y=meanA, color=(ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results_filtered$Label, nudge_x=0.005)+ ylab("A")
+protein_plot
+
+final_plot<-ggplot(data=results_filtered,(aes(x=weights, y=CS, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+final_plot
+
+batch_plot<-ggplot(data=results_filtered, aes(x=P, y=CS, color=(batch)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+geom_text(label=results_filtered$Label, nudge_x=0.005)+ ylab("CS Activity (nmol/(mg*min))")
+batch_plot
+
+qqnorm(results_filtered$CS, pch = 1, frame = FALSE)
+qqline(results_filtered$CS, col = "steelblue", lwd = 2)
+#improved Q-Q results
 ```
