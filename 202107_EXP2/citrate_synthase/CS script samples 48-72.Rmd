@@ -94,7 +94,7 @@ GSH<-(m*deltaOD)+b
 V<-50 #uL from procedure 
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 CS_activity<-(GSH/(t*V))*D/P
-results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity  ) #OD is the delta OD for the samples
+results<-mutate(initial, OD=deltaOD, GSH=GSH, weights, protein_content, standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity) #OD is the delta OD for the samples
 
 ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
 names(ploidy)[1]<-'Label'
