@@ -16,16 +16,16 @@ echo $PATH
 ```{r load_libraries, inlcude = TRUE}
 
 ## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
-# install.packages("BiocManager")
-# BiocManager::install("DESeq2")
-# BiocManager::install("vsn")
-# BiocManager::install("tidybulk")
-# BiocManager::install("goseq")
-# BiocManager::install("affycoretools")
-# BiocManager::install("EnhancedVolcano")
-# BiocManager::install("pcaExplorer")
-# BiocManager::install("apeglm")
-# BiocManager::install("PCAtools")
+install.packages("BiocManager")
+BiocManager::install("DESeq2")
+BiocManager::install("vsn")
+BiocManager::install("tidybulk")
+BiocManager::install("goseq")
+BiocManager::install("affycoretools")
+BiocManager::install("EnhancedVolcano")
+BiocManager::install("pcaExplorer")
+BiocManager::install("apeglm")
+BiocManager::install("PCAtools")
 
 
 # List of packages we want to install (run every time)
@@ -99,7 +99,7 @@ coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
 # Pheatmap: M43, N57, R53, R62, T62, X42, X44 
 coldata <- coldata[!(row.names(coldata) %in% c('N56', 'X44', 'M43', 'N57', 'R53', 'R62', 'T62', 'X42', 'X44')),]
 cts <- as.matrix(subset(cts, select=-c(N56, X44, M43, N57, R53, R62, T62, X42, X44)))
-coldata %>% count(group)
+coldata %>% dplyr::count(group)
 all(colnames(cts) %in% rownames(coldata))
 
 # Reorder cts/coldata by group for easy visualization in pcaexplorer
@@ -157,9 +157,8 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -365,6 +364,7 @@ setwd("..")
 
 ```
 
+
 # ALL treatments, triploids only
 ```{r ALL:TRT:diploids, warning=FALSE, include=TRUE}
 
@@ -379,9 +379,8 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -477,6 +476,7 @@ setwd("..")
 ```
 
 
+
 # CONTROLS only - effect of ploidy
 ```{r CONTROL:PLOIDY, warning=FALSE, include=TRUE}
 
@@ -498,21 +498,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -566,29 +563,48 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "control_ploidy"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "control_ploidy"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "control_ploidy"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "control_ploidy"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "control_ploidy" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "control_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "control_ploidy" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "control_ploidy" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
@@ -649,15 +665,22 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/control_ploidy/CONTROL_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
@@ -665,86 +688,85 @@ write.table(sig_genes_ashr,   file = "../output/control_ploidy/CONTROL_PLOIDY-SI
 write.table(gene_counts,      file = "../output/control_ploidy/CONTROL_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'ploidy',
-              colkey = c('diploid' = 'royalblue1', 'triploid' = 'green1'),
-              shape = 'ploidy',
-              shapekey = c('diploid' = 19, 'triploid' = 17),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-125,145), ylim = c(-100, 80),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'ploidy',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-# Plot pheatmap
-
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-setwd("..")
-setwd("output/control_ploidy")
-ggexport(filename = "CONTROL-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "CONTROL-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "CONTROL-PLOIDY-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'ploidy',
+#               colkey = c('diploid' = 'royalblue1', 'triploid' = 'green1'),
+#               shape = 'ploidy',
+#               shapekey = c('diploid' = 19, 'triploid' = 17),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-125,145), ylim = c(-100, 80),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'ploidy',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# # Plot pheatmap
+# 
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# setwd("..")
+# setwd("output/control_ploidy")
+# ggexport(filename = "CONTROL-PLOIDY-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "CONTROL-PLOIDY-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "CONTROL-PLOIDY-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
-
 
 # HEAT only - effect of ploidy
 ```{r HEAT:PLOIDY, warning=FALSE, include=TRUE}
@@ -767,21 +789,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -835,29 +854,48 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "heat_ploidy"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "heat_ploidy"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "heat_ploidy"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "heat_ploidy"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "heat_ploidy" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "heat_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "heat_ploidy" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "heat_ploidy" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
@@ -918,16 +956,22 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
-
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/heat_ploidy/HEAT_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
@@ -935,94 +979,93 @@ write.table(sig_genes_ashr,   file = "../output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-
 write.table(gene_counts,      file = "../output/heat_ploidy/HEAT_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'ploidy',
-              shapekey = c('diploid' = 19, 'triploid' = 17),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-100,110), ylim = c(-50, 60),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'ploidy',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-
-# Plot pheatmap
-
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-
-
-
-setwd("..")
-setwd("output/heat_ploidy")
-ggexport(filename = "HEAT-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "HEAT-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "HEAT-PLOIDY-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-setwd("..")
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'ploidy',
+#               shapekey = c('diploid' = 19, 'triploid' = 17),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-100,110), ylim = c(-50, 60),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'ploidy',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# 
+# # Plot pheatmap
+# 
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# 
+# 
+# 
+# setwd("..")
+# setwd("output/heat_ploidy")
+# ggexport(filename = "HEAT-PLOIDY-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "HEAT-PLOIDY-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "HEAT-PLOIDY-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
-
 
 # DESICCATION only - effect of ploidy
 ```{r DESICCATION:PLOIDY, warning=FALSE, include=TRUE}
@@ -1045,21 +1088,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -1113,29 +1153,48 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "desiccation_ploidy"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "desiccation_ploidy"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "desiccation_ploidy"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "desiccation_ploidy"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "desiccation_ploidy" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "desiccation_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "desiccation_ploidy" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "desiccation_ploidy" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
@@ -1188,7 +1247,6 @@ write.table(single_gene_expression_normal, file = "../output/desiccation_ploidy/
 write.table(single_gene_expression_apeglm, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
 write.table(single_gene_expression_ashr, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
 
-
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
 print(paste("# of genes dropped:", nrow(cts) - length(dds), sep=" ")) # count number of genes dropped
@@ -1197,108 +1255,115 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
 write.table(sig_genes_ashr,   file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
 write.table(gene_counts,      file = "../output/desiccation_ploidy/DESICCATION_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
-# Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'ploidy',
-              shapekey = c('diploid' = 19, 'triploid' = 17),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-130,150), ylim = c(-40, 60),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'ploidy',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-# Plot pheatmap
-# rld <- rlog(dds, blind=T)
-# rld_mat <- assay(rld)
-# pca <- prcomp(t(rld_mat))
-# rld_cor <- cor(rld_mat)
-# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# # Plot PCA
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 # 
-# bp3
-
-
-
-setwd("..")
-setwd("output/desiccation_ploidy")
-ggexport(filename = "DESICCATION-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DESICCATION-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-# ggexport(filename = "DESICCATION-PLOIDY-pheatmap.png",
-#          plot   = bp3,
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'ploidy',
+#               shapekey = c('diploid' = 19, 'triploid' = 17),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-130,150), ylim = c(-40, 60),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'ploidy',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# # Plot pheatmap
+# # rld <- rlog(dds, blind=T)
+# # rld_mat <- assay(rld)
+# # pca <- prcomp(t(rld_mat))
+# # rld_cor <- cor(rld_mat)
+# # bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# # 
+# # bp3
+# 
+# 
+# 
+# setwd("..")
+# setwd("output/desiccation_ploidy")
+# ggexport(filename = "DESICCATION-PLOIDY-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "DESICCATION-PLOIDY-PAIRS.png",
+#          plot   = bp2,
 #          res    = 600,
 #          width  = 6000,
 #          height = 6000)
-
-setwd("..")
+# 
+# # ggexport(filename = "DESICCATION-PLOIDY-pheatmap.png",
+# #          plot   = bp3,
+# #          res    = 600,
+# #          width  = 6000,
+# #          height = 6000)
+# 
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
-
 
 # DIPLOID only - effect of temperature
 ```{r DIPLOID:HEAT, warning=FALSE, include=TRUE}
@@ -1321,21 +1386,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "heat", "control") # factor, treatment group, control
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -1389,35 +1451,54 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "diploid_heat"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "diploid_heat"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "diploid_heat"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "diploid_heat"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "diploid_heat" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "diploid_heat" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "diploid_heat" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "diploid_heat" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
 for (i in 1:nrow(sig_genes)){
   LOCID <- sig_genes$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1428,7 +1509,7 @@ for (i in 1:nrow(sig_genes)){
 single_gene_expression_normal <- data.frame()
 for (i in 1:nrow(sig_genes_normal)){
   LOCID <- sig_genes_normal$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1440,7 +1521,7 @@ for (i in 1:nrow(sig_genes_normal)){
 single_gene_expression_apeglm <- data.frame()
 for (i in 1:nrow(sig_genes_apeglm)){
   LOCID <- sig_genes_apeglm$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1451,7 +1532,7 @@ for (i in 1:nrow(sig_genes_apeglm)){
 single_gene_expression_ashr <- data.frame()
 for (i in 1:nrow(sig_genes_ashr)){
   LOCID <- sig_genes_ashr$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1472,106 +1553,112 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/diploid_heat/DIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/diploid_heat/DIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/diploid_heat/DIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/diploid_heat/DIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/diploid_heat/DIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/diploid_heat/DIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
 write.table(sig_genes_ashr,   file = "../output/diploid_heat/DIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
 write.table(gene_counts,      file = "../output/diploid_heat/DIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
 
-# Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'condition',
-              shapekey = c('control' = 19, 'heat' = 19),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              ellipseFillKey = c('control' = 'royalblue1', 'heat' = 'orangered1'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-140,100), ylim = c(-50, 50),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'condition',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-# Plot pheatmap
-
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-setwd("..")
-setwd("output/diploid_heat")
-ggexport(filename = "DIPLOID-HEAT-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-HEAT-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "DIPLOID-HEAT-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-setwd("..")
+# # Plot PCA
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'condition',
+#               shapekey = c('control' = 19, 'heat' = 19),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               ellipseFillKey = c('control' = 'royalblue1', 'heat' = 'orangered1'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-140,100), ylim = c(-50, 50),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'condition',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# # Plot pheatmap
+# 
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# setwd("..")
+# setwd("output/diploid_heat")
+# ggexport(filename = "DIPLOID-HEAT-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "DIPLOID-HEAT-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "DIPLOID-HEAT-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
-
 
 # DIPLOID only - effect of desiccation
 ```{r DIPLOID:DESICCATION, warning=FALSE, include=TRUE}
@@ -1594,21 +1681,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "desiccation", "control") # factor, treatment group, control
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -1662,35 +1746,54 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "diploid_desiccation"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "diploid_desiccation"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "diploid_desiccation"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "diploid_desiccation"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "diploid_desiccation" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "diploid_desiccation" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "diploid_desiccation" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "diploid_desiccation" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
 for (i in 1:nrow(sig_genes)){
   LOCID <- sig_genes$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1701,7 +1804,7 @@ for (i in 1:nrow(sig_genes)){
 single_gene_expression_normal <- data.frame()
 for (i in 1:nrow(sig_genes_normal)){
   LOCID <- sig_genes_normal$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1713,7 +1816,7 @@ for (i in 1:nrow(sig_genes_normal)){
 single_gene_expression_apeglm <- data.frame()
 for (i in 1:nrow(sig_genes_apeglm)){
   LOCID <- sig_genes_apeglm$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1724,7 +1827,7 @@ for (i in 1:nrow(sig_genes_apeglm)){
 single_gene_expression_ashr <- data.frame()
 for (i in 1:nrow(sig_genes_ashr)){
   LOCID <- sig_genes_ashr$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1745,107 +1848,112 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
-
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
 write.table(sig_genes_ashr,   file = "../output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "../output/diploid_desiccation/DIPLOID_DESICCATION-gene-counts.csv",       row.names = TRUE)
+write.table(gene_counts,      file = "../output/diploid_desiccation/DIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
 
-# Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'condition',
-              shapekey = c('control' = 19, 'desiccation' = 19),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              ellipseFillKey = c('control' = 'royalblue1', 'desiccation' = 'red1'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-150,180), ylim = c(-110, 60),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'condition',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-
-# Plot pheatmap
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-setwd("..")
-setwd("output/diploid_desiccation")
-ggexport(filename = "DIPLOID-DESICCATION-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-DESICCATION-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "DIPLOID-DESICCATION-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-setwd("..")
+# # Plot PCA
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'condition',
+#               shapekey = c('control' = 19, 'desiccation' = 19),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               ellipseFillKey = c('control' = 'royalblue1', 'desiccation' = 'red1'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-150,180), ylim = c(-110, 60),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'condition',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# 
+# # Plot pheatmap
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# setwd("..")
+# setwd("output/diploid_desiccation")
+# ggexport(filename = "DIPLOID-DESICCATION-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "DIPLOID-DESICCATION-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "DIPLOID-DESICCATION-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
-
 
 # TRIPLOID only - effect of temperature
 ```{r TRIPLOID:HEAT, warning=FALSE, include=TRUE}
@@ -1868,21 +1976,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "heat", "control") # factor, treatment group, control
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -1936,35 +2041,54 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "triploid_heat"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "triploid_heat"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "triploid_heat"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "triploid_heat"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "triploid_heat" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "triploid_heat" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "triploid_heat" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "triploid_heat" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
 for (i in 1:nrow(sig_genes)){
   LOCID <- sig_genes$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1975,7 +2099,7 @@ for (i in 1:nrow(sig_genes)){
 single_gene_expression_normal <- data.frame()
 for (i in 1:nrow(sig_genes_normal)){
   LOCID <- sig_genes_normal$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1987,7 +2111,7 @@ for (i in 1:nrow(sig_genes_normal)){
 single_gene_expression_apeglm <- data.frame()
 for (i in 1:nrow(sig_genes_apeglm)){
   LOCID <- sig_genes_apeglm$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -1998,7 +2122,7 @@ for (i in 1:nrow(sig_genes_apeglm)){
 single_gene_expression_ashr <- data.frame()
 for (i in 1:nrow(sig_genes_ashr)){
   LOCID <- sig_genes_ashr$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -2019,104 +2143,112 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/triploid_heat/TRIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
 write.table(sig_genes_ashr,   file = "../output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
 write.table(gene_counts,      file = "../output/triploid_heat/TRIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
 
-# Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'condition',
-              shapekey = c('control' = 17, 'heat' = 17),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              ellipseFillKey = c('control' = 'green1', 'heat' = 'orangered3'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-160,140), ylim = c(-100, 80),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'condition',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-# Plot pheatmap
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-setwd("..")
-setwd("output/triploid_heat")
-ggexport(filename = "TRIPLOID-HEAT-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-HEAT-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "TRIPLOID-HEAT-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-setwd("..")
+# # Plot PCA
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'condition',
+#               shapekey = c('control' = 17, 'heat' = 17),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               ellipseFillKey = c('control' = 'green1', 'heat' = 'orangered3'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-160,140), ylim = c(-100, 80),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'condition',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# # Plot pheatmap
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# setwd("..")
+# setwd("output/triploid_heat")
+# ggexport(filename = "TRIPLOID-HEAT-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          # device = "png",
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "TRIPLOID-HEAT-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "TRIPLOID-HEAT-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 
 ```
+
 # TRIPLOID only - effect of desiccation
 ```{r TRIPLOID:DESICCATION, warning=FALSE, include=TRUE}
 
@@ -2138,21 +2270,18 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
-dds <- dds[keep,]
+# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
+dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "desiccation", "control") # factor, treatment group, control
 res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
 res_table_normal <- lfcShrink(dds,
                               coef=2, 
-                              type="normal",
-                              lfcThreshold = 0.585) # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_apeglm <- lfcShrink(dds,
                               coef=2, 
-                              type="apeglm",
-                              lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
 res_table_ashr   <- lfcShrink(dds,
                               coef=2, 
                               type="ashr")
@@ -2206,35 +2335,54 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes <- all_genes %>% arrange(-log2FoldChange)
+all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes           <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment <- "triploid_desiccation"
+# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
+all_genes_normal$treatment <- "triploid_desiccation"
+
+all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
+# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
+all_genes_apeglm$treatment <- "triploid_desiccation"
+
+all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment <- "triploid_desiccation"
 
 # Filter results by
 sig_genes <- res_table %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+sig_genes$treatment <- "triploid_desiccation" 
 
 sig_genes_normal <- res_table_normal %>%
   filter(abs(log2FoldChange) > lfc.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal$treatment <- "triploid_desiccation" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(svalue < svalue.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
+sig_genes_apeglm$treatment <- "triploid_desiccation" 
 
 sig_genes_ashr <- res_table_ashr %>%
   filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
+sig_genes_ashr$treatment <- "triploid_desiccation" 
 
 # Save single gene expression counts to a data frame object, for each shrinkage estimator
 single_gene_expression_unshrunk <- data.frame()
 for (i in 1:nrow(sig_genes)){
   LOCID <- sig_genes$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -2245,7 +2393,7 @@ for (i in 1:nrow(sig_genes)){
 single_gene_expression_normal <- data.frame()
 for (i in 1:nrow(sig_genes_normal)){
   LOCID <- sig_genes_normal$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -2257,7 +2405,7 @@ for (i in 1:nrow(sig_genes_normal)){
 single_gene_expression_apeglm <- data.frame()
 for (i in 1:nrow(sig_genes_apeglm)){
   LOCID <- sig_genes_apeglm$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -2268,7 +2416,7 @@ for (i in 1:nrow(sig_genes_apeglm)){
 single_gene_expression_ashr <- data.frame()
 for (i in 1:nrow(sig_genes_ashr)){
   LOCID <- sig_genes_ashr$gene[i]
-  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="condition", returnData=TRUE)
+  gene_counts_data <- plotCounts(dds, gene=LOCID, intgroup="ploidy", returnData=TRUE)
   gene_counts_data$gene <- LOCID
   gene_counts_data$sample <- row.names(gene_counts_data)
   row.names(gene_counts_data) <- NULL
@@ -2289,119 +2437,146 @@ print(paste("# DEGs, unshrunken, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes)))
 print(paste("# DEGs, normal shrinkage estimator, lfc = 1.5:", nrow(sig_genes_normal)))
 print(paste("# DEGs, apeglm shrinkage estimator, svalue = 0.005, lfc = 1.5:", nrow(sig_genes_apeglm)))
 print(paste("# DEGs, ashr shrinkage estimator, pvalue = 0.05, lfc = 1.5:", nrow(sig_genes_ashr)))
-gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),nrow(sig_genes),nrow(sig_genes_normal),
-                 nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
-row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped","DEGs_all-genes",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5","DEG_apeglm-s0.005_lfc1.5",
-                            "DEG_ashr-p0.05_lfc1.5")
+gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nrow(all_genes),
+                            nrow(all_genes_normal),nrow(all_genes_apeglm),nrow(all_genes_ashr),
+                            nrow(sig_genes),nrow(sig_genes_normal),
+                            nrow(sig_genes_apeglm),nrow(sig_genes_ashr)))
+row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes","DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
+                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
 colnames(gene_counts) <- "count"
-
 
 # Output tables of DEGs
 write.table(all_genes,        file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
 write.table(sig_genes,        file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
 write.table(sig_genes_normal, file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
 write.table(sig_genes_apeglm, file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
 write.table(sig_genes_ashr,   file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
 write.table(gene_counts,      file = "../output/triploid_desiccation/TRIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
 
-# Plot PCA
-p <- pca(assay(vst(dds)), metadata = coldata_trt)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'group',
-              colkey = c('A' = 'royalblue1' , 
-                         'B' = 'green1'     ,
-                         'C' = 'yellow2' ,
-                         'D' = 'orange' ,
-                         'E' = 'orangered1',
-                         'F' = 'red3'),
-              shape = 'condition',
-              shapekey = c('control' = 17, 'desiccation' = 17),
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              ellipseFillKey = c('control' = 'green1', 'desiccation' = 'red3'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              xlim = c(-150,130), ylim = c(-70, 60),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
-
-bp2 <- pairsplot(p,
-                components = getComponents(p, c(1:5)),
-                triangle = TRUE, trianglelabSize = 12,
-                hline = 0, vline = 0,
-                pointSize = 1,
-                gridlines.major = FALSE, gridlines.minor = FALSE,
-                colby = 'condition',
-                title = 'Pairs plot', plotaxes = FALSE,
-                margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
-bp2
-
-# Plot pheatmap
-rld <- rlog(dds, blind=T)
-rld_mat <- assay(rld)
-pca <- prcomp(t(rld_mat))
-rld_cor <- cor(rld_mat)
-bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
-
-bp3
-
-setwd("..")
-setwd("output/triploid_desiccation")
-ggexport(filename = "TRIPLOID-DESICCATION-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-DESICCATION-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "TRIPLOID-DESICCATION-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-setwd("..")
+# # Plot PCA
+# p <- pca(assay(vst(dds)), metadata = coldata_trt)
+# screeplot(p, axisLabSize = 18, titleLabSize = 22)
+# biplot(p, showLoadings = TRUE, colby = 'group',
+#     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+# 
+# bp1 <- biplot(p, x = "PC1", y = "PC2",
+#               colby = 'group',
+#               colkey = c('A' = 'royalblue1' , 
+#                          'B' = 'green1'     ,
+#                          'C' = 'yellow2' ,
+#                          'D' = 'orange' ,
+#                          'E' = 'orangered1',
+#                          'F' = 'red3'),
+#               shape = 'condition',
+#               shapekey = c('control' = 17, 'desiccation' = 17),
+#               pointSize = 4,
+#               showLoadings = FALSE,
+#               lab = NULL,
+#               drawConnectors = FALSE,
+#               ellipse = TRUE,
+#               ellipseLevel = 0.95,
+#               ellipseFill = FALSE,
+#               ellipseFillKey = c('control' = 'green1', 'desiccation' = 'red3'),
+#               ellipseAlpha = 1/4,
+#               ellipseLineSize = 1,
+#               xlim = c(-150,130), ylim = c(-70, 60),
+#               gridlines.major = FALSE,
+#               gridlines.minor = FALSE,
+#               borderWidth = 1,
+#               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+#               theme(axis.text.x       = element_text(size=16,color="black"),
+#                     axis.text.y       = element_text(size=16,color="black"),
+#                     axis.ticks.x      = element_line(color="black"),
+#                     axis.ticks.y      = element_line(color="black"))
+# bp1
+# 
+# 
+# bp2 <- pairsplot(p,
+#                 components = getComponents(p, c(1:5)),
+#                 triangle = TRUE, trianglelabSize = 12,
+#                 hline = 0, vline = 0,
+#                 pointSize = 1,
+#                 gridlines.major = FALSE, gridlines.minor = FALSE,
+#                 colby = 'condition',
+#                 title = 'Pairs plot', plotaxes = FALSE,
+#                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
+# bp2
+# 
+# # Plot pheatmap
+# rld <- rlog(dds, blind=T)
+# rld_mat <- assay(rld)
+# pca <- prcomp(t(rld_mat))
+# rld_cor <- cor(rld_mat)
+# bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# 
+# bp3
+# 
+# setwd("..")
+# setwd("output/triploid_desiccation")
+# ggexport(filename = "TRIPLOID-DESICCATION-PCA.png",
+#          plot   = bp1,
+#          res    = 600,
+#          width  = 4000,
+#          height = 5000)
+# 
+# ggexport(filename = "TRIPLOID-DESICCATION-PAIRS.png",
+#          plot   = bp2,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# 
+# ggexport(filename = "TRIPLOID-DESICCATION-pheatmap.png",
+#          plot   = bp3,
+#          res    = 600,
+#          width  = 6000,
+#          height = 6000)
+# setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
 ```
 
+# Generate table for IPA
 ```{R}
+rm(list=ls())
 
-# rld <- rlog(dds, blind=T)
-# rld_mat <- assay(rld)
-# pca <- prcomp(t(rld_mat))
-# rld_cor <- cor(rld_mat)
-# pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+control_ploidy     <- read.table("../output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+heat_ploidy        <- read.table("../output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+desiccation_ploidy <- read.table("../output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+diploid_heat          <- read.table("../output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
+diploid_desciccation  <- read.table("../output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
+triploid_heat         <- read.table("../output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
+triploid_desiccation  <- read.table("../output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
 
+control_ploidy       <- control_ploidy        %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+heat_ploidy          <- heat_ploidy           %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+desiccation_ploidy   <- desiccation_ploidy    %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+diploid_heat         <- diploid_heat          %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+diploid_desciccation <- diploid_desciccation  %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+triploid_heat        <- triploid_heat         %>% dplyr::select(treatment,gene,padj,log2FoldChange)
+triploid_desiccation <- triploid_desiccation  %>% dplyr::select(treatment,gene,padj,log2FoldChange)
 
-# dat_nested <- single_gene_expression %>% 
-# +     group_by(gene) %>%
-# +     nest() %>% 
-# +     ungroup()
+all_trt <- rbind(control_ploidy,
+                 heat_ploidy,
+                 desiccation_ploidy,
+                 diploid_heat,
+                 diploid_desciccation,
+                 triploid_heat,
+                 triploid_desiccation)
 
+# check row sums match
+sum(nrow(control_ploidy),nrow(heat_ploidy),nrow(desiccation_ploidy ),
+    nrow(diploid_heat ),nrow(diploid_desciccation),nrow(triploid_heat ),
+    nrow(triploid_desiccation))
+nrow(all_trt)
+
+write.table(all_trt, "../output/2022_cgigas_DEG-all-treatments.txt", row.names = FALSE)
 
 ```
 

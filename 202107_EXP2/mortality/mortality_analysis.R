@@ -13,8 +13,6 @@ setwd(dirname(current_path )); getwd()
 ## Load R packages
 library(readxl)
 library(ggplot2)
-library(stringr)
-library(scales)
 library(tidyverse)
 
 
@@ -46,8 +44,6 @@ current_path <- getActiveDocumentContext()$path
 FR_plot     <- read_excel("mortality.xlsx", sheet = "plot2", col_names = TRUE)
 trt_list    <- read_excel("mortality.xlsx", sheet = "trt_list", col_names = TRUE)
 FR_plot$trt <- factor(FR_plot$trt,levels=trt_list$trt_list,ordered=TRUE)
-
-# lims <- as.POSIXct(strptime(c("2021-07-13 07:00","2021-07-13 14:00"), format = "%Y-%m-%d %H:%M"))
 
 FR_plot_control   <- FR_plot %>% filter(trt == "D-control" | trt == "T-control")
 FR_plot_heated    <- FR_plot %>% filter(trt == "D-heat_only" | trt == "T-heat_only" | trt == "D-heat_desiccation" | trt == "T-heat_desiccation")
