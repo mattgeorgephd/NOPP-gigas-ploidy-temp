@@ -1,0 +1,223 @@
+---
+title: "respirometry_analysis"
+author: "Matt George"
+date: '2022-07-21'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages; set ggplot theme
+```{r message=TRUE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","rstudioapi","Johnson","agricolae","nlme","multcomp","rstatix") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.5),
+                  rect              = element_rect(size=1.5),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  legend.key        = element_blank(), # removes background of legend bullets
+                  legend.position   = "none"
+                  ) 
+```
+LOAD dataset
+```{r}
+
+key             <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "key", col_names = TRUE)
+resp_plot       <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "combo", col_names = TRUE)
+trt_list        <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "trt_list", col_names = TRUE)
+resp_plot$trt_list <- factor(resp_plot$trt_list,levels=trt_list$trt_list,ordered=TRUE)
+```
+
+boxplots, controls
+```{r}
+resp_plot_controls <- resp_plot %>% filter(trt == "control")
+trt_list_controls  <- trt_list %>% filter(trt == "control")
+
+
+bp1 <-  ggplot(resp_plot_controls, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE) +
+        # geom_point(aes(x=as.factor(timepoint), y=SMR_weight, group=as.factor(trt_list)),
+        #            position=position_dodge(width=0.75),
+        #            size = 3, shape = 19, fill = "black", alpha = 1/10) +
+        scale_fill_manual(values=trt_list_controls$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        my_theme
+
+bp1
+
+ggsave("analyses/respiration/bp_respiration_controls.png",
+       plot   = bp1,
+       dpi    = 600,
+       device = "png",
+       width  = 3.5,
+       height = 4,
+       units  = "in")
+
+```
+
+boxplots, diploids - treatment only
+```{r}
+resp_plot_diploids <- resp_plot %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+trt_list_diploids  <- trt_list %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+
+
+bp2 <-  ggplot(resp_plot_diploids, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE) +
+        # geom_point(aes(x=as.factor(timepoint), y=SMR_weight, group=as.factor(trt_list)),
+        #            position=position_dodge(width=0.75),
+        #            size = 3, shape = 19, fill = "black", alpha = 1/10) +
+        scale_fill_manual(values=trt_list_diploids$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        my_theme
+
+bp2
+
+ggsave("analyses/respiration/bp_respiration_diploids.png",
+       plot   = bp2,
+       dpi    = 600,
+       device = "png",
+       width  = 4.5,
+       height = 4,
+       units  = "in")
+
+```
+
+boxplots, triploids - treatment only
+```{r}
+resp_plot_triploids <- resp_plot %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+trt_list_triploids  <- trt_list %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+
+
+bp3 <-  ggplot(resp_plot_triploids, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE) +
+        # geom_point(aes(x=as.factor(timepoint), y=SMR_weight, group=as.factor(trt_list)),
+        #            position=position_dodge(width=0.75),
+        #            size = 3, shape = 19, fill = "black", alpha = 1/10) +
+        scale_fill_manual(values=trt_list_triploids$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        my_theme
+
+bp3
+
+ggsave("analyses/respiration/bp_respiration_triploids.png",
+       plot   = bp3,
+       dpi    = 600,
+       device = "png",
+       width  = 4.5,
+       height = 4,
+       units  = "in")
+
+```
+linegraph, diploids - treatment only
+```{r}
+resp_plot_diploids <- resp_plot %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+trt_list_diploids  <- trt_list %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+resp_plot_diploids$timepoint <- factor(resp_plot_diploids$timepoint, levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p1 <- ggplot(resp_plot_diploids, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("royalblue4","royalblue1")) +
+      scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      my_theme
+
+p1
+
+ggsave("analyses/respiration/line_respiration_diploids.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 3.7,
+       height = 4,
+       units  = "in")
+
+```
+linegraph, triploids - treatment only
+```{r}
+resp_plot_triploids <- resp_plot %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+trt_list_triploids  <- trt_list %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+resp_plot_triploids$timepoint <- factor(resp_plot_triploids$timepoint, 
+                                        levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p2 <- ggplot(resp_plot_triploids, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("orangered4","orangered1")) +
+      scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      my_theme
+
+p2
+
+ggsave("analyses/respiration/line_respiration_triploids.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 3.7,
+       height = 4,
+       units  = "in")
+
+```
+
+linegraph, both ploidy - desiccation
+```{r}
+resp_plot_desiccation <- resp_plot %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+trt_list_desiccation  <- trt_list %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+resp_plot_desiccation$timepoint <- factor(resp_plot_desiccation$timepoint, 
+                                        levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p3 <- ggplot(resp_plot_desiccation, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("royalblue4","orangered4")) +
+      scale_y_continuous(breaks = seq(0, 1.5, 0.5), limits = c(0, 1.75)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      my_theme
+
+p3
+
+ggsave("analyses/respiration/line_respiration_desiccation.png",
+       plot   = p3,
+       dpi    = 600,
+       device = "png",
+       width  = 3.7,
+       height = 4,
+       units  = "in")
+
+```

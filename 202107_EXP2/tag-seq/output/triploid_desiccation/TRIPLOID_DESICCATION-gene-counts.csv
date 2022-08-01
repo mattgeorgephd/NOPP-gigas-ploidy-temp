@@ -1,9 +1,12 @@
 "count"
 "genes_before_filtering" 31371
-"genes_after_filtering" 24920
-"genes_dropped" 6451
-"DEGs_all-genes" 24920
-"DEG_unshrunken-p0.05_lfc1.5" 110
-"DEG_normal-lfc1.5" 3
-"DEG_apeglm-s0.005_lfc1.5" 73
-"DEG_ashr-p0.05_lfc1.5" 59
+"genes_after_filtering" 29804
+"genes_dropped" 1567
+"DEGs_all-genes" 29804
+"DEGs_all-genes-normal" 29804
+"DEGs_all-genes-apeglm" 29804
+"DEGs_all-genes-ashr" 29804
+"DEG_unshrunken-p0.05_lfc1.5" 128
+"DEG_normal-lfc1.5" 5
+"DEG_apeglm-s0.005_lfc1.5" 77
+"DEG_ashr-p0.05_lfc1.5" 65

@@ -1,0 +1,116 @@
+---
+title: "mortality_analsysis"
+author: "Matt George"
+date: '2022-07-20'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages; set ggplot theme
+```{r message=TRUE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","rstudioapi") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.5),
+                  rect              = element_rect(size=1.5),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  legend.key        = element_blank() # removes background of legend bullets
+                  ) 
+```
+LOAD dataset
+```{r}
+mort_plot       <- read_excel("mortality/mortality.xlsx", sheet = "plot_mortality", col_names = TRUE)
+trt_list        <- read_excel("mortality/mortality.xlsx", sheet = "trt_list", col_names = TRUE)
+mort_plot$trt   <- factor(mort_plot$trt,levels=trt_list$trt_list,ordered=TRUE)
+```
+
+
+Linegraph, diploids
+```{r}
+mort_plot_diploid <- mort_plot %>% filter(ploidy == "diploid")
+
+p1 <- ggplot(data=mort_plot_diploid,aes(x=day,y=mortality,color=trt)) +
+            geom_line(size=1.2,aes(linetype=trt)) +
+            scale_linetype_manual(values=trt_list$trt_line[1:3]) +
+            scale_color_manual(values=trt_list$trt_color[1:3]) +
+            scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0,42)) +
+            scale_x_continuous(breaks = seq(-30,30,10) , limits = c(-32,32)) +
+            my_theme
+
+p1
+
+ggsave("analyses/mortality/mortality_diploids.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+```
+
+Linegraph, triploids
+```{r}
+mort_plot_triploid <- mort_plot %>% filter(ploidy == "triploid")
+
+p2 <- ggplot(data=mort_plot_triploid,aes(x=day,y=mortality,color=trt)) +
+            geom_line(size=1.2,aes(linetype=trt)) +
+            scale_linetype_manual(values=trt_list$trt_line[4:6]) +
+            scale_color_manual(values=trt_list$trt_color[4:6]) +
+            scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0,42)) +
+            scale_x_continuous(breaks = seq(-30,30,10) , limits = c(-32,32)) +
+            my_theme
+
+p2
+
+ggsave("analyses/mortality/mortality_triploids.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+```
+Linegraph, all
+```{r}
+p3 <- ggplot(data=mort_plot,aes(x=day,y=mortality,color=trt)) +
+            geom_line(size=1.2,aes(linetype=trt)) +
+            scale_linetype_manual(values=trt_list$trt_line) +
+            scale_color_manual(values=trt_list$trt_color) +
+            scale_y_continuous(breaks = seq(0, 40, 10), limits = c(0,42)) +
+            scale_x_continuous(breaks = seq(-30,30,10) , limits = c(-32,32)) +
+            my_theme
+
+p3
+
+ggsave("analyses/mortality/mortality_all.png",
+       plot   = p3,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+```
