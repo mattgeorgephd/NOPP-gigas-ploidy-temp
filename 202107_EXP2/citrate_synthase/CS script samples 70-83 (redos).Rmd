@@ -19,11 +19,12 @@ CS_5$Label<-rep(wells, 15) #note rep=15
 cs_standards<-CS_5[c(730:734),] #set standards and removed outliers
 standards<-as.numeric(c(8, 16, 24, 32, 40)) #relabel
 cs_standards$Label<-standards
+
 #plot CS standards
 standard_plot<-ggplot(data=cs_standards,(aes(x=A, y=Label)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 1) )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=0.25, label.y=20)
 standard_plot
 #extract equation from chart
-#y=55x-2.5
+#y=55x -2.5
 
 ###View controls
 controls<-c(0,'background', 'pos')
@@ -120,7 +121,6 @@ CS_activity_20uL<-(GSH_20/(t*V2))*D/BSA_20$P
 weights_10<-filter(BSA_results, BSA_results$Label %in% V10)
 weights_20<-filter(BSA_results, BSA_results$Label %in% V20)
 
-######start here
 results_10uL<-mutate(initial_10, OD=deltaOD_10, GSH=GSH_10, weights=weights_10$weights, protein_content=BSA_10$protein_content, standardized=BSA_10$standardization, "Protein (mg/ul)"=BSA_10$P, "CS activity (nmol/(mg*min))"=CS_activity_10uL) #OD is the delta OD for the samples
 
 results_20uL<-mutate(initial_20, OD=deltaOD_20, GSH=GSH_20, weights=weights_20$weights, protein_content=BSA_20$protein_content,standardized=BSA_20$standardization, "Protein (mg/ul)"=BSA_20$P, "CS activity (nmol/(mg*min))"=CS_activity_20uL) #OD is the delta OD for the samples
