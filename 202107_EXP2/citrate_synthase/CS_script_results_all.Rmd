@@ -60,8 +60,9 @@ batch_plot
 
 qqnorm(results$meanA, pch = 1, frame = FALSE)
 qqline(results$meanA, col = "steelblue", lwd = 2)
+#filtered out X,Y,Z due to deviations with Q-Q plot
 ##################################################
-results_filtered<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_test_2.csv")
+results_filtered<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/results/result_test_3.csv")
 
 names(results_filtered)[10]<-'CS'
 names(results_filtered)[9]<-'P'
