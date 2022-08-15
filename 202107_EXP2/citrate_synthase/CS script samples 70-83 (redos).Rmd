@@ -95,12 +95,9 @@ sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-giga
 names(sample_list)[1]<-'Label'
 names(sample_list)[2]<-'Weights'
 joined<-inner_join(samples_BSA, sample_list, by="Label") #from CS sample list 
-weights<-as.numeric(joined$Weights[-c(25,29)]) 
-V1<-350 #uL (added 350uL buffer to tube before homogenization) 
-standardization<-weights/V1 #mg/uL
 P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
 
-BSA_results<-mutate(samples_BSA, protein_content, weights, standardization, P)
+BSA_results<-mutate(samples_BSA, protein_content, P)
 
 BSA_10<-filter(BSA_results, BSA_results$Label %in% V10)
 BSA_20<-filter(BSA_results, BSA_results$Label %in% V20)
