@@ -179,6 +179,20 @@ results_joined<-inner_join(results_joined, trt, by="Label")
 final_plot<-ggplot(data=results_joined,(aes(x=`Protein (ug/mL) `, y=`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 
 write.csv(results_joined, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_72.csv")
+#########################Add redos from July 11-12##########################
+#all samples including duplicates
+results_all<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_all.csv")
+
+results_all<-results_all[-c(40),]#removed outlier @ 160 CS (really high)
+
+all_plot<-ggplot(data=results_all,(aes(x=results_all$Protein..mg.ul., y=results_all$CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
+
+#unique samples only
+results_unique<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_unique.csv")
+
+results_unique<-results_unique[-c(37),]
+
+u_plot<-ggplot(data=results_unique,(aes(x=Protein..mg.ul., y=CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 ```
 
 

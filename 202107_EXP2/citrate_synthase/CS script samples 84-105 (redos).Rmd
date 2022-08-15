@@ -102,11 +102,9 @@ names(sample_list)[1]<-'Label'
 names(sample_list)[3]<-'Weights'
 joined<-inner_join(samples_BSA, sample_list, by="Label") #from CS sample list 
 weights<-as.numeric(joined$Weights) 
-V1<-350 #uL (added 350uL buffer to tube before homogenization) 
-standardization<-weights/V1 #mg/uL
-P<-(protein_content/standardization)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
+P<-(protein_content)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
 
-BSA_results<-mutate(samples_BSA, protein_content, weights, standardization, P)
+BSA_results<-mutate(samples_BSA, protein_content, P)
 
 ######Calculate Final CS Values
 #y= 37x -1.8 (from CS activity plot)
@@ -118,7 +116,7 @@ V1<-50 #uL from procedure
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 CS_activity<-(GSH/(t*V1))*D/P
 
-results<-mutate(initial, OD=deltaOD, GSH=GSH, weights=weights, protein_content=protein_content, standardized=standardization, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity) #OD is the delta OD for the samples
+results<-mutate(initial, OD=deltaOD, GSH=GSH, protein_content=protein_content, "Protein (mg/ul)"=P, "CS activity (nmol/(mg*min))"=CS_activity) #OD is the delta OD for the samples
 
 ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
 names(ploidy)[1]<-'Label'
@@ -131,12 +129,13 @@ names(trt)[2]<-'Label'
 results_joined<-inner_join(results, ploidy , by="Label") #from CS sample list 
 
 results_joined<-inner_join(results_joined, trt, by="Label")
+
 #R60 is negative again, set to zero instead
 results_positive <- results_joined                   # Duplicate data frame
 results_positive[results_positive < 0] <- 0     # Set negative values to 0
-#write.csv(results_positive, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_105.csv")
+write.csv(results_joined, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_105.csv")
 
-final_plot<-ggplot(data=results_joined,(aes(x=weights, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+final_plot<-ggplot(data=results_positive,(aes(x=results_positive$`Protein (mg/ul)`, y=results_positive$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
 final_plot
 ```
 
