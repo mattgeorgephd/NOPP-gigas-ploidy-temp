@@ -126,13 +126,15 @@ bsa_3$Plate<-rep(3,3)
 bsa_72<-rbind(bsa, bsa_2, bsa_3)
 
 #extract equation from standard plot
-bsa_standards<-bsa[c(175:182),]
+bsa_standards<-bsa_72[c(1,7),]
+#bsa_standards<-bsa[c(175:182),]
 
 #make plot
 reverse_plot<-ggplot(data=bsa_standards,(aes(x=A, y=as.numeric(Label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=500)+ylab("ug/mL")
 
 reverse_plot
-#y=-2400 +2900x
+#y=-2700+3500x
+##y=-2400 +2900x
 
 A<-bsa_72 %>% 
   group_by(Label) %>%
@@ -141,9 +143,9 @@ A<-bsa_72 %>%
 
 A_samples<-A[-c(1:8, 14, 75),]
 
-protein_content<-(2900*A_samples$meanA)-2400 #with no correction
-protein_content[protein_content < 250]<-NA #<250 ug/mL is out of range for BSA
-protein_content[protein_content > 1500]<-NA #P>1500 is out of range for BSA
+protein_content<-(3500*A_samples$meanA)-2700 #with no correction
+protein_content[protein_content < 0]<-NA #<0 ug/mL is out of range for BSA
+
 
 sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights.csv")
 joined<-inner_join(A_samples, sample_list, by="Label") #from CS sample list 
