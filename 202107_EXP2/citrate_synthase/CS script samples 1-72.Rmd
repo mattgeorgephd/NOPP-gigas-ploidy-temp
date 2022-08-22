@@ -188,7 +188,7 @@ results_all<-results_all[-c(40),]#removed outlier @ 160 CS (really high)
 all_plot<-ggplot(data=results_all,(aes(x=results_all$Protein..mg.ul., y=results_all$CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 
 #unique samples only
-results_unique<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_unique.csv")
+#results_unique<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_unique.csv")
 
 results_unique<-results_unique[-c(37),]
 
@@ -213,48 +213,6 @@ anova(oysterANOVA2) #no different between triploid and diploid
 TukeyHSD(aov(oysterANOVA))
 #reject the null when p<0.05 for each pair-wise comparison 
 #cannot reject the null for everything except T-desiccation/T-heat/T-control (p=0.003 and 0.0002)
-
-#ANOVA test
-#for three or more samples = k
-#are any of the means of the samples significantly different?
-#by hand
-library(plyr)
-daply(results_unique, .(trt, results_unique$CS.activity..nmol..mg.min..), function(trt), trt$trt)
-mean_1<-mean(results_unique$
-mean_2<-mean(ReducingPain$Music)
-mean_3<-mean(ReducingPain$Earphones)
-mean_total<-mean(ReducingPainLong$value)
-k<-3
-N<-length(ReducingPainLong$value)
-n_1<-length(ReducingPain$Audiobook)
-n_2<-length(ReducingPain$Music)
-n_3<-length(ReducingPain$Earphones)
-calc.total.ANOVA<-function(ReducingPainLong) {
-  sum.squares<-(sum((ReducingPainLong$value-mean(ReducingPainLong$value))^2))
-  df<-length(ReducingPainLong$value)-1
-  return(list(Total_SS=sum.squares, df=df))
-}
-calc.total.ANOVA(ReducingPainLong) #Total SS
-means<-c(mean_1, mean_2, mean_3)
-n<-c(n_1, n_2, n_3)
-SS_group<-sum(n*(means-mean_total)^2) #Group SS
-SS_total<-
-DF_total<-39
-SS_group<-
-DF_group<-3
-SS_error<-SS_total - SS_group
-DF_error<-DF_total - DF_group
-MS_group<-SS_group/DF_group
-MS_error<-SS_error/DF_error
-F_stat<-MS_group/MS_error
-1-pf(F_stat, df1=DF_group, df2=DF_error)
-#one tailed, right hand only
-qf(p=0.05, df1=k-1, df2 = N-k, lower.tail = F)
-pf(q=10.13, df1=k-1, df2=N-k, lower.tail = F)
-#checking our assumptions
-var(data)
-vars<-apply(X=X, MARGIN = 2, FUN = var)
-max(vars)/min(vars)
 ```
 
 
