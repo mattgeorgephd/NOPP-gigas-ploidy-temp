@@ -1,0 +1,16 @@
+trt,mean diff,lwr,upr,p adj
+D-Desiccation-D-Control,3.7609,-0.5436,8.0654,0.1201
+D-heat-D-control,-0.1445,-4.5415,4.2526,1.0000
+T-control-D-control,0.8581,-3.5390,5.2552,0.9923
+T-desiccation-D-control,6.8091,2.3034,11.3147,0.0005
+T-heat-D-control,-0.6961,-5.3310,3.9388,0.9977
+D-heat-D-desiccation,-3.9053,-8.2098,0.3992,0.0963
+T-control-D-desiccation,-2.9027,-7.2072,1.4018,0.3620
+T-desiccation-D-desiccation,3.0482,-1.3672,7.4636,0.3360
+T-heat-D-desiccation,-4.4570,-9.0042,0.0902,0.0578
+T-control-D-heat,1.0026,-3.3945,5.3997,0.9843
+T-desiccation-D-heat,6.9536,2.4479,11.4592,0.0004
+T-heat-D-heat,-0.5517,-5.1866,4.0833,0.9993
+T-desiccation-T-control,5.9510,1.4453,10.4566,0.0034
+T-heat-T-control,-1.5542,-6.1892,3.0807,0.9199
+T-heat-T-desiccation,-7.5052,-12.2433,-2.7671,0.0003
