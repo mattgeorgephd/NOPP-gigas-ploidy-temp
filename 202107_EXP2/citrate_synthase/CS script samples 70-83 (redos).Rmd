@@ -1,0 +1,154 @@
+---
+title: "CS_assay"
+output: pdf_document
+---
+# Samples 70-82 from July 11-12th 2022 (redos from March 22nd)
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+#load samples 70-83
+CS_5<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/CS%20activity%20july%2013th%20part%201.csv")
+CS_5['Label'] <- NA
+names(CS_5)[7]<-'Label'
+names(CS_5)[6]<-'A'
+wells<-c(0, 8, 16, 24, 32, 40, "pos","pos", "pos", "background", "background", "background", "R61", "R61", "R61", "R59", "R59", NA, "T59", "T59", "T59", "D56", "D56", "D56", "N49", "N49", "N49", "D58", "D58", "D58", "R57", "R57", "R57", "R50", "R50", "R50", "N46", "N46", "N46", "N41", "N41", "N41", "N41", "N45", "N45", "N45", "T61", "T61", "T61", "M47", "M47", "M47")
+CS_5$Label<-rep(wells, 15) #note rep=15 
+
+###View controls
+controls<-c(0,'background', 'pos')
+controls2<-subset(CS_5, Label == controls)
+quickview<-ggplot(data=controls2, aes(x=Repeat, y=A, color=Label))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)
+quickview
+#based on controls, I would subtract Repeat 15 values from Repeat 4 values without subtracting 0s from data-set, The temperature dropped throughout the experiment, subtract background from samples should correct for this. 
+background_4<-mean(CS_5$A[c(166:168)])
+background_15<-mean(CS_5$A[c(738:740)])
+
+
+###View Data
+samples<-c("R61", "R59", "T59", "D56", "N49", "D58", "R57", "R50", "N46",   "N41", "N45", "T61", "M47")
+mydata5<-filter(CS_5, CS_5$Label %in% samples)
+quickview5<-ggplot(data=mydata5, aes(x=Repeat, y=A, color=(Label)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 15, by=1))
+quickview5 #looks great!
+
+##########################Get CS results######################
+time_i<-subset(CS_5, CS_5$Repeat==4)
+time_f<-subset(CS_5, CS_5$Repeat==15) #pick maximum data point
+initial<-time_i %>% 
+  group_by(Label) %>%
+  summarise(meanA = mean(A)) %>%
+  mutate(newA = meanA-background_4)
+final<-time_f %>% 
+  group_by(Label) %>%
+  summarise(meanA = mean(A)) %>%
+  mutate(newA = meanA-background_15)
+#########################Plot CS Standards##################
+cs_standards<-rbind(initial, final) #set standards and removed outliers
+cs_standards<-(cs_standards[c(1:6),])
+standards<-as.numeric(c(0, 16, 24, 32, 40, 8)) #relabel
+cs_standards$Label<-standards
+
+#plot
+standard_plot<-ggplot(data=cs_standards,(aes(x=newA, y=Label)))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 1) )+xlab("Concentration of standard ug/mL")+ylab("A @ 570nm")+theme_bw()+stat_regline_equation(label.x=0.25, label.y=20)
+standard_plot
+#extract equation from chart
+#y = 41x -1.1
+#########################Calculate Delta OD#################
+final<-final[-c(1:7, 15, 22),] #this will change each time
+initial<-initial[-c(1:7, 15, 22),] #this will change each time
+#split data into 10uL and 20uL sample volumes 
+###############(must be handled separately from here out)#################
+#*****split volumes into V=10uL and V=20uL due to lack of reagent 
+V10<-c("R61", "R59", "T59")
+V20<-c("D56", "N49", "D58", "R57", "R50", "N46", "N41", "N45", "T61", "M47")
+final_10<-filter(final, final$Label %in% V10)
+final_20<-filter(final, final$Label %in% V20)
+initial_10<-filter(initial, initial$Label %in% V10)
+initial_20<-filter(initial, initial$Label %in% V20)
+deltaOD_10<-final_10$meanA-initial_10$meanA
+deltaOD_20<-final_20$meanA-initial_20$meanA
+
+results_10<-mutate(initial_10, OD=deltaOD_10) #OD is the delta OD for the samples
+results_20<-mutate(initial_20, OD=deltaOD_20) #OD is the delta OD for the samples
+
+####get BSA data#####
+
+bsa<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/BSA_7_11_22_20.csv")
+names(bsa)[6]<-'A'
+wells<-c(2000, 1500, 1000, 750, 500, 250, 125, 0, "N46", "N46", "N46", "N44", "N44", "N44", "M46", "M46", "M46", "T61", "T61", "T61", "N47", "N47", "N47", "R50", "R50", "R50", "N57", "N57", "N57", "R59", "R59", "R59", "X43", "X43", "X43", "D56", "D56", "D56", "N45", "N45", "N45", "M47", "M47", "M47", "N49", "N49", "N49", "D58", "D58", "D58", "T59", "T59", "T59", "R57", "R57", "R57", "N41", "N41", "N41", "R61", "R61", "R61")
+
+bsa$Label<-rep(wells, 3)
+
+bsa_standards<-bsa[c(2:8),]
+#make plot
+
+reverse_plot<-ggplot(data=bsa_standards,(aes(x=A, y=as.numeric(Label))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ x )+theme_bw()+stat_regline_equation(label.x=0.6, label.y=500)+ylab("ug/mL")
+
+reverse_plot
+#y=-1400 +2500x
+#extract equation from plot
+A<-bsa %>% 
+  group_by(Label) %>%
+  summarise(meanA = mean(A))
+
+A_samples<-A[-c(1:8),]  #remove standards 
+samples_BSA<-filter(A_samples, A_samples$Label %in% samples) #filter out bad data
+
+protein_content<-(2500*samples_BSA$meanA)-1400 #with no correction
+
+sample_list<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/weights_redos.csv") #this changed from last CS script, make sure this is the correct weight CSV
+names(sample_list)[1]<-'Label'
+names(sample_list)[2]<-'Weights'
+joined<-inner_join(samples_BSA, sample_list, by="Label") #from CS sample list 
+P<-(protein_content)/1000/1000 #ug/ml, ug/uL, mg/uL  also equal to total protein extracted 
+
+BSA_results<-mutate(samples_BSA, protein_content, P)
+
+BSA_10<-filter(BSA_results, BSA_results$Label %in% V10)
+BSA_20<-filter(BSA_results, BSA_results$Label %in% V20)
+
+######Calculate Final Values
+#y = 41x -1.1 (CS activity)
+t<-50 #min
+m<-41
+b<--1.1
+GSH_10<-(m*deltaOD_10)+b 
+GSH_20<-(m*deltaOD_20)+b 
+V1<-10 #uL from procedure (for samples R61, R59, T59 only)
+V2<-20 #uL from procedure (for samples D56, N49, D58, R57, R50, N46, N41, N45, T61, M47)
+D<-1 #dilution coefficient, should be 1 since we did not dilute
+CS_activity_10uL<-(GSH_10/(t*V1))*D/BSA_10$P
+CS_activity_20uL<-(GSH_20/(t*V2))*D/BSA_20$P
+####################### split data by Volume Used ************************
+weights_10<-filter(BSA_results, BSA_results$Label %in% V10)
+weights_20<-filter(BSA_results, BSA_results$Label %in% V20)
+
+results_10uL<-mutate(initial_10, OD=deltaOD_10, GSH=GSH_10, weights=weights_10$weights, protein_content=BSA_10$protein_content, "Protein (mg/ul)"=BSA_10$P, "CS activity (nmol/(mg*min))"=CS_activity_10uL) #OD is the delta OD for the samples
+
+results_20uL<-mutate(initial_20, OD=deltaOD_20, GSH=GSH_20, weights=weights_20$weights, protein_content=BSA_20$protein_content, "Protein (mg/ul)"=BSA_20$P, "CS activity (nmol/(mg*min))"=CS_activity_20uL) #OD is the delta OD for the samples
+
+ploidy<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/ploidy.csv")
+names(ploidy)[1]<-'Label'
+
+treatment<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/treatments.csv")
+trt<-treatment[c(1:72),]
+names(trt)[2]<-'Label'
+
+####get final results 
+results_joined_10uL<-inner_join(results_10uL, ploidy , by="Label") #from CS sample list 
+results_joined_20uL<-inner_join(results_20uL, ploidy, by="Label")
+
+stacked<-rbind(results_joined_10uL, results_joined_20uL)
+
+results_joined<-inner_join(stacked, trt, by="Label")
+
+results_positive <- results_joined                   # Duplicate data frame
+results_positive[results_positive < 0] <- 0     # Set negative values to 0
+
+write.csv(results_joined, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_83.csv")
+
+final_plot<-ggplot(data=results_joined,(aes(x=protein_content, y=results_joined$`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))")
+final_plot
+```
+
+
