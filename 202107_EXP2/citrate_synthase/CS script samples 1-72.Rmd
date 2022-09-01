@@ -220,24 +220,33 @@ table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
 
 #table_1<-write.csv(table1, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/TukeyHSD.csv")
 ```
+
 # Morphometrics Data Analysis
 ```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
 #factors for GLM
--Shell Length
--Shell Width
--Shell Height
--Shell Volume 
--Calculated Dry Weights 
--Ploidy
--Heat (control/heat/desiccation) 
+#-Shell Length
+#-Shell Width
+#-Shell Height
+#-Shell Volume 
+#-Calculated Dry Weights 
+#-Ploidy
+#-Heat (control/heat/desiccation) 
 
-load tube number
-load morphometric data
-filter by tube number
+morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/morphometrics_CS.csv")
+
+names<-morph$tube_number
+print(names)
+
+filter_my_data<-morph %>%
+  filter(morph$ID %in% names)
+
+x<-inner_join
 keep ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight
 calculate GLM 
 Make graph 
-
 ```
 
 
