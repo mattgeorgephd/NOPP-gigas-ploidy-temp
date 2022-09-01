@@ -1,6 +1,7 @@
 ---
 title: "Citrate Synthase Enzyme Assay"
 output: pdf_document
+author: Olivia Catttau | oliviacattau@gmail.com
 ---
 # Make new CS standard curve for new data (3/22/2022)
 ```{r}
