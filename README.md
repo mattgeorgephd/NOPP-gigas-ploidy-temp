@@ -1,4 +1,4 @@
-# NOPP-cgigas-ploidy-temp
+# NOPP-gigas-ploidy-temp
 
 Data from [NOPP](https://www.nopp.org/) funded project investigating impact of marine heatwaves (temperature and/or desiccation) on diploid (2n) and triploid (3n) pacific oysters. 
 The following experiments took place at the University of Washington and the Pt. Whitney Shellfish Hatchery over the course of Winter 2020 - Fall 2021:
