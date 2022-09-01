@@ -3,7 +3,7 @@ title: "Citrate Synthase Enzyme Assay"
 output: pdf_document
 author: Olivia Catttau | oliviacattau@gmail.com
 ---
-# Make new CS standard curve for new data (3/22/2022)
+# Citrate Sythase Enzyme Data Analysis
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -219,6 +219,25 @@ table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
 #cannot reject the null for everything except T-desiccation/T-heat/T-control (p=0.003 and 0.0002)
 
 #table_1<-write.csv(table1, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/TukeyHSD.csv")
+```
+# Morphometrics Data Analysis
+```{r}
+#factors for GLM
+-Shell Length
+-Shell Width
+-Shell Height
+-Shell Volume 
+-Calculated Dry Weights 
+-Ploidy
+-Heat (control/heat/desiccation) 
+
+load tube number
+load morphometric data
+filter by tube number
+keep ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight
+calculate GLM 
+Make graph 
+
 ```
 
 
