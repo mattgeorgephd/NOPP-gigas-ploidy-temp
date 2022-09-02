@@ -2,13 +2,13 @@
 D01,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,97,61,40,,6/23/21,,123925,5.4166,yes,D54
 D02,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,80,59,36,,6/23/21,,88970,4.0184,yes,D55
 D03,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,94,65,38,,6/23/21,,121569,5.32236,yes,D56
-D04,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,84,55,34,,6/23/21,,82247,3.74948,yes,D57
+D04,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,84,55,34,,6/23/21,,82247,3.74948,yes,
 D05,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,80,57,33,,6/23/21,,78791,3.61124,yes,D58
 D06,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,81,65,34,,6/23/21,,93729,4.20876,yes,D59
 D07,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,96,60,31,,6/23/21,,93494,4.19936,yes,M41
 D08,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,100,58,33,,6/23/21,,100217,4.46828,yes,M42
 D09,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,85,51,30,,6/23/21,,68094,3.18336,yes,M43
-D10,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,91,57,37,,6/23/21,,100489,4.47916,yes,M44
+D10,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,91,57,37,,6/23/21,,100489,4.47916,yes,
 D11,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,94,55,27,,6/23/21,,73089,3.38316,yes,M45
 D12,D,no,D-no,tank_5,-10,baseline,D-baseline,baseline_D_-10,102,59,34,,6/23/21,,107135,4.745,yes,M46
 D13,D,yes,D-yes,tank_6,,control,D-control,control_D_,85,53,30,,,4.87,70764,3.29016,,M47
@@ -35,9 +35,9 @@ D33,D,yes,D-yes,tank_6,,control,D-control,control_D_,92,71,36,,,7.76,123125,5.38
 D34,D,yes,D-yes,tank_6,,control,D-control,control_D_,106,64,41,,,7.37,145636,6.28504,,N57
 D35,D,yes,D-yes,tank_6,,control,D-control,control_D_,81,49,33,,,4.46,68579,3.20276,,N58
 D36,D,yes,D-yes,tank_6,,control,D-control,control_D_,96,50,39,,,4.73,98018,4.38032,,N59
-D37,D,yes,D-yes,tank_6,,control,D-control,control_D_,84,48,28,,,3.31,59112,2.82408,,R41
+D37,D,yes,D-yes,tank_6,,control,D-control,control_D_,84,48,28,,,3.31,59112,2.82408,,
 D38,D,yes,D-yes,tank_6,,control,D-control,control_D_,90,60,35,,,3.89,98960,4.418,,R42
-D39,D,yes,D-yes,tank_6,,control,D-control,control_D_,65,55,33,,,3.28,61772,2.93048,,R43
+D39,D,yes,D-yes,tank_6,,control,D-control,control_D_,65,55,33,,,3.28,61772,2.93048,,
 D40,D,yes,D-yes,tank_6,,control,D-control,control_D_,99,64,31,,,5,102843,4.57332,,R46
 D41,D,yes,D-yes,tank_6,,control,D-control,control_D_,86,56,26,,,3.48,65563,3.08212,,R47
 D42,D,yes,D-yes,tank_6,,control,D-control,control_D_,86,48,24,,,2.81,51874,2.53456,,R48
@@ -46,7 +46,7 @@ D44,D,yes,D-yes,tank_6,,control,D-control,control_D_,95,60,40,,,5.31,119381,5.23
 D45,D,yes,D-yes,tank_6,,control,D-control,control_D_,95,71,29,,,3.44,102419,4.55636,,R52
 D46,D,yes,D-yes,tank_6,,control,D-control,control_D_,71,46,23,,,2.41,39332,2.03288,,R53
 D47,D,yes,D-yes,tank_6,,control,D-control,control_D_,75,43,27,,,2.87,45592,2.28328,,R54
-D48,D,yes,D-yes,tank_6,,control,D-control,control_D_,81,57,32,14,,,77359,3.55396,,R55
+D48,D,yes,D-yes,tank_6,,control,D-control,control_D_,81,57,32,14,,,77359,3.55396,,
 D49,D,yes,D-yes,tank_6,,control,D-control,control_D_,95,50,27,,,3.52,67152,3.14568,,R56
 D50,D,yes,D-yes,tank_6,,control,D-control,control_D_,80,49,27,,,3.25,55418,2.67632,,R57
 D51,D,yes,D-yes,tank_6,,control,D-control,control_D_,70,57,27,,,4.19,56407,2.71588,,R58
