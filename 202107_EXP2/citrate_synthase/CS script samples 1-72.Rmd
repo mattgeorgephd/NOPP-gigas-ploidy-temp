@@ -196,9 +196,21 @@ results_unique<-results_unique[-c(37),]
 u_plot<-ggplot(data=results_unique,(aes(x=Protein..mg.ul., y=CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 u_plot
 
-boxplot<-ggplot(data=results_unique, xaxt="n", aes(factor(trt), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(trt), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+ stat_compare_means(comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."))
+boxplot<-ggplot(data=results_unique, aes(x=factor(trt), y=CS.activity..nmol..mg.min..))+
+  geom_boxplot(aes(x=factor(trt), y=CS.activity..nmol..mg.min.., color=ploidy))+
+  theme_bw()+
+  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
+  xlab("Treatment Group")+ 
+  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=19)+
+  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=17)+
+  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=23)+geom_line(data=xxy, aes(x=final_list, y=final_mort/3, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,34),
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(~.*3, name="% survival")
+  ) +theme(axis.title.y.right = element_text(color="red"))
 
 boxplot
+
+comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c("D-desiccation", "T-desiccation"))
 
 boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(ploidy), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
 boxplot2 #not significant
@@ -286,10 +298,20 @@ anova(morphANOVA2)
 table3<-anova(morphANOVA2)
 
 #make graphs
-Sample Date
-Calc Dry weight
+barplot1<-ggplot(data=filtered_morph)+geom_bar(aes(x=(trt), y=sample_date))+theme_bw()+ylab("Date of Dissection")+xlab("Treatment Group")
 
+barplot1
+
+#mortality
+final_mort<-c(94.318, 90.909, 85.227, 77.272, 90.909, 63.636)
+final_list<-c("D-control", "D-heat", "D-desiccation", "T-control", "T-heat", "T-desiccation")
+xxy<-data.frame(final_mort, final_list)
+
+mortality<-ggplot(data=xxy, aes(x=final_list, y=final_mort, group=1))+geom_line()+geom_point()+theme_bw()
+
+mortality
 ```
+
 # Results
 - sample_date is significant (one extra day before sampling)
 - trt is almost significant at 0.06
