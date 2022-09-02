@@ -222,10 +222,23 @@ table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
 ```
 
 # Morphometrics Data Analysis
+### factors for GLM
+-Shell Length
+-Shell Width
+-Shell Height
+-Shell Volume 
+-Calculated Dry Weights 
+-Ploidy (triploid/diploid)
+-Heat (control/heat/desiccation) is trt
+-Heat + Ploidy is ploidy.trt
+-Sample Date (7.12.21 or 7.13.21) or dissection date
+-Date of Sample (3.22.22 or 7.11.22) or CS assay date
+
 ```{r}
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
+library(tidyr)
 #factors for GLM
 #-Shell Length
 #-Shell Width
@@ -233,19 +246,54 @@ library(ggpubr)
 #-Shell Volume 
 #-Calculated Dry Weights 
 #-Ploidy
-#-Heat (control/heat/desiccation) 
+#-Heat (control/heat/desiccation) is trt
+#-Heat + Ploidy is ploidy.trt
 
 morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/morphometrics_CS.csv")
 
-names<-morph$tube_number
+names<-results_unique$Label
 print(names)
 
 filter_my_data<-morph %>%
   filter(morph$ID %in% names)
 
-keep ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight
-calculate GLM 
-Make graph 
+filter_my_data<-filter_my_data[-c(2,7)]
+names(filter_my_data)[1]<-'Label'
+
+
+#keep: ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight, ploidy.trt
+
+filtered_morph<- as.data.frame(filter_my_data %>%
+  left_join(results_unique, by="Label")) %>% 
+  mutate(sample_date = na_if(sample_date, "missing"))
+
+
+######calculate GLM
+#Null Hypothesis: none of the grouping variables, such as shell volume, should be significantly different from each other in regards to CS response
+#Alternative Hypothesis: if significant, then the significant variable explains some variation in the CS response
+
+#direct GLM
+morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+shell_length+shell_width+shell_height+sample_date+calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+date.of.sample)
+
+anova(morphANOVA)
+
+table2<-anova(morphANOVA)
+
+#interactions
+morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*shell_length+shell_width*shell_height+sample_date*calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*date.of.sample)
+anova(morphANOVA2)
+
+table3<-anova(morphANOVA2)
+
+#make graphs
+Sample Date
+Calc Dry weight
+
 ```
+# Results
+- sample_date is significant (one extra day before sampling)
+- trt is almost significant at 0.06
+- ploidy trt is almost significant at 0.08
+- sample_date:calc_dry_weight interaction is significant at 0.02
 
 
