@@ -1,0 +1,236 @@
+---
+title: "treatment_analysis"
+author: "Matt George"
+date: '2022-07-21'
+output: html_document
+---
+
+# Seacarb
+# tutorial: https://www.youtube.com/watch?v=35_Utg8hiAM&t=86s
+# documentation: https://cran.r-project.org/web/packages/seacarb/index.htm
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages; set ggplot theme
+```{r message=TRUE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","seacarb","AquaEnv") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.2),
+                  rect              = element_rect(size=1.2),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.2),
+                  legend.key        = element_blank(), # removes background of legend bullets
+                  legend.position   = "none"
+                  ) 
+```
+LOAD dataset
+```{r}
+# Load datasets
+tank_cond  <- read.csv("treatment_conditions/tank_conditions.csv", header = TRUE, sep = ",")
+
+# set alpha for boxplots
+alpha_set = 0.8
+
+# summarize by ploidy * timepoint * treatment
+tank_cond %>% group_by(combo) %>% summarise(mean=mean(T1_temp), sd=sd(T1_temp), count=n())
+
+```
+# Calculate total alkalinity
+```{r}
+# Salinity vs TA relationship from FHL
+m = 41.765
+b = 828.01 # r^2 = 0.9124
+
+# calculate total alk
+tank_cond$T1_talk <- (m*tank_cond$T1_sal+b) * 10^-6
+tank_cond$T2_talk <- (m*tank_cond$T2_sal+b) * 10^-6
+tank_cond$T3_talk <- (m*tank_cond$T3_sal+b) * 10^-6
+tank_cond$T4_talk <- (m*tank_cond$T4_sal+b) * 10^-6
+
+# NBS not supported, convert to free scale
+tank_cond$T1_pH <- AquaEnv::convert(tank_cond$T1_pH,"pHscale", "nbs2free", S=tank_cond$T1_sal, t=tank_cond$T1_temp)
+tank_cond$T2_pH <- AquaEnv::convert(tank_cond$T2_pH,"pHscale", "nbs2free", S=tank_cond$T2_sal, t=tank_cond$T2_temp)
+tank_cond$T3_pH <- AquaEnv::convert(tank_cond$T3_pH,"pHscale", "nbs2free", S=tank_cond$T3_sal, t=tank_cond$T3_temp)
+tank_cond$T4_pH <- AquaEnv::convert(tank_cond$T4_pH,"pHscale", "nbs2free", S=tank_cond$T4_sal, t=tank_cond$T4_temp)
+
+# tank_cond <- tank_cond[458:nrow(tank_cond),]
+# tank_cond <- tank_cond[1:147,]
+# tank_cond <- tank_cond[458:nrow(tank_cond),]
+
+```
+
+# Seacarb - Tank 1
+```{r}
+# Set parameters
+flag = 8                       # flag 8 = pH & Alk (has to be in this order)
+var1 = tank_cond$T1_pH         # pH
+evar1 = 0.01                   # pH error
+var2 = tank_cond$T1_talk       # Total Alk, multiply by e-6
+evar2 = 10e-6                  # Total Alk error
+T = tank_cond$T1_temp          # temp, C
+S = tank_cond$T1_sal           # salinity
+P = 1.01325                    # units in bar
+k1k2 = "l"                     # l for lueker et al
+ks = "d"                       # "d" for using Ks from Dickson (1990)
+pHscale = "F"                  # free scale
+
+
+T1_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
+T1_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
+
+```
+
+# Seacarb - Tank 2
+```{r}
+# Set parameters
+flag = 8                       # flag 8 = pH & Alk (has to be in this order)
+var1 = tank_cond$T2_pH         # pH
+evar1 = 0.01                   # pH error
+var2 = tank_cond$T2_talk       # Total Alk, multiply by e-6
+evar2 = 10e-6                  # Total Alk error
+T = tank_cond$T2_temp          # temp, C
+S = tank_cond$T2_sal           # salinity
+P = 1.01325                    # units in bar
+k1k2 = "l"                     # l for lueker et al
+ks = "d"                       # "d" for using Ks from Dickson (1990)
+pHscale = "F"                  # free scale
+
+
+T2_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
+T2_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
+
+```
+
+# Seacarb - Tank 3
+```{r}
+# Set parameters
+flag = 8                       # flag 8 = pH & Alk (has to be in this order)
+var1 = tank_cond$T3_pH         # pH
+evar1 = 0.01                   # pH error
+var2 = tank_cond$T3_talk       # Total Alk, multiply by e-6
+evar2 = 10e-6                  # Total Alk error
+T = tank_cond$T3_temp          # temp, C
+S = tank_cond$T3_sal           # salinity
+P = 1.01325                    # units in bar
+k1k2 = "l"                     # l for lueker et al
+ks = "d"                       # "d" for using Ks from Dickson (1990)
+pHscale = "F"                  # free scale
+
+
+T3_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
+T3_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
+
+```
+
+# Seacarb - Tank 4
+```{r}
+# Set parameters
+flag = 8                       # flag 8 = pH & Alk (has to be in this order)
+var1 = tank_cond$T4_pH         # pH
+evar1 = 0.01                   # pH error
+var2 = tank_cond$T4_talk       # Total Alk, multiply by e-6
+evar2 = 10e-6                  # Total Alk error
+T = tank_cond$T4_temp          # temp, C
+S = tank_cond$T4_sal           # salinity
+P = 1.01325                    # units in bar
+k1k2 = "l"                     # l for lueker et al
+ks = "d"                       # "d" for using Ks from Dickson (1990)
+pHscale = "F"                  # free scale
+
+
+T4_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
+T4_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
+
+```
+
+# Add parameters
+```{r}
+
+# convert talk
+tank_cond$T1_talk <- tank_cond$T1_talk*10^6
+tank_cond$T2_talk <- tank_cond$T2_talk*10^6
+tank_cond$T3_talk <- tank_cond$T3_talk*10^6
+tank_cond$T4_talk <- tank_cond$T4_talk*10^6
+
+# Results
+tank_cond$T1_pCO2 <- T1_result$pCO2
+tank_cond$T2_pCO2 <- T2_result$pCO2
+tank_cond$T3_pCO2 <- T3_result$pCO2
+tank_cond$T4_pCO2 <- T4_result$pCO2
+
+tank_cond$T1_CO3 <- T1_result$CO3*10^6
+tank_cond$T2_CO3 <- T2_result$CO3*10^6
+tank_cond$T3_CO3 <- T3_result$CO3*10^6
+tank_cond$T4_CO3 <- T4_result$CO3*10^6
+
+tank_cond$T1_HCO3 <- T1_result$HCO3*10^6
+tank_cond$T2_HCO3 <- T2_result$HCO3*10^6
+tank_cond$T3_HCO3 <- T3_result$HCO3*10^6
+tank_cond$T4_HCO3 <- T4_result$HCO3*10^6
+
+tank_cond$T1_Oar <- T1_result$OmegaAragonite
+tank_cond$T2_Oar <- T2_result$OmegaAragonite
+tank_cond$T3_Oar <- T3_result$OmegaAragonite
+tank_cond$T4_Oar <- T4_result$OmegaAragonite
+
+tank_cond$T1_Oca <- T1_result$OmegaCalcite
+tank_cond$T2_Oca <- T2_result$OmegaCalcite
+tank_cond$T3_Oca <- T3_result$OmegaCalcite
+tank_cond$T4_Oca <- T4_result$OmegaCalcite
+
+# Error
+tank_cond$T1_pCO2_error <- T1_error$pCO2
+tank_cond$T2_pCO2_error <- T2_error$pCO2
+tank_cond$T3_pCO2_error <- T3_error$pCO2
+tank_cond$T4_pCO2_error <- T4_error$pCO2
+
+tank_cond$T1_CO3_error <- T1_error$CO3*10^6
+tank_cond$T2_CO3_error <- T2_error$CO3*10^6
+tank_cond$T3_CO3_error <- T3_error$CO3*10^6
+tank_cond$T4_CO3_error <- T4_error$CO3*10^6
+
+tank_cond$T1_HCO3_error <- T1_error$HCO3*10^6
+tank_cond$T2_HCO3_error <- T2_error$HCO3*10^6
+tank_cond$T3_HCO3_error <- T3_error$HCO3*10^6
+tank_cond$T4_HCO3_error <- T4_error$HCO3*10^6
+
+tank_cond$T1_Oar_error <- T1_error$OmegaAragonite
+tank_cond$T2_Oar_error <- T2_error$OmegaAragonite
+tank_cond$T3_Oar_error <- T3_error$OmegaAragonite
+tank_cond$T4_Oar_error <- T4_error$OmegaAragonite
+
+tank_cond$T1_Oca_error <- T1_error$OmegaCalcite
+tank_cond$T2_Oca_error <- T2_error$OmegaCalcite
+tank_cond$T3_Oca_error <- T3_error$OmegaCalcite
+tank_cond$T4_Oca_error <- T4_error$OmegaCalcite
+
+write.table(tank_cond, file = "treatment_conditions/tank_conditions_w_calc.csv", row.names = FALSE)
+
+```
+
+```{r}
+# summarize by hour
+tank_cond_hour_mean <- tank_cond %>% group_by(combo) %>% summarise_all(mean)
+write.table(tank_cond_hour_mean, file = "treatment_conditions/tank_conditions_hour_mean.csv", row.names = FALSE)
+
+```
