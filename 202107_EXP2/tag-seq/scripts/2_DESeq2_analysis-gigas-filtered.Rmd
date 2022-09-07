@@ -29,7 +29,7 @@ echo $PATH
 
 
 # List of packages we want to install (run every time)
-load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr")
+load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -96,9 +96,10 @@ coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
 
 # Remove bad samples
 # MuliQC report: D54, N56, X44
-# Pheatmap: R53?, old - M43, N57, R53, R62, T62, X42, X44
-coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44')),]
-cts <- as.matrix(subset(cts, select=-c(D54, N56, X44)))
+# Pheatmap outliers: R53?
+# BIPLOT outliers: R53, M43, N54, X42 
+coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44', 'R53', 'M43', 'N54', 'X42')),]
+cts <- as.matrix(subset(cts, select=-c(D54, N56, X44, R53, M43, N54, X42)))
 coldata %>% dplyr::count(group)
 all(colnames(cts) %in% rownames(coldata))
 
@@ -153,14 +154,15 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -276,7 +278,7 @@ dds <- dds[keep,]
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -388,14 +390,15 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -513,8 +516,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
@@ -706,7 +710,7 @@ write.table(gene_counts,      file = "output/control_ploidy/CONTROL_PLOIDY-gene-
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -769,7 +773,6 @@ ggexport(filename = "CONTROL-PLOIDY-BIPLOT.png",
 ggexport(filename = "CONTROL-PLOIDY-PCA.png",
          plot   = bp1,
          res    = 600,
-         device = "png",
          width  = 4000,
          height = 5000)
 
@@ -904,8 +907,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
@@ -1097,7 +1101,7 @@ write.table(gene_counts,      file = "output/heat_ploidy/HEAT_PLOIDY-gene-counts
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -1302,8 +1306,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("ploidy", "triploid", "diploid")
@@ -1495,7 +1500,7 @@ write.table(gene_counts,      file = "output/desiccation_ploidy/DESICCATION_PLOI
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -1520,7 +1525,7 @@ bp1 <- biplot(p, x = "PC1", y = "PC2",
               # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
               ellipseAlpha = 1/4,
               ellipseLineSize = 1,
-              xlim = c(-130,150), ylim = c(-40, 60),
+              xlim = c(-150,120), ylim = c(-40, 50),
               gridlines.major = FALSE,
               gridlines.minor = FALSE,
               borderWidth = 1,
@@ -1700,8 +1705,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "heat", "control") # factor, treatment group, control
@@ -1893,7 +1899,7 @@ write.table(gene_counts,      file = "output/diploid_heat/DIPLOID_HEAT-gene-coun
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -1918,7 +1924,7 @@ bp1 <- biplot(p, x = "PC1", y = "PC2",
               ellipseFillKey = c('control' = 'royalblue1', 'heat' = 'orangered1'),
               ellipseAlpha = 1/4,
               ellipseLineSize = 1,
-              xlim = c(-140,100), ylim = c(-50, 50),
+              xlim = c(-140,100), ylim = c(-70, 50),
               gridlines.major = FALSE,
               gridlines.minor = FALSE,
               borderWidth = 1,
@@ -2096,8 +2102,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "desiccation", "control") # factor, treatment group, control
@@ -2289,7 +2296,7 @@ write.table(gene_counts,      file = "output/diploid_desiccation/DIPLOID_DESICCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -2314,7 +2321,7 @@ bp1 <- biplot(p, x = "PC1", y = "PC2",
               ellipseFillKey = c('control' = 'royalblue1', 'desiccation' = 'red1'),
               ellipseAlpha = 1/4,
               ellipseLineSize = 1,
-              xlim = c(-150,180), ylim = c(-110, 60),
+              xlim = c(-150,180), ylim = c(-50, 70),
               gridlines.major = FALSE,
               gridlines.minor = FALSE,
               borderWidth = 1,
@@ -2491,8 +2498,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "heat", "control") # factor, treatment group, control
@@ -2684,7 +2692,7 @@ write.table(gene_counts,      file = "output/triploid_heat/TRIPLOID_HEAT-gene-co
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -2886,8 +2894,9 @@ dds <- DESeqDataSetFromMatrix(countData = cts_trt,
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 
-# Filtering: keep genes that have at least 10 counts across all samples - https://support.bioconductor.org/p/110307/
-dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(cts_trt)/3
+dds <- dds[keep,]
 
 # Generate Contrasts
 contrast_list    <- c("condition", "desiccation", "control") # factor, treatment group, control
@@ -3079,7 +3088,7 @@ write.table(gene_counts,      file = "output/triploid_desiccation/TRIPLOID_DESIC
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
 
 bp0
@@ -3258,6 +3267,10 @@ ggsave("output/triploid_desiccation/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
+```
+
+```{r}
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # Generate table for IPA
