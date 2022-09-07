@@ -95,12 +95,12 @@ coldata$condition <- factor(coldata$condition)
 coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
 
 # Remove bad samples
-# MuliQC report: N56, X44
-# Pheatmap: M43, N57, R53, R62, T62, X42, X44 
-# coldata <- coldata[!(row.names(coldata) %in% c('N56', 'X44', 'M43', 'N57', 'R53', 'R62', 'T62', 'X42', 'X44')),]
-# cts <- as.matrix(subset(cts, select=-c(N56, X44, M43, N57, R53, R62, T62, X42, X44)))
-# coldata %>% dplyr::count(group)
-# all(colnames(cts) %in% rownames(coldata))
+# MuliQC report: D54, N56, X44
+# Pheatmap: R53?, old - M43, N57, R53, R62, T62, X42, X44
+coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44')),]
+cts <- as.matrix(subset(cts, select=-c(D54, N56, X44)))
+coldata %>% dplyr::count(group)
+all(colnames(cts) %in% rownames(coldata))
 
 # Reorder cts/coldata by group for easy visualization in pcaexplorer
 coldata <- coldata %>% arrange(group)
@@ -159,8 +159,11 @@ dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
 # A - diploid; control
 # B - triploid; control
@@ -222,10 +225,16 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/all_treatments")
+
+ggexport(filename = "ALL-TREATMENTS-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "ALL-TREATMENTS-PCA.png",
          plot   = bp1,
          res    = 600,
-         # device = "png",
          width  = 4000,
          height = 5000)
 
@@ -266,8 +275,11 @@ dds <- dds[keep,]
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
 # A - diploid; control
 # B - triploid; control
@@ -329,6 +341,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/diploid")
+
+ggexport(filename = "ALL-TREATMENTS-DIPLOID-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "ALL-TREATMENTS-DIPLOID-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -375,8 +394,11 @@ dds <- dds[rowSums(DESeq2::counts(dds)) >= 10,]
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
 # A - diploid; control
 # B - triploid; control
@@ -438,6 +460,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/triploid")
+
+ggexport(filename = "ALL-TREATMENTS-TRIPLOID-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "ALL-TREATMENTS-TRIPLOID-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -675,9 +704,12 @@ write.table(gene_counts,      file = "output/control_ploidy/CONTROL_PLOIDY-gene-
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
- screeplot(p, axisLabSize = 18, titleLabSize = 22)
- biplot(p, showLoadings = TRUE, colby = 'group',
-     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+screeplot(p, axisLabSize = 18, titleLabSize = 22)
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
+    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
  bp1 <- biplot(p, x = "PC1", y = "PC2",
                colby = 'ploidy',
@@ -727,6 +759,13 @@ p <- pca(assay(vst(dds)), metadata = coldata_trt)
  bp3
 
 setwd("output/control_ploidy")
+
+ggexport(filename = "CONTROL-PLOIDY-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "CONTROL-PLOIDY-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -1057,8 +1096,11 @@ write.table(gene_counts,      file = "output/heat_ploidy/HEAT_PLOIDY-gene-counts
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
@@ -1114,6 +1156,13 @@ bp3
 
  
 setwd("output/heat_ploidy")
+
+ggexport(filename = "HEAT-PLOIDY-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "HEAT-PLOIDY-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -1442,12 +1491,14 @@ write.table(sig_genes_apeglm, file = "output/desiccation_ploidy/DESICCATION_PLOI
 write.table(sig_genes_ashr,   file = "output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
 write.table(gene_counts,      file = "output/desiccation_ploidy/DESICCATION_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
-
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
 
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
@@ -1501,6 +1552,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/desiccation_ploidy")
+
+ggexport(filename = "DESICCATION-PLOIDY-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "DESICCATION-PLOIDY-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -1834,9 +1892,12 @@ write.table(gene_counts,      file = "output/diploid_heat/DIPLOID_HEAT-gene-coun
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-# 
+
+bp0
+
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
               colkey = c('A' = 'royalblue1' ,
@@ -1889,6 +1950,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/diploid_heat")
+
+ggexport(filename = "DIPLOID-HEAT-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "DIPLOID-HEAT-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -2220,9 +2288,12 @@ write.table(gene_counts,      file = "output/diploid_desiccation/DIPLOID_DESICCA
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-# 
+
+bp0
+
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
               colkey = c('A' = 'royalblue1' ,
@@ -2264,8 +2335,7 @@ bp2 <- pairsplot(p,
                 title = 'Pairs plot', plotaxes = FALSE,
                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
 bp2
-# 
-# 
+
 # Plot pheatmap
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
@@ -2276,6 +2346,12 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/diploid_desiccation")
+ggexport(filename = "DIPLOID-DESICCATION-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "DIPLOID-DESICCATION-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -2607,8 +2683,11 @@ write.table(gene_counts,      file = "output/triploid_heat/TRIPLOID_HEAT-gene-co
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
  
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
@@ -2662,6 +2741,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 
 setwd("output/triploid_heat")
+
+ggexport(filename = "TRIPLOID-HEAT-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "TRIPLOID-HEAT-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -2992,9 +3078,12 @@ write.table(gene_counts,      file = "output/triploid_desiccation/TRIPLOID_DESIC
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
-biplot(p, showLoadings = TRUE, colby = 'group',
+
+bp0 <- biplot(p, showLoadings = TRUE, colby = 'group',
     labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
-# 
+
+bp0
+
 bp1 <- biplot(p, x = "PC1", y = "PC2",
               colby = 'group',
               colkey = c('A' = 'royalblue1' ,
@@ -3048,6 +3137,13 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 bp3
 # 
 setwd("output/triploid_desiccation")
+
+ggexport(filename = "TRIPLOID-DESICCATION-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
 ggexport(filename = "TRIPLOID-DESICCATION-PCA.png",
          plot   = bp1,
          res    = 600,
@@ -3165,7 +3261,7 @@ ggsave("output/triploid_desiccation/Volcano_sig_genes_apeglm.png",
 ```
 
 # Generate table for IPA
-```{R}
+```{R eval=FALSE, include=FALSE}
 rm(list=ls())
 
 control_ploidy     <- read.table("output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
