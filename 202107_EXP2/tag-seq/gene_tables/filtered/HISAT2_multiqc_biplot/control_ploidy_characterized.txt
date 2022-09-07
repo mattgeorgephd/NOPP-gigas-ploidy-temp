@@ -1,0 +1,45 @@
+gene,log2FoldChange,description
+LOC105321903,4.19553961771026,failed axon connections homolog
+LOC105318398,3.60498014229337,latrophilin Cirl-like
+LOC105318705,3.58752097901972,complement C1q-like protein 4 isoform X2
+LOC117691676,3.15393166535668,C-type lectin mannose-binding isoform-like isoform X1
+LOC105345717,2.72922858401601,neurogenic locus notch homolog protein 1
+LOC105344432,2.66685598833602,M-phase inducer phosphatase 1
+LOC105317176,2.65141324743323,spindle and kinetochore-associated protein 1
+LOC117687700,2.3857944831701,transient receptor potential cation channel subfamily M member-like 2 isoform X2
+LOC105321927,2.34575233458563,diamine acetyltransferase 2
+LOC117692375,2.34341051611337,G protein-coupled receptor 161-like
+LOC117684731,2.1464345111527,cell death abnormality protein 1-like
+LOC117680621,2.11854391387656,heavy metal-binding protein HIP-like
+LOC105336626,2.11497229794299,complement C1q-like protein 4
+LOC105330135,2.11279837550103,potassium voltage-gated channel protein Shaw
+LOC105335981,1.9893128871688,proton myo-inositol cotransporter
+LOC105344536,1.94203737237133,complement C1q-like protein 4 isoform X1
+LOC105321620,1.89923742052056,heavy metal-binding protein HIP
+LOC109620576,1.88705492408305,hemagglutinin/amebocyte aggregation factor isoform X1
+LOC105340623,1.8506535649143,solute carrier organic anion transporter family member 4A1 isoform X1
+LOC105336491,1.82297997309372,multiple epidermal growth factor-like domains protein 6 isoform X3
+LOC117681310,1.81035977017891,perlucin-like protein
+LOC105349079,1.80490983269344,prostate-associated microseminoprotein-like
+LOC105337695,1.78215944689115,cyanophycinase
+LOC117688697,1.7762847766664,receptor-type tyrosine-protein phosphatase C-like
+LOC105332012,1.77107114017598,multiple epidermal growth factor-like domains protein 11
+LOC105346456,1.76883038727265,trace amine-associated receptor 4
+LOC105332051,1.71238150401827,macrophage mannose receptor 1-like
+LOC105347517,1.70807100434402,interferon-induced protein 44-like
+LOC105336969,1.70297327958389,superoxide dismutase [Cu-Zn]
+LOC109619522,1.66654254221666,sarcoplasmic calcium-binding protein-like
+LOC105322860,1.61629867426826,protein l(2)37Cc
+LOC105332245,1.59555915079525,laccase-24
+LOC117683634,1.533053568082,sarcoplasmic calcium-binding protein-like
+LOC117682926,1.51654521450328,heavy metal-binding protein HIP-like
+LOC105336906,-1.6404226657658,collagen alpha-1(X) chain-like
+LOC105338579,-1.65582861125112,collagen alpha-1(XII) chain
+LOC117690222,-1.70305223779457,short-chain collagen C4-like
+LOC105327043,-1.7801765540815,tenascin-like isoform X2
+LOC105334570,-1.83466925912946,NT-3 growth factor receptor
+LOC105343725,-1.91520893941014,galactose-specific lectin nattectin
+LOC105317803,-2.0004741178777,mitochondrial uncoupling protein 2
+LOC117686792,-2.27129208695068,multiple epidermal growth factor-like domains protein 11
+LOC117681164,-2.96211467091589,complement C1q-like protein 4 isoform X1
+LOC105327005,-4.40290245158019,transient receptor potential cation channel subfamily M member 2-like

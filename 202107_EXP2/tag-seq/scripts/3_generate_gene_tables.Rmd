@@ -18,7 +18,7 @@ echo $PATH
 ```{r load_libraries, inlcude = TRUE}
 
 # List of packages we want to install (run every time)
-load.lib<-c("ggplot2","RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","kmisc")
+load.lib<-c("ggplot2","RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","beepr")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -35,34 +35,46 @@ sapply(load.lib,require,character=TRUE)
 ```{r load_data, inlcude = TRUE}
 
 # Load LOCID to gene description tables, compare, find gigas and mito genes
-control_ploidy <- read.delim("../output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+control_ploidy <- read.delim("output/filtered/HISAT2_multiqc_biplot/control_ploidy/CONTROL_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 control_ploidy <- control_ploidy %>% select(gene, log2FoldChange, description)
 
-heat_ploidy <- read.delim("../output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+heat_ploidy <- read.delim("output/filtered/HISAT2_multiqc_biplot/heat_ploidy/HEAT_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 heat_ploidy <- heat_ploidy %>% select(gene, log2FoldChange, description)
 
-desiccation_ploidy <- read.delim("../output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+desiccation_ploidy <- read.delim("output/filtered/HISAT2_multiqc_biplot/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 desiccation_ploidy <- desiccation_ploidy %>% select(gene, log2FoldChange, description)
 
-diploid_heat <- read.delim("../output/diploid_heat/DIPLOID_HEAT-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+diploid_heat <- read.delim("output/filtered/HISAT2_multiqc_biplot/diploid_heat/DIPLOID_HEAT-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 diploid_heat <- diploid_heat %>% select(gene, log2FoldChange, description)
 
-diploid_desiccation <- read.delim("../output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+diploid_desiccation <- read.delim("output/filtered/HISAT2_multiqc_biplot/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 diploid_desiccation <- diploid_desiccation %>% select(gene, log2FoldChange, description)
 
-triploid_heat <- read.delim("../output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+triploid_heat <- read.delim("output/filtered/HISAT2_multiqc_biplot/triploid_heat/TRIPLOID_HEAT-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 triploid_heat <- triploid_heat %>% select(gene, log2FoldChange, description)
 
-triploid_desiccation <- read.delim("../output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
+triploid_desiccation <- read.delim("output/filtered/HISAT2_multiqc_biplot/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-apeglm.csv", sep = " ", header = TRUE)
 triploid_desiccation <- triploid_desiccation %>% select(gene, log2FoldChange, description)
 
 ```
+
+# remove commas in gene "description" to prevent errors when saving with write.table w/ "," seperators
+```{r}
+control_ploidy$description       <- gsub(",", ";", control_ploidy$description)
+heat_ploidy$description          <- gsub(",", ";", heat_ploidy$description)
+desiccation_ploidy$description   <- gsub(",", ";", desiccation_ploidy$description)
+diploid_heat$description         <- gsub(",", ";", diploid_heat$description)
+diploid_desiccation$description  <- gsub(",", ";", diploid_desiccation$description)
+triploid_heat$description        <- gsub(",", ";", triploid_heat$description)
+triploid_desiccation$description <- gsub(",", ";", triploid_desiccation$description)
+
+```
+
 
 # Separate tables by unknown LOCID
 ```{r}
 
 grx <- glob2rx("unchar*")
-
 
 control_ploidy_NA              <- with(control_ploidy,       subset(control_ploidy,       subset = grepl(glob2rx("LOCNA*"), gene)))
 control_ploidy                 <- anti_join(control_ploidy, control_ploidy_NA, by = 'gene')
@@ -131,50 +143,37 @@ row.names(uncharacterized) <- c('control_ploidy',
                                 'triploid_heat', 
                                 'triploid_desiccation')
 
-write.table(uncharacterized, file = "../gene_tables/uncharacterized_stats.txt", sep = ",", quote = FALSE, row.names = TRUE)
+write.table(uncharacterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/uncharacterized_stats.txt", sep = ",", quote = FALSE, row.names = TRUE)
 
 ```
 
 ```{R}
 
-write.table(control_ploidy_characterized,       file = "../gene_tables/control_ploidy_characterized.txt",       sep = ",", quote = FALSE, row.names = F)
-write.table(heat_ploidy_characterized,          file = "../gene_tables/heat_ploidy_characterized.txt",          sep = ",", quote = FALSE, row.names = F)
-write.table(desiccation_ploidy_characterized,   file = "../gene_tables/desiccation_ploidy_characterized.txt",   sep = ",", quote = FALSE, row.names = F)
-write.table(diploid_heat_characterized,         file = "../gene_tables/diploid_heat_characterized.txt",         sep = ",", quote = FALSE, row.names = F)
-write.table(diploid_desiccation_characterized,  file = "../gene_tables/diploid_desiccation_characterized.txt",  sep = ",", quote = FALSE, row.names = F)
-write.table(triploid_heat_characterized,        file = "../gene_tables/triploid_heat_characterized.txt",        sep = ",", quote = FALSE, row.names = F)
-write.table(triploid_desiccation_characterized, file = "../gene_tables/triploid_desiccation_characterized.txt", sep = ",", quote = FALSE, row.names = F)
+write.table(control_ploidy_characterized,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_characterized.txt",       sep = ",", quote = FALSE, row.names = F)
+write.table(heat_ploidy_characterized,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_characterized.txt",          sep = ",", quote = FALSE, row.names = F)
+write.table(desiccation_ploidy_characterized,   file = "gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_characterized.txt",   sep = ",", quote = FALSE, row.names = F)
+write.table(diploid_heat_characterized,         file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_heat_characterized.txt",         sep = ",", quote = FALSE, row.names = F)
+write.table(diploid_desiccation_characterized,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_characterized.txt",  sep = ",", quote = FALSE, row.names = F)
+write.table(triploid_heat_characterized,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_characterized.txt",        sep = ",", quote = FALSE, row.names = F)
+write.table(triploid_desiccation_characterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_characterized.txt", sep = ",", quote = FALSE, row.names = F)
 
-write.table(control_ploidy_uncharacterized,       file = "../gene_tables/control_ploidy_uncharacterized.txt",       sep = ",", quote = FALSE, row.names = F)
-write.table(heat_ploidy_uncharacterized,          file = "../gene_tables/heat_ploidy_uncharacterized.txt",          sep = ",", quote = FALSE, row.names = F)
-write.table(desiccation_ploidy_uncharacterized,   file = "../gene_tables/desiccation_ploidy_uncharacterized.txt",   sep = ",", quote = FALSE, row.names = F)
-write.table(diploid_heat_uncharacterized,         file = "../gene_tables/diploid_heat_uncharacterized.txt",         sep = ",", quote = FALSE, row.names = F)
-write.table(diploid_desiccation_uncharacterized,  file = "../gene_tables/diploid_desiccation_uncharacterized.txt",  sep = ",", quote = FALSE, row.names = F)
-write.table(triploid_heat_uncharacterized,        file = "../gene_tables/triploid_heat_uncharacterized.txt",        sep = ",", quote = FALSE, row.names = F)
-write.table(triploid_desiccation_uncharacterized, file = "../gene_tables/triploid_desiccation_uncharacterized.txt", sep = ",", quote = FALSE, row.names = F)
+write.table(control_ploidy_uncharacterized,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_uncharacterized.txt",       sep = ",", quote = FALSE, row.names = F)
+write.table(heat_ploidy_uncharacterized,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_uncharacterized.txt",          sep = ",", quote = FALSE, row.names = F)
+write.table(desiccation_ploidy_uncharacterized,   file = "gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_uncharacterized.txt",   sep = ",", quote = FALSE, row.names = F)
+write.table(diploid_heat_uncharacterized,         file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_heat_uncharacterized.txt",         sep = ",", quote = FALSE, row.names = F)
+write.table(diploid_desiccation_uncharacterized,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_uncharacterized.txt",  sep = ",", quote = FALSE, row.names = F)
+write.table(triploid_heat_uncharacterized,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_uncharacterized.txt",        sep = ",", quote = FALSE, row.names = F)
+write.table(triploid_desiccation_uncharacterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_uncharacterized.txt", sep = ",", quote = FALSE, row.names = F)
 
-write.table(control_ploidy$gene,       file = "../gene_tables/control_ploidy_all_LOCID.txt",      sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(heat_ploidy$gene,          file = "../gene_tables/heat_ploidy_all_LOCID.txt",         sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(desiccation_ploidy$gene,   file = "../gene_tables/desiccation_ploidy_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(diploid_heat$gene,         file = "../gene_tables/diploid_heat_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(diploid_desiccation$gene,  file = "../gene_tables/diploid_desiccation_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(triploid_heat$gene,        file = "../gene_tables/triploid_heat_all_LOCID.txt",        sep = ",", quote = FALSE, row.names = F, col.names = F)
-write.table(triploid_desiccation$gene, file = "../gene_tables/triploid_desiccation_all_LOCID.txt", sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(control_ploidy$gene,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_all_LOCID.txt",      sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(heat_ploidy$gene,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_all_LOCID.txt",         sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(desiccation_ploidy$gene,   file = "gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(diploid_heat$gene,         file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_heat_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(diploid_desiccation$gene,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_all_LOCID.txt",  sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(triploid_heat$gene,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_all_LOCID.txt",        sep = ",", quote = FALSE, row.names = F, col.names = F)
+write.table(triploid_desiccation$gene, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_all_LOCID.txt", sep = ",", quote = FALSE, row.names = F, col.names = F)
 
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
-```{r}
-Volcano plots 
-ggplot(genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-  geom_point(aes(color = Significant)) +
-  scale_color_manual(values = c("red", "grey")) +
-  theme_bw(base_size = 12) + theme(legend.position = "bottom") +
-  geom_text_repel(
-    data = subset(genes, padj < 0.05),
-    aes(label = Gene),
-    size = 5,
-    box.padding = unit(0.35, "lines"),
-    point.padding = unit(0.3, "lines")
 
-```

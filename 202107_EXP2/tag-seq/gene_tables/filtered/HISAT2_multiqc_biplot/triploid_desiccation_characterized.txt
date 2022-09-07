@@ -1,0 +1,41 @@
+gene,log2FoldChange,description
+LOC105334510,8.58107091241137,heat shock protein 68
+LOC117680673,8.30477968198114,heat shock protein 68-like
+LOC105348304,8.30113433754818,heat shock protein 68
+LOC105348305,8.14557063183594,heat shock protein 68-like
+LOC105322484,5.76499753110143,heat shock protein 68-like
+LOC105346578,4.80862455127903,major egg antigen
+LOC105334234,4.05479495376993,heat shock protein 70 B2
+LOC105343216,3.48583841147549,heat shock protein 27
+LOC105334580,3.47873712164228,BAG family molecular chaperone regulator 3
+LOC105327005,3.24310339618602,transient receptor potential cation channel subfamily M member 2-like
+LOC117688712,3.11078672047381,multiple epidermal growth factor-like domains protein 6
+LOC117680358,2.8548021090428,baculoviral IAP repeat-containing protein 2-like
+LOC105319646,2.60460356063011,C-type lectin domain family 4 member M isoform X7
+LOC105343637,2.52327960416744,complement C1q tumor necrosis factor-related protein 2
+LOC105348306,2.22999651940129,transmembrane protein 234 homolog
+LOC117686792,2.21834769418419,multiple epidermal growth factor-like domains protein 11
+LOC117680708,2.21546628845425,serine/arginine-rich splicing factor 1-like
+LOC105318237,2.1441370280064,trichohyalin isoform X1
+LOC105343643,2.13755559727215,complement C1q tumor necrosis factor-related protein 7
+LOC105324591,1.88929309845429,multiple epidermal growth factor-like domains protein 11 isoform X1
+LOC105329206,1.7748523669375,alpha-1;2-mannosyltransferase ALG9
+LOC105337952,1.70759149216604,centromere protein T isoform X1
+LOC105337372,1.65868761381627,C1q-related factor
+LOC105326635,1.6166109078348,basic salivary proline-rich protein 4
+LOC105330901,-1.50290324185489,ethanolaminephosphotransferase 1-like
+LOC105333638,-1.58304807101316,C-type lectin mannose-binding isoform-like isoform X2
+LOC105335714,-1.60829804347322,lectin BRA-3 isoform X4
+LOC117689844,-1.6145076538193,microfibril-associated glycoprotein 4-like
+LOC117690533,-1.84226068633251,serine/threonine-protein kinase TAO3-like
+LOC117682909,-1.86457434503518,heavy metal-binding protein HIP-like isoform X1
+LOC105342748,-1.88627489261796,microfibril-associated glycoprotein 4
+LOC117686727,-1.89351342538258,short-chain collagen C4-like
+LOC105326729,-1.89663292332778,complement C1q-like protein 3
+LOC105347308,-2.26974154257387,myeloid differentiation primary response protein MyD88
+LOC117691193,-2.41449232759114,elongation factor 2-like
+LOC105320276,-2.46793792800835,translation initiation factor IF-2-like isoform X7
+LOC105321620,-2.58204322477383,heavy metal-binding protein HIP
+LOC109619585,-3.32875729452516,sterile alpha motif domain-containing protein 9-like
+LOC105318074,-3.66451957693686,perlucin-like protein
+LOC105330078,-3.96384767254487,fucolectin

@@ -1,0 +1,46 @@
+gene,log2FoldChange,description
+LOC105348304,8.93804649400194,heat shock protein 68
+LOC105334510,8.78051438972697,heat shock protein 68
+LOC105348305,8.40874623785678,heat shock protein 68-like
+LOC117680673,8.33515655354566,heat shock protein 68-like
+LOC105346578,6.0345836090625,major egg antigen
+LOC105334234,5.86412169020115,heat shock protein 70 B2
+LOC105322484,5.76994428011915,heat shock protein 68-like
+LOC105343216,5.3647597454131,heat shock protein 27
+LOC105334580,5.13582808210658,BAG family molecular chaperone regulator 3
+LOC105329206,3.2058912706948,alpha-1;2-mannosyltransferase ALG9
+LOC117680358,2.81654686978815,baculoviral IAP repeat-containing protein 2-like
+LOC117680708,2.32753711680341,serine/arginine-rich splicing factor 1-like
+LOC105330701,2.08172659445338,cathepsin L1
+LOC105328062,2.0268218181628,baculoviral IAP repeat-containing protein 2
+LOC117691504,1.96784337478718,synapse differentiation-inducing gene protein 1-like
+LOC105317855,1.92705088748081,intracellular protein transport protein USO1 isoform X1
+LOC105346089,1.85064415266496,mammalian ependymin-related protein 1-like
+LOC105322528,1.83335381206373,adenosine 3'-phospho 5'-phosphosulfate transporter 1 isoform X1
+LOC105322366,1.81469188357936,laccase-2
+LOC105330649,1.75696762217801,galaxin-like
+LOC105343643,1.70047241559424,complement C1q tumor necrosis factor-related protein 7
+LOC105334730,1.64646520876831,calmodulin-beta
+LOC105343849,1.56826747083433,carboxylesterase 1C isoform X1
+LOC105325416,1.54013428408607,inactive rhomboid protein 2 isoform X2
+LOC105328795,1.53949024447855,heat shock protein Hsp-16.2
+LOC105319596,1.5358920944246,phosphatidylinositol N-acetylglucosaminyltransferase subunit A
+LOC117691751,-1.54092219735319,complement C1q-like protein 2
+LOC105347119,-1.54732030564553,complement C1q tumor necrosis factor-related protein 3
+LOC105338579,-1.6200273560117,collagen alpha-1(XII) chain
+LOC105326341,-1.62272348681917,AAC-rich mRNA clone AAC4 protein-like
+LOC105329085,-1.69288965606272,high mobility group-T protein
+LOC105347762,-1.71976527309149,kelch-like protein 10
+LOC105344085,-1.77323461312201,nucleolin isoform X1
+LOC105331456,-1.775637897298,organic cation transporter protein
+LOC105329127,-1.8486959293325,complement C1q tumor necrosis factor-related protein 3-like
+LOC117690533,-1.8698845703315,serine/threonine-protein kinase TAO3-like
+LOC105320228,-1.96014234350893,prostaglandin E2 receptor EP4 subtype
+LOC105345603,-2.14810450783473,peptidyl-prolyl cis-trans isomerase B isoform X2
+LOC105346570,-2.17713150903108,O-acyltransferase like protein
+LOC117682508,-2.71064254729255,fucolectin-like
+LOC105330078,-2.80737460145684,fucolectin
+LOC105318074,-2.90719003089002,perlucin-like protein
+LOC117682976,-3.04408328260876,MAM and LDL-receptor class A domain-containing protein 1-like
+LOC105333234,-3.22848052330409,fibroleukin isoform X1
+LOC105348557,-3.35689600473198,fucolectin

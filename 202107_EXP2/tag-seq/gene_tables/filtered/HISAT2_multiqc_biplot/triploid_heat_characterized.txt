@@ -1,0 +1,60 @@
+gene,log2FoldChange,description
+LOC105327005,4.14031573468535,transient receptor potential cation channel subfamily M member 2-like
+LOC105319646,3.44250769911967,C-type lectin domain family 4 member M isoform X7
+LOC105318831,2.43910714577577,epithelial membrane protein 3
+LOC117680708,2.42523796438084,serine/arginine-rich splicing factor 1-like
+LOC105318237,2.37430902127523,trichohyalin isoform X1
+LOC105326635,2.16259151628369,basic salivary proline-rich protein 4
+LOC105324591,2.09756972514357,multiple epidermal growth factor-like domains protein 11 isoform X1
+LOC105340370,2.02210230707222,78 kDa glucose-regulated protein precursor
+LOC105345989,2.01765889251163,heat shock protein 83-like
+LOC117680291,1.93542869870222,heat shock protein 83-like
+LOC105341388,1.91104926795498,protein disulfide-isomerase A6 isoform X1
+LOC105319208,1.89188629016582,spliceosome RNA helicase DDX39B
+LOC105325010,1.83186113779803,hypoxia up-regulated protein 1 isoform X2
+LOC105338176,1.8296889973704,transmembrane protease serine 2
+LOC117684211,1.72075972844044,hemicentin-2-like
+LOC105338780,1.61169791492122,E3 ubiquitin-protein ligase RNF14 isoform X1
+LOC105321218,1.57312647845239,F-box/LRR-repeat protein 6-like
+LOC105320749,1.54748709163707,2';5'-phosphodiesterase 12 isoform X1
+LOC117691511,-1.51890999779258,ryncolin-4-like
+LOC105330939,-1.55412050108228,microfibril-associated glycoprotein 4-like
+LOC117687932,-1.64652867986375,multiple epidermal growth factor-like domains protein 10
+LOC117681168,-1.66161274554517,complement C1q-like protein 3 isoform X2
+LOC105319259,-1.66224781212095,protein app1 isoform X2
+LOC105346538,-1.66325856562773,clumping factor A
+LOC117681310,-1.68383940199687,perlucin-like protein
+LOC105344085,-1.68954751607313,nucleolin isoform X1
+LOC117688218,-1.69171741673404,transmembrane GTPase Marf-like
+LOC105329128,-1.71863349797997,complement C1q tumor necrosis factor-related protein 3
+LOC105326729,-1.72451710443615,complement C1q-like protein 3
+LOC105340239,-1.73034188837226,A disintegrin and metalloproteinase with thrombospondin motifs gon-1
+LOC105338367,-1.74473826354845,interferon-induced protein 44-like
+LOC105333234,-1.7611416233221,fibroleukin isoform X1
+LOC105317162,-1.76669388124617,adenosylhomocysteinase A
+LOC105345449,-1.771273105067,fucolectin-7-like
+LOC105343727,-1.77979330095173,collagen alpha-3(VI) chain-like
+LOC105335714,-1.79074109582329,lectin BRA-3 isoform X4
+LOC117681347,-1.8720244166132,phosphonoacetaldehyde hydrolase-like
+LOC117686727,-1.87741165760545,short-chain collagen C4-like
+LOC105338755,-1.89647646171699,short-chain collagen C4-like
+LOC117682909,-1.90385959552791,heavy metal-binding protein HIP-like isoform X1
+LOC105326443,-1.93336676457878,perlucin-like protein
+LOC105331115,-1.95044501702542,pyrroline-5-carboxylate reductase 3
+LOC105330265,-1.99040147472594,fibroleukin isoform X1
+LOC117683620,-1.99546560781688,short-chain collagen C4-like
+LOC105337779,-2.02923450632334,microfibril-associated glycoprotein 4
+LOC105342748,-2.04182917309485,microfibril-associated glycoprotein 4
+LOC105329085,-2.07613579020843,high mobility group-T protein
+LOC105339575,-2.10212537453152,betaine--homocysteine S-methyltransferase 1
+LOC105336630,-2.12095096956143,complement C1q-like protein 4 isoform X1
+LOC117681472,-2.15303760152093,sacsin-like
+LOC105320276,-2.38341196991192,translation initiation factor IF-2-like isoform X7
+LOC117689844,-2.38380720818167,microfibril-associated glycoprotein 4-like
+LOC105329127,-2.39253993698392,complement C1q tumor necrosis factor-related protein 3-like
+LOC117686834,-2.42055716626655,perlucin-like protein isoform X1
+LOC105321620,-2.43627862267015,heavy metal-binding protein HIP
+LOC105333638,-2.76985279586426,C-type lectin mannose-binding isoform-like isoform X2
+LOC105327216,-2.86496100104075,complement C1q subcomponent subunit B-like
+LOC105320320,-3.50200315032716,complement C1q-like protein 4 isoform X2
+LOC105318074,-3.91698873032575,perlucin-like protein
