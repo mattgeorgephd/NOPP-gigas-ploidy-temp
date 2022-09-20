@@ -1,0 +1,76 @@
+GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0097264,self proteolysis,9,3,0.02,0.00000043
+GO:0010941,regulation of cell death,2622,17,4.62,0.00000133
+GO:0042981,regulation of apoptotic process,2351,16,4.14,0.00000160
+GO:0043067,regulation of programmed cell death,2386,16,4.2,0.00000195
+GO:1903394,protein localization to kinetochore invo...,2,2,0,0.00000304
+GO:0008219,cell death,3605,18,6.35,0.00002383
+GO:0012501,programmed cell death,3364,17,5.92,0.00003768
+GO:0006915,apoptotic process,3127,16,5.5,0.00005961
+GO:0006897,endocytosis,1272,10,2.24,0.00006419
+GO:0071360,cellular response to exogenous dsRNA,51,3,0.09,0.00010
+GO:0071359,cellular response to dsRNA,64,3,0.11,0.00020
+GO:0035726,common myeloid progenitor cell prolifera...,13,2,0.02,0.00023
+GO:0070162,adiponectin secretion,14,2,0.02,0.00027
+GO:0070163,regulation of adiponectin secretion,14,2,0.02,0.00027
+GO:0070165,positive regulation of adiponectin secre...,14,2,0.02,0.00027
+GO:0010976,positive regulation of neuron projection...,351,5,0.62,0.00038
+GO:0034501,protein localization to kinetochore,17,2,0.03,0.00041
+GO:0071459,protein localization to chromosome, cent...,17,2,0.03,0.00041
+GO:1903083,protein localization to condensed chromo...,17,2,0.03,0.00041
+GO:0043330,response to exogenous dsRNA,84,3,0.15,0.00044
+GO:0035356,cellular triglyceride homeostasis,18,2,0.03,0.00046
+GO:0071638,negative regulation of monocyte chemotac...,19,2,0.03,0.00051
+GO:0060353,regulation of cell adhesion molecule pro...,20,2,0.04,0.00057
+GO:0060355,positive regulation of cell adhesion mol...,20,2,0.04,0.00057
+GO:0090051,negative regulation of cell migration in...,20,2,0.04,0.00057
+GO:0002224,toll-like receptor signaling pathway,221,4,0.39,0.00062
+GO:0034138,toll-like receptor 3 signaling pathway,21,2,0.04,0.00062
+GO:0043331,response to dsRNA,97,3,0.17,0.00067
+GO:0030948,negative regulation of vascular endothel...,22,2,0.04,0.00069
+GO:0043537,negative regulation of blood vessel endo...,23,2,0.04,0.00075
+GO:0090049,regulation of cell migration involved in...,23,2,0.04,0.00075
+GO:0060352,cell adhesion molecule production,25,2,0.04,0.00089
+GO:0045721,negative regulation of gluconeogenesis,27,2,0.05,0.00104
+GO:0071605,monocyte chemotactic protein-1 productio...,27,2,0.05,0.00104
+GO:0071637,regulation of monocyte chemotactic prote...,27,2,0.05,0.00104
+GO:0002042,cell migration involved in sprouting ang...,28,2,0.05,0.00112
+GO:0051382,kinetochore assembly,28,2,0.05,0.00112
+GO:0051383,kinetochore organization,28,2,0.05,0.00112
+GO:0032682,negative regulation of chemokine product...,29,2,0.05,0.00120
+GO:0090365,regulation of mRNA modification,1,1,0,0.00176
+GO:0090367,negative regulation of mRNA modification,1,1,0,0.00176
+GO:2001144,regulation of phosphatidylinositol-3,4,5...,1,1,0,0.00176
+GO:2001145,negative regulation of phosphatidylinosi...,1,1,0,0.00176
+GO:0006111,regulation of gluconeogenesis,37,2,0.07,0.00195
+GO:0055090,acylglycerol homeostasis,39,2,0.07,0.00216
+GO:0070328,triglyceride homeostasis,39,2,0.07,0.00216
+GO:0034058,endosomal vesicle fusion,40,2,0.07,0.00227
+GO:0046887,positive regulation of hormone secretion,150,3,0.26,0.00236
+GO:0016322,neuron remodeling,151,3,0.27,0.00241
+GO:0017145,stem cell division,42,2,0.07,0.00250
+GO:0002221,pattern recognition receptor signaling p...,324,4,0.57,0.00254
+GO:0034508,centromere complex assembly,45,2,0.08,0.00287
+GO:0030947,regulation of vascular endothelial growt...,48,2,0.08,0.00326
+GO:0060986,endocrine hormone secretion,49,2,0.09,0.00339
+GO:0043535,regulation of blood vessel endothelial c...,50,2,0.09,0.00353
+GO:0042551,neuron maturation,177,3,0.31,0.00377
+GO:0043534,blood vessel endothelial cell migration,55,2,0.1,0.00425
+GO:0010677,negative regulation of cellular carbohyd...,57,2,0.1,0.00456
+GO:1903312,negative regulation of mRNA metabolic pr...,59,2,0.1,0.00488
+GO:0050714,positive regulation of protein secretion,197,3,0.35,0.00508
+GO:0006094,gluconeogenesis,61,2,0.11,0.00520
+GO:0045912,negative regulation of carbohydrate meta...,64,2,0.11,0.00571
+GO:0032642,regulation of chemokine production,66,2,0.12,0.00607
+GO:0032602,chemokine production,67,2,0.12,0.00625
+GO:0048536,spleen development,69,2,0.12,0.00661
+GO:0019319,hexose biosynthetic process,70,2,0.12,0.00680
+GO:0001817,regulation of cytokine production,443,4,0.78,0.00766
+GO:0050886,endocrine process,75,2,0.13,0.00777
+GO:0009408,response to heat,231,3,0.41,0.00787
+GO:0010596,negative regulation of endothelial cell ...,76,2,0.13,0.00797
+GO:0031346,positive regulation of cell projection o...,710,5,1.25,0.00810
+GO:0051222,positive regulation of protein transport,452,4,0.8,0.00821
+GO:1904951,positive regulation of establishment of ...,457,4,0.8,0.00852
+GO:0070935,3'-UTR-mediated mRNA stabilization,5,1,0.01,0.00877
+GO:0046364,monosaccharide biosynthetic process,85,2,0.15,0.00988

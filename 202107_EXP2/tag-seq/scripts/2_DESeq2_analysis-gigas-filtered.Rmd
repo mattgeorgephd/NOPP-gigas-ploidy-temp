@@ -15,6 +15,9 @@ echo $PATH
 ### Load libraries
 ```{r load_libraries, inlcude = TRUE}
 
+## clear
+rm(list=ls())
+
 ## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
 # install.packages("BiocManager")
 # BiocManager::install("DESeq2")
@@ -29,7 +32,7 @@ echo $PATH
 
 
 # List of packages we want to install (run every time)
-load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr")
+load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr","genefilter","ComplexHeatmap","circlize")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -140,6 +143,7 @@ mkdir output/diploid
 mkdir output/triploid
 
 ```
+
 # ALL treatments, both ploidy
 ```{r ALL:TRT:ploidy, warning=FALSE, include=TRUE}
 
@@ -253,7 +257,7 @@ ggexport(filename = "ALL-TREATMENTS-pheatmap.png",
          height = 6000)
 
 # pcaExplorer(dds = dds_ploidy)
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # ALL treatments, diploids only
@@ -373,8 +377,9 @@ setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
-```
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 
+```
 
 # ALL treatments, triploids only
 ```{r ALL:TRT:diploids, warning=FALSE, include=TRUE}
@@ -490,10 +495,8 @@ ggexport(filename = "ALL-TREATMENTS-TRIPLOID-pheatmap.png",
          height = 6000)
 
 # pcaExplorer(dds = dds_ploidy)
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
-
-
 
 # CONTROLS only - effect of ploidy
 ```{r CONTROL:PLOIDY, warning=FALSE, include=TRUE}
@@ -559,7 +562,7 @@ padj.cutoff <- 0.05 # pvalues not produced with apeglm shrinkage estimator
 svalue.cutoff <- 0.005 # 0.005 corresponds to pvalue of 0.05
 lfc.cutoff <- 1.5 # fold-change cutoff, 1.5 or 2-fold is recommended
 
-# Rearrange tables by gene
+# Rearrange results tables by gene
 res_table <- res_table %>%
   data.frame() %>%
   rownames_to_column(var="gene") %>%
@@ -582,10 +585,10 @@ res_table_ashr <- res_table_ashr %>%
 
 # How many genes are differentially expressed compared to Control?
 colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature")
-all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes           <- all_genes %>% arrange(-log2FoldChange)
-all_genes$treatment <- "control_ploidy"
-# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
+
+all_genes                  <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes                  <- all_genes %>% arrange(-log2FoldChange)
+all_genes$treatment        <- "control_ploidy"
 
 all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
@@ -593,24 +596,21 @@ all_genes_normal$treatment <- "control_ploidy"
 
 all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
-# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
 all_genes_apeglm$treatment <- "control_ploidy"
 
-all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-all_genes_ashr           <- all_genes_ashr %>% arrange(-log2FoldChange)
-all_genes_ashr$treatment <- "control_ploidy"
+all_genes_ashr             <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+all_genes_ashr             <- all_genes_ashr %>% arrange(-log2FoldChange)
+all_genes_ashr$treatment   <- "control_ploidy"
 
-# Filter results by
-sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
-sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-sig_genes <- sig_genes %>% arrange(-log2FoldChange)
+# Filter results by lfc and pvalue cutoffs
+sig_genes           <- res_table %>% filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+sig_genes           <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+sig_genes           <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "control_ploidy" 
 
-sig_genes_normal <- res_table_normal %>%
-  filter(abs(log2FoldChange) > lfc.cutoff)
-sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
-sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
+sig_genes_normal           <- res_table_normal %>% filter(abs(log2FoldChange) > lfc.cutoff)
+sig_genes_normal           <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
+sig_genes_normal           <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "control_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
@@ -671,6 +671,7 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
+# Write outputs
 write.table(single_gene_expression_unshrunk, file = "output/control_ploidy/CONTROL_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
 write.table(single_gene_expression_normal, file = "output/control_ploidy/CONTROL_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
 write.table(single_gene_expression_apeglm, file = "output/control_ploidy/CONTROL_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
@@ -753,7 +754,6 @@ bp0
  bp2
 
  # Plot pheatmap
-
  rld <- rlog(dds, blind=T)
  rld_mat <- assay(rld)
  pca <- prcomp(t(rld_mat))
@@ -761,7 +761,91 @@ bp0
  bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
  bp3
+ 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/control_ploidy/control_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+ 
 setwd("output/control_ploidy")
 
 ggexport(filename = "CONTROL-PLOIDY-BIPLOT.png",
@@ -791,8 +875,6 @@ ggexport(filename = "CONTROL-PLOIDY-pheatmap.png",
 setwd("..")
 setwd("..")
 
-# pcaExplorer(dds = dds_ploidy)
-
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
@@ -820,6 +902,8 @@ p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
              geom_point(aes(color=log2FoldChange>0))
 
+
+# Save plots
 ggsave("output/control_ploidy/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
@@ -884,6 +968,7 @@ ggsave("output/control_ploidy/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # HEAT only - effect of ploidy
@@ -1158,6 +1243,93 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/heat_ploidy/heat_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
  
 setwd("output/heat_ploidy")
 
@@ -1282,7 +1454,7 @@ ggsave("output/heat_ploidy/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # DESICCATION only - effect of ploidy
@@ -1556,6 +1728,95 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/desiccation_ploidy/desiccation_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+
+
 setwd("output/desiccation_ploidy")
 
 ggexport(filename = "DESICCATION-PLOIDY-BIPLOT.png",
@@ -1679,9 +1940,7 @@ ggsave("output/desiccation_ploidy/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-
-
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # DIPLOID only - effect of temperature
@@ -1955,6 +2214,94 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/diploid_heat/diploid_heat_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+
 setwd("output/diploid_heat")
 
 ggexport(filename = "DIPLOID-HEAT-BIPLOT.png",
@@ -2078,7 +2425,7 @@ ggsave("output/diploid_heat/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # DIPLOID only - effect of desiccation
@@ -2352,6 +2699,94 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/diploid_desiccation/diploid_desiccation_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+
 setwd("output/diploid_desiccation")
 ggexport(filename = "DIPLOID-DESICCATION-BIPLOT.png",
          plot   = bp0,
@@ -2474,7 +2909,7 @@ ggsave("output/diploid_desiccation/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # TRIPLOID only - effect of temperature
@@ -2748,6 +3183,97 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOCNA*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, gene)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/triploid_heat/triploid_heat_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+
 setwd("output/triploid_heat")
 
 ggexport(filename = "TRIPLOID-HEAT-BIPLOT.png",
@@ -2871,6 +3397,7 @@ ggsave("output/triploid_heat/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 # TRIPLOID only - effect of desiccation
@@ -3144,7 +3671,99 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
-# 
+
+# Gene expression heatmap
+# Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
+# From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
+
+sigs <- na.omit(res_table_apeglm)
+sigs <- sigs[sigs$padj < 0.05,]
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Remove genes w/ uncharacterized and/or low quality proteins from plot
+grx <- glob2rx("unchar*")
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOW*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+grx <- glob2rx("LOCNA*")
+sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, gene)))
+sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
+
+df <- as.data.frame(sigs_characterized)
+row.names(df) <- df$gene
+
+df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
+df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
+head(df.top)
+
+# Get normalized count data from dds object
+rlog_out <- rlog(dds, blind=FALSE) 
+mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+colnames(mat) <- rownames(coldata_trt)
+base_mean <- rowMeans(mat)
+
+# Generate Z-score
+mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled)<-colnames(mat)
+
+# Keep the X number of  
+num_keep <- 10
+rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
+l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
+colnames(l2_val)<-"logFC"
+mean <- as.matrix(df.top[rows_keep,]$baseMean) #getting mean value for each gene we are keeping
+colnames(mean)<-"AveExpr"
+
+#maps values between b/w/r for min and max l2 values
+col_logFC <- colorRamp2(c(min(l2_val),0, max(l2_val)), c("blue", "white", "red"))
+
+#maps between 0% quantile, and 75% quantile of mean values --- 0, 25, 50, 75, 100
+col_AveExpr <- colorRamp2(c(quantile(mean)[1], quantile(mean)[4]), c("white", "red"))
+
+LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
+colnames(LOCID) <- 'gene'
+LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Z-score matrix
+h1 <- Heatmap(mat.scaled[rows_keep,], 
+            column_labels       = colnames(mat.scaled),
+            row_labels          = LOCID$description,
+            row_names_side      = "left",
+            row_names_gp        = gpar(fontsize = 8),
+            row_names_centered  = F,
+            cluster_columns     = F,
+            cluster_rows        = F,
+            row_names_max_width =  unit(10, "cm"))
+
+# log2FoldChange matrix
+h2 <- Heatmap(l2_val, row_labels = df.top$gene[rows_keep], 
+            cluster_rows = F, 
+            name="logFC", 
+            col = col_logFC,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(l2_val[i, j],1), x, y)
+            })
+
+# Average expression
+h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep], 
+            cluster_rows = F, 
+            name = "AveExpr", 
+            col=col_AveExpr,
+            cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+              grid.text(round(mean[i, j],0), x, y)
+            })
+h<-h1+h2+h3
+h
+
+png(filename = "output/triploid_desiccation/triploid_desiccation_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+print(h)
+dev.off()
+
+
 setwd("output/triploid_desiccation")
 
 ggexport(filename = "TRIPLOID-DESICCATION-BIPLOT.png",
@@ -3267,6 +3886,7 @@ ggsave("output/triploid_desiccation/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
 ```{r}

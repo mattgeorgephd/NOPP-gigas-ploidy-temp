@@ -1,0 +1,229 @@
+GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0010882,regulation of cardiac muscle contraction...,33,4,0.25,0.00010
+GO:0086014,atrial cardiac muscle cell action potent...,33,4,0.25,0.00010
+GO:0086026,atrial cardiac muscle cell to AV node ce...,33,4,0.25,0.00010
+GO:0086066,atrial cardiac muscle cell to AV node ce...,33,4,0.25,0.00010
+GO:0061077,chaperone-mediated protein folding,63,5,0.47,0.00011
+GO:0035815,positive regulation of renal sodium excr...,13,3,0.1,0.00011
+GO:0048895,lateral line nerve glial cell differenti...,13,3,0.1,0.00011
+GO:0048897,myelination of lateral line nerve axons,13,3,0.1,0.00011
+GO:0048918,posterior lateral line nerve development,13,3,0.1,0.00011
+GO:0048931,posterior lateral line nerve glial cell ...,13,3,0.1,0.00011
+GO:0048932,myelination of posterior lateral line ne...,13,3,0.1,0.00011
+GO:0048937,lateral line nerve glial cell developmen...,13,3,0.1,0.00011
+GO:0048938,lateral line nerve glial cell morphogene...,13,3,0.1,0.00011
+GO:0048941,posterior lateral line nerve glial cell ...,13,3,0.1,0.00011
+GO:0048942,posterior lateral line nerve glial cell ...,13,3,0.1,0.00011
+GO:0060876,semicircular canal formation,13,3,0.1,0.00011
+GO:0060879,semicircular canal fusion,13,3,0.1,0.00011
+GO:0044403,biological process involved in symbiotic...,309,10,2.3,0.00011
+GO:0034470,ncRNA processing,439,12,3.26,0.00012
+GO:0006338,chromatin remodeling,253,9,1.88,0.00012
+GO:0048514,blood vessel morphogenesis,889,18,6.61,0.00013
+GO:0032290,peripheral nervous system myelin formati...,14,3,0.1,0.00014
+GO:0035810,positive regulation of urine volume,14,3,0.1,0.00014
+GO:0006911,phagocytosis, engulfment,205,8,1.52,0.00016
+GO:0050953,sensory perception of light stimulus,323,10,2.4,0.00016
+GO:0052126,movement in host environment,207,8,1.54,0.00017
+GO:0001568,blood vessel development,1006,19,7.48,0.00020
+GO:0051147,regulation of muscle cell differentiatio...,333,10,2.47,0.00021
+GO:0032508,DNA duplex unwinding,73,5,0.54,0.00022
+GO:0030913,paranodal junction assembly,41,4,0.3,0.00024
+GO:0032392,DNA geometric change,75,5,0.56,0.00024
+GO:0099024,plasma membrane invagination,222,8,1.65,0.00027
+GO:0006259,DNA metabolic process,1566,25,11.64,0.00027
+GO:0030422,production of siRNA involved in post-tra...,18,3,0.13,0.00030
+GO:0001944,vasculature development,1042,19,7.74,0.00031
+GO:0032436,positive regulation of proteasomal ubiqu...,79,5,0.59,0.00031
+GO:0001818,negative regulation of cytokine producti...,172,7,1.28,0.00032
+GO:0003230,cardiac atrium development,44,4,0.33,0.00032
+GO:0006367,transcription initiation from RNA polyme...,123,6,0.91,0.00032
+GO:2000288,positive regulation of myoblast prolifer...,4,2,0.03,0.00033
+GO:0010324,membrane invagination,231,8,1.72,0.00035
+GO:0007168,receptor guanylyl cyclase signaling path...,19,3,0.14,0.00036
+GO:0035809,regulation of urine volume,19,3,0.14,0.00036
+GO:0006457,protein folding,234,8,1.74,0.00039
+GO:1901342,regulation of vasculature development,300,9,2.23,0.00044
+GO:0050777,negative regulation of immune response,86,5,0.64,0.00046
+GO:0008037,cell recognition,369,10,2.74,0.00047
+GO:0009751,response to salicylic acid,21,3,0.16,0.00049
+GO:0042730,fibrinolysis,21,3,0.16,0.00049
+GO:0048892,lateral line nerve development,21,3,0.16,0.00049
+GO:0042692,muscle cell differentiation,998,18,7.42,0.00051
+GO:0039534,negative regulation of MDA-5 signaling p...,5,2,0.04,0.00054
+GO:0035812,renal sodium excretion,22,3,0.16,0.00056
+GO:0035813,regulation of renal sodium excretion,22,3,0.16,0.00056
+GO:0090049,regulation of cell migration involved in...,22,3,0.16,0.00056
+GO:0097254,renal tubular secretion,22,3,0.16,0.00056
+GO:0006203,dGTP catabolic process,23,3,0.17,0.00064
+GO:0009146,purine nucleoside triphosphate catabolic...,23,3,0.17,0.00064
+GO:0009217,purine deoxyribonucleoside triphosphate ...,23,3,0.17,0.00064
+GO:0046060,dATP metabolic process,23,3,0.17,0.00064
+GO:0046061,dATP catabolic process,23,3,0.17,0.00064
+GO:0046070,dGTP metabolic process,23,3,0.17,0.00064
+GO:0098801,regulation of renal system process,23,3,0.17,0.00064
+GO:0009155,purine deoxyribonucleotide catabolic pro...,24,3,0.18,0.00073
+GO:0006310,DNA recombination,463,11,3.44,0.00074
+GO:0048884,neuromast development,6,2,0.04,0.00081
+GO:0048919,posterior lateral line neuromast develop...,6,2,0.04,0.00081
+GO:2000291,regulation of myoblast proliferation,6,2,0.04,0.00081
+GO:0097553,calcium ion transmembrane import into cy...,205,7,1.52,0.00089
+GO:0019058,viral life cycle,334,9,2.48,0.00094
+GO:0060402,calcium ion transport into cytosol,269,8,2,0.00096
+GO:1901800,positive regulation of proteasomal prote...,101,5,0.75,0.00096
+GO:0003205,cardiac chamber development,210,7,1.56,0.00103
+GO:0002042,cell migration involved in sprouting ang...,27,3,0.2,0.00104
+GO:0009204,deoxyribonucleoside triphosphate catabol...,27,3,0.2,0.00104
+GO:0039533,regulation of MDA-5 signaling pathway,27,3,0.2,0.00104
+GO:0055078,sodium ion homeostasis,27,3,0.2,0.00104
+GO:0002040,sprouting angiogenesis,155,6,1.15,0.00110
+GO:0070972,protein localization to endoplasmic reti...,61,4,0.45,0.00111
+GO:1904427,positive regulation of calcium ion trans...,61,4,0.45,0.00111
+GO:0032434,regulation of proteasomal ubiquitin-depe...,105,5,0.78,0.00114
+GO:1901570,fatty acid derivative biosynthetic proce...,29,3,0.22,0.00128
+GO:0060401,cytosolic calcium ion transport,282,8,2.1,0.00129
+GO:0006937,regulation of muscle contraction,351,9,2.61,0.00132
+GO:0006352,DNA-templated transcription, initiation,161,6,1.2,0.00133
+GO:0086005,ventricular cardiac muscle cell action p...,65,4,0.48,0.00141
+GO:0039530,MDA-5 signaling pathway,30,3,0.22,0.00142
+GO:0001775,cell activation,1185,19,8.81,0.00144
+GO:2000058,regulation of ubiquitin-dependent protei...,165,6,1.23,0.00151
+GO:0010522,regulation of calcium ion transport into...,113,5,0.84,0.00159
+GO:0051101,regulation of DNA binding,114,5,0.85,0.00165
+GO:0009143,nucleoside triphosphate catabolic proces...,32,3,0.24,0.00171
+GO:0031347,regulation of defense response,676,13,5.02,0.00175
+GO:0045765,regulation of angiogenesis,297,8,2.21,0.00179
+GO:0009215,purine deoxyribonucleoside triphosphate ...,33,3,0.25,0.00187
+GO:0071450,cellular response to oxygen radical,9,2,0.07,0.00191
+GO:0071451,cellular response to superoxide,9,2,0.07,0.00191
+GO:0061061,muscle structure development,1310,20,9.74,0.00193
+GO:0086019,cell-cell signaling involved in cardiac ...,71,4,0.53,0.00195
+GO:0060537,muscle tissue development,770,14,5.72,0.00197
+GO:0031333,negative regulation of protein-containin...,303,8,2.25,0.00203
+GO:0031348,negative regulation of defense response,175,6,1.3,0.00203
+GO:0048752,semicircular canal morphogenesis,34,3,0.25,0.00204
+GO:1990034,calcium ion export across plasma membran...,34,3,0.25,0.00204
+GO:2000060,positive regulation of ubiquitin-depende...,120,5,0.89,0.00207
+GO:0050776,regulation of immune response,953,16,7.08,0.00216
+GO:0032613,interleukin-10 production,35,3,0.26,0.00222
+GO:0007517,muscle organ development,782,14,5.81,0.00227
+GO:0007204,positive regulation of cytosolic calcium...,381,9,2.83,0.00231
+GO:0000303,response to superoxide,10,2,0.07,0.00238
+GO:0002215,defense response to nematode,10,2,0.07,0.00238
+GO:0032714,negative regulation of interleukin-5 pro...,10,2,0.07,0.00238
+GO:0051450,myoblast proliferation,10,2,0.07,0.00238
+GO:0061580,colon epithelial cell migration,10,2,0.07,0.00238
+GO:0009607,response to biotic stimulus,1826,25,13.57,0.00240
+GO:0009151,purine deoxyribonucleotide metabolic pro...,36,3,0.27,0.00241
+GO:0009264,deoxyribonucleotide catabolic process,36,3,0.27,0.00241
+GO:0070839,metal ion export,37,3,0.27,0.00261
+GO:0042743,hydrogen peroxide metabolic process,78,4,0.58,0.00275
+GO:0045088,regulation of innate immune response,319,8,2.37,0.00278
+GO:0060872,semicircular canal development,38,3,0.28,0.00282
+GO:1901568,fatty acid derivative metabolic process,38,3,0.28,0.00282
+GO:0000413,protein peptidyl-prolyl isomerization,11,2,0.08,0.00289
+GO:0032633,interleukin-4 production,11,2,0.08,0.00289
+GO:0032673,regulation of interleukin-4 production,11,2,0.08,0.00289
+GO:0032753,positive regulation of interleukin-4 pro...,11,2,0.08,0.00289
+GO:1901019,regulation of calcium ion transmembrane ...,80,4,0.59,0.00302
+GO:0006942,regulation of striated muscle contractio...,254,7,1.89,0.00302
+GO:0046386,deoxyribose phosphate catabolic process,39,3,0.29,0.00304
+GO:0051279,regulation of release of sequestered cal...,81,4,0.6,0.00316
+GO:0086012,membrane depolarization during cardiac m...,81,4,0.6,0.00316
+GO:0051241,negative regulation of multicellular org...,1083,17,8.05,0.00316
+GO:0090257,regulation of muscle system process,478,10,3.55,0.00323
+GO:0009200,deoxyribonucleoside triphosphate metabol...,40,3,0.3,0.00327
+GO:0030195,negative regulation of blood coagulation,40,3,0.3,0.00327
+GO:0060148,positive regulation of post-transcriptio...,40,3,0.3,0.00327
+GO:1900047,negative regulation of hemostasis,40,3,0.3,0.00327
+GO:0043207,response to external biotic stimulus,1769,24,13.15,0.00329
+GO:0051707,response to other organism,1769,24,13.15,0.00329
+GO:1903050,regulation of proteolysis involved in ce...,194,6,1.44,0.00339
+GO:0032060,bleb assembly,12,2,0.09,0.00345
+GO:0032634,interleukin-5 production,12,2,0.09,0.00345
+GO:0032674,regulation of interleukin-5 production,12,2,0.09,0.00345
+GO:0048882,lateral line development,12,2,0.09,0.00345
+GO:0048916,posterior lateral line development,12,2,0.09,0.00345
+GO:0070162,adiponectin secretion,12,2,0.09,0.00345
+GO:0070163,regulation of adiponectin secretion,12,2,0.09,0.00345
+GO:0070165,positive regulation of adiponectin secre...,12,2,0.09,0.00345
+GO:0140115,export across plasma membrane,41,3,0.3,0.00350
+GO:1903052,positive regulation of proteolysis invol...,137,5,1.02,0.00366
+GO:0035295,tube development,2200,28,16.35,0.00373
+GO:0086002,cardiac muscle cell action potential inv...,85,4,0.63,0.00376
+GO:0061136,regulation of proteasomal protein catabo...,139,5,1.03,0.00389
+GO:0006265,DNA topological change,13,2,0.1,0.00406
+GO:0009615,response to virus,497,10,3.69,0.00424
+GO:0086065,cell communication involved in cardiac c...,88,4,0.65,0.00425
+GO:0014819,regulation of skeletal muscle contractio...,44,3,0.33,0.00428
+GO:0072677,eosinophil migration,44,3,0.33,0.00428
+GO:0034660,ncRNA metabolic process,667,12,4.96,0.00442
+GO:0032728,positive regulation of interferon-beta p...,45,3,0.33,0.00457
+GO:0032462,regulation of protein homooligomerizatio...,14,2,0.1,0.00472
+GO:0032463,negative regulation of protein homooligo...,14,2,0.1,0.00472
+GO:0042744,hydrogen peroxide catabolic process,46,3,0.34,0.00486
+GO:0051099,positive regulation of binding,212,6,1.58,0.00521
+GO:1903364,positive regulation of cellular protein ...,150,5,1.11,0.00537
+GO:0061045,negative regulation of wound healing,94,4,0.7,0.00537
+GO:0021527,spinal cord association neuron different...,15,2,0.11,0.00542
+GO:0032460,negative regulation of protein oligomeri...,15,2,0.11,0.00542
+GO:0061337,cardiac conduction,214,6,1.59,0.00545
+GO:1903670,regulation of sprouting angiogenesis,48,3,0.36,0.00547
+GO:0001817,regulation of cytokine production,435,9,3.23,0.00549
+GO:0072359,circulatory system development,1948,25,14.48,0.00550
+GO:0019730,antimicrobial humoral response,151,5,1.12,0.00552
+GO:1903362,regulation of cellular protein catabolic...,218,6,1.62,0.00595
+GO:0006325,chromatin organization,441,9,3.28,0.00598
+GO:0009394,2'-deoxyribonucleotide metabolic process,50,3,0.37,0.00614
+GO:0043535,regulation of blood vessel endothelial c...,50,3,0.37,0.00614
+GO:0000305,response to oxygen radical,16,2,0.12,0.00616
+GO:0018208,peptidyl-proline modification,16,2,0.12,0.00616
+GO:0035356,cellular triglyceride homeostasis,16,2,0.12,0.00616
+GO:0045454,cell redox homeostasis,98,4,0.73,0.00622
+GO:0098901,regulation of cardiac muscle cell action...,99,4,0.74,0.00644
+GO:0003009,skeletal muscle contraction,51,3,0.38,0.00649
+GO:0060347,heart trabecula formation,51,3,0.38,0.00649
+GO:0048660,regulation of smooth muscle cell prolife...,100,4,0.74,0.00667
+GO:0086004,regulation of cardiac muscle cell contra...,100,4,0.74,0.00667
+GO:1903115,regulation of actin filament-based movem...,100,4,0.74,0.00667
+GO:0065004,protein-DNA complex assembly,159,5,1.18,0.00683
+GO:0051560,mitochondrial calcium ion homeostasis,52,3,0.39,0.00684
+GO:0006959,humoral immune response,296,7,2.2,0.00689
+GO:0021516,dorsal spinal cord development,17,2,0.13,0.00695
+GO:0039532,negative regulation of viral-induced cyt...,17,2,0.13,0.00695
+GO:0051767,nitric-oxide synthase biosynthetic proce...,17,2,0.13,0.00695
+GO:0051769,regulation of nitric-oxide synthase bios...,17,2,0.13,0.00695
+GO:0061582,intestinal epithelial cell migration,17,2,0.13,0.00695
+GO:0071638,negative regulation of monocyte chemotac...,17,2,0.13,0.00695
+GO:0008033,tRNA processing,162,5,1.2,0.00738
+GO:0015709,thiosulfate transport,1,1,0.01,0.00743
+GO:0015729,oxaloacetate transport,1,1,0.01,0.00743
+GO:0015744,succinate transport,1,1,0.01,0.00743
+GO:0016204,determination of muscle attachment site,1,1,0.01,0.00743
+GO:0033274,response to vitamin B2,1,1,0.01,0.00743
+GO:0035291,specification of segmental identity, int...,1,1,0.01,0.00743
+GO:0048241,epinephrine transport,1,1,0.01,0.00743
+GO:0048712,negative regulation of astrocyte differe...,1,1,0.01,0.00743
+GO:0060164,regulation of timing of neuron different...,1,1,0.01,0.00743
+GO:0071422,succinate transmembrane transport,1,1,0.01,0.00743
+GO:0071423,malate transmembrane transport,1,1,0.01,0.00743
+GO:0019692,deoxyribose phosphate metabolic process,54,3,0.4,0.00760
+GO:0048771,tissue remodeling,230,6,1.71,0.00766
+GO:0051239,regulation of multicellular organismal p...,3431,38,25.5,0.00778
+GO:0032501,multicellular organismal process,11567,104,85.96,0.00782
+GO:0006952,defense response,1900,24,14.12,0.00784
+GO:0043534,blood vessel endothelial cell migration,55,3,0.41,0.00799
+GO:0006851,mitochondrial calcium ion transmembrane ...,56,3,0.42,0.00840
+GO:0044062,regulation of excretion,56,3,0.42,0.00840
+GO:0048659,smooth muscle cell proliferation,107,4,0.8,0.00844
+GO:0032459,regulation of protein oligomerization,19,2,0.14,0.00865
+GO:0090051,negative regulation of cell migration in...,19,2,0.14,0.00865
+GO:0048709,oligodendrocyte differentiation,169,5,1.26,0.00877
+GO:0006094,gluconeogenesis,57,3,0.42,0.00882
+GO:0009262,deoxyribonucleotide metabolic process,57,3,0.42,0.00882
+GO:0086091,regulation of heart rate by cardiac cond...,109,4,0.81,0.00899
+GO:0051480,regulation of cytosolic calcium ion conc...,472,9,3.51,0.00913
+GO:0022011,myelination in peripheral nervous system,58,3,0.43,0.00925
+GO:0032292,peripheral nervous system axon ensheathm...,58,3,0.43,0.00925
+GO:0006396,RNA processing,1211,17,9,0.00931
+GO:0014044,Schwann cell development,59,3,0.44,0.00969

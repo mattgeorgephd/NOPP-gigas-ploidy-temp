@@ -1,0 +1,8 @@
+comparison,total,positive,negative,percent_negative,percent_positive
+control_ploidy,109,80,29,26.6,73.4
+heat_ploidy,344,290,54,15.7,84.3
+desiccation_ploidy,138,81,57,41.3,58.7
+diploid_heat,317,90,227,71.6,28.4
+diploid_desiccation,74,46,28,37.8,62.2
+triploid_heat,94,35,59,62.8,37.2
+triploid_desiccation,62,33,29,46.8,53.2
