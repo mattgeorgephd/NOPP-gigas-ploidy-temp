@@ -1,0 +1,368 @@
+---
+title: "5_GOterm_Annotation"
+author: "Matt George"
+date: "2022-09-08"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = FALSE, cache = TRUE)
+```
+
+```{bash, engine.path="C:/Windows/System32/bash.exe"}
+echo $PATH
+```
+# Make file structure
+```{bash engine.path="C:/Windows/System32/bash.exe", include=FALSE}
+
+mkdir GOterm_annotation/desiccation_ploidy/
+mkdir GOterm_annotation/heat_ploidy/
+mkdir GOterm_annotation/desiccation_ploidy/
+mkdir GOterm_annotation/desiccation_ploidy/
+mkdir GOterm_annotation/diploid_desiccation/
+mkdir GOterm_annotation/triploid_heat/
+mkdir GOterm_annotation/triploid_desiccation/
+
+```
+
+### Load libraries
+```{r load_libraries, inlcude = TRUE}
+
+## clear
+rm(list=ls())
+
+## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
+# BiocManager::install(version = "3.13")
+# BiocManager::install("BiocGenerics")
+# BiocManager::install("graph")
+# BiocManager::install("Biobase")
+# BiocManager::install("AnnotationDbi")
+# BiocManager::install("GO.db")
+# BiocManager::install("topGO", force = TRUE)
+# BiocManager::install("simplifyEnrichment") #Needs newest R Version (4.1.0)
+# BiocManager::install("rrvgo", force = TRUE)
+
+# List of packages we want to install (run every time)
+load.lib<-c("tidyverse","RColorBrewer","readxl","ggpubr","beepr","BiocManager","topGO","simplifyEnrichment","SparseM","magick","gclus","rrvgo","beebr")
+
+# Select only the packages that aren't currently installed (run every time)
+install.lib <- load.lib[!load.lib %in% installed.packages()]
+
+# And finally we install the missing packages, including their dependency.
+for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# After the installation process completes, we load all packages.
+sapply(load.lib,require,character=TRUE)
+                        
+```
+#Set ggplot theme
+```{r ggplot_theme, include=FALSE}
+
+my_theme <- theme(line              = element_line(size=1.5),
+                  rect              = element_rect(size=1.5),
+                  text              = element_text(size=9,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=9,color="black"),
+                  axis.text.y       = element_text(size=9,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  legend.key        = element_blank()) # removes background of legend bullets
+```
+
+### NOTES ####################################################################################################
+
+# Chandra Rajan et al. (2020) Methods:
+# https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgcb.15675&file=gcb15675-sup-0002-FileS2.txt
+
+# Bioconductor SimplifyEnrichment Methods:
+# http://www.bioconductor.org/packages/devel/bioc/vignettes/simplifyEnrichment/inst/doc/simplifyEnrichment.html
+# https://www.biostars.org/p/350710/#350712
+# https://bioconductor.org/packages/devel/bioc/vignettes/topGO/inst/doc/topGO.pdf
+# https://www.bioconductor.org/packages/devel/bioc/vignettes/rrvgo/inst/doc/rrvgo.html
+
+# Yaamini's Notebook
+# https://github.com/RobertsLab/project-oyster-oa/blob/master/code/Haws/08-GOterm-Annotation.ipynb
+
+### ####################################################################################################
+
+# Import list of DEG lists and associated GO term annotations
+```{r}
+desiccation_ploidy <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(desiccation_ploidy) # 2352
+
+desiccation_ploidy_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(desiccation_ploidy_bg) # 578343
+
+```
+
+```{r}
+# Filter by BP, CC, or MF
+desiccation_ploidy_BP <- desiccation_ploidy %>% filter(., desiccation_ploidy$GOcat == "P")
+desiccation_ploidy_CC <- desiccation_ploidy %>% filter(., desiccation_ploidy$GOcat == "C")
+desiccation_ploidy_MF <- desiccation_ploidy %>% filter(., desiccation_ploidy$GOcat == "F")
+nrow(desiccation_ploidy_BP) # 1173
+
+# Count GOIDs
+desiccation_ploidy_BP_count <- as.data.frame(table(desiccation_ploidy_BP$GOID))
+desiccation_ploidy_CC_count <- as.data.frame(table(desiccation_ploidy_CC$GOID))
+desiccation_ploidy_MF_count <- as.data.frame(table(desiccation_ploidy_MF$GOID))
+
+nrow(unique(desiccation_ploidy_BP_count)) # 219 of unique GOIDs associated with ploidy
+nrow(unique(desiccation_ploidy_CC_count)) # 74 of unique GOIDs associated with ploidy
+nrow(unique(desiccation_ploidy_MF_count)) # 119 of unique GOIDs associated with ploidy
+
+# Add column names
+colnames(desiccation_ploidy_BP_count) <- c("GOID", "Freq")
+colnames(desiccation_ploidy_CC_count) <- c("GOID", "Freq")
+colnames(desiccation_ploidy_MF_count) <- c("GOID", "Freq")
+
+# Filter by frequency
+desiccation_ploidy_BP_count <- desiccation_ploidy_BP_count %>% filter(desiccation_ploidy_BP_count$Freq != 0)
+desiccation_ploidy_CC_count <- desiccation_ploidy_CC_count %>% filter(desiccation_ploidy_CC_count$Freq != 0)
+desiccation_ploidy_MF_count <- desiccation_ploidy_MF_count %>% filter(desiccation_ploidy_MF_count$Freq != 0)
+
+# Save GOterms associated with BP, CC, or MF
+write.csv(desiccation_ploidy_BP, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy-BP-ALL_GOterms.csv", quote = FALSE, row.names = FALSE)
+write.csv(desiccation_ploidy_CC, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy-CC-ALL_GOterms.csv", quote = FALSE, row.names = FALSE)
+write.csv(desiccation_ploidy_MF, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy-MF-ALL_GOterms.csv", quote = FALSE, row.names = FALSE)
+
+desiccation_ploidy_BP_revigo <- desiccation_ploidy_BP[,c(10,2)]
+desiccation_ploidy_BP_revigo <- unique(desiccation_ploidy_BP_revigo)
+
+write.table(desiccation_ploidy_BP_revigo, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy_BP_revigo.csv", col.names = FALSE, row.names = FALSE, quote = FALSE,  sep = "\t")
+
+```
+
+# Generate backgroud gene2go list
+```{bash engine.path="C:/Windows/System32/bash.exe"}
+pwd
+#Extract transcript IDs
+#Filter and save unique IDs
+cut -f5 gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_bg.txt | uniq \
+> gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_bg_transcriptIDs_unique.txt
+
+```
+
+```{r}
+desiccation_ploidy_bg_unique <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_bg_transcriptIDs_unique.txt", header = TRUE, sep = "\t")
+colnames(desiccation_ploidy_bg_unique) <- c("GeneID")
+desiccation_ploidy_bg_unique$GeneID <- as.character(desiccation_ploidy_bg_unique$GeneID)
+
+geneid2go <- read.delim("blast/geneid2go.tab", header = FALSE, sep = "\t")
+colnames(geneid2go) <- c("GeneID","GOterm")
+geneid2go <- unique(geneid2go)
+
+nrow(desiccation_ploidy_bg_unique)
+
+desiccation_ploidy_bg_unique <- left_join(desiccation_ploidy_bg_unique, geneid2go, by = "GeneID")
+
+write.table(desiccation_ploidy_bg_unique, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy_bg_unique.txt", sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+nrow(desiccation_ploidy_bg_unique)
+
+```
+
+```{r}
+########### Load genetic background #################
+# Load data for gene enrichment
+# Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+desiccation_ploidy_bg_topGO <- topGO::readMappings(file = "GOterm_annotation/desiccation_ploidy/desiccation_ploidy_bg_unique.txt")
+length(desiccation_ploidy_bg_topGO) #35233
+
+str(head(desiccation_ploidy_bg_topGO)) #Confirm file structure
+geneNames <- names(desiccation_ploidy_bg_topGO) #Extract names to use as gene universe
+head(desiccation_ploidy_bg_topGO)
+```
+
+```{r}
+desiccation_ploidy_genes     <- unique(desiccation_ploidy$product_accession) #Extract transcript ID
+desiccation_ploidy_gene_list <- factor(as.integer(geneNames %in% desiccation_ploidy_genes))
+names(desiccation_ploidy_gene_list) <- geneNames #PLOIDYGenes
+str(desiccation_ploidy_gene_list)
+
+```
+
+########## Run TopGo #########################
+```{r}
+# Create topGOdata - Biological processes
+desiccation_ploidy_topGO <- new("topGOdata", ontology = "BP", allGenes = desiccation_ploidy_gene_list,
+                            annot = annFUN.gene2GO, gene2GO = desiccation_ploidy_bg_topGO) #Create biological process topGO object
+desiccation_ploidy_topGO #Get summary of object
+
+```
+
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+
+# PLOIDY
+resultFisher.desiccation_ploidy_BP <- getSigGroups(desiccation_ploidy_topGO, test.stat)
+pvalFis.desiccation_ploidy_BP <- score(resultFisher.desiccation_ploidy_BP) #Extract p-values
+hist(pvalFis.desiccation_ploidy_BP, 50, xlab = "p-values") #Plot histogram of p-values
+
+allRes.desiccation_ploidy_BP <- GenTable(desiccation_ploidy_topGO, 
+                                     classic = resultFisher.desiccation_ploidy_BP, 
+                                     ranksOf = "classic", 
+                                     orderBy = "classic", 
+                                     topNodes = length(pvalFis.desiccation_ploidy_BP)) 
+head(allRes.desiccation_ploidy_BP)
+
+write.csv(allRes.desiccation_ploidy_BP, "GOterm_annotation/desiccation_ploidy/desiccation_ploidy-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+
+```
+
+```{r}
+############# Match enriched GOterms with general annotation information and product ID #################
+# Filter significantly enriched GOterms
+sigRes.desiccation_ploidy_BP <- filter(allRes.desiccation_ploidy_BP,classic<0.01)
+write.csv(sigRes.desiccation_ploidy_BP, "GOterm_annotation/desiccation_ploidy/sigRes-Enriched-GOterms-desiccation_ploidy_BP.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+
+# keep GOID, GOterm, and p-value
+sigRes.desiccation_ploidy_BP <- sigRes.desiccation_ploidy_BP[,c(1,6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.desiccation_ploidy_BP) <- c("GOID", "p.value") #Change column names
+
+# Add annotation information
+sigRes.desiccation_ploidy_BP_Annot <- merge(sigRes.desiccation_ploidy_BP, desiccation_ploidy_BP, by = "GOID") #Additional annotations
+length(unique(sigRes.desiccation_ploidy_BP_Annot$gene)) #50 unique genes
+length(unique(sigRes.desiccation_ploidy_BP_Annot$product_accession)) #85 unique transcripts
+head(sigRes.desiccation_ploidy_BP_Annot) #Confirm formatting
+
+write.csv(sigRes.desiccation_ploidy_BP_Annot, "GOterm_annotation/desiccation_ploidy/sigRes-Enrichched-desiccation_ploidy_BP-withTranscript.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+
+sigRes.desiccation_ploidy_BP_Annot_noT <- unique(sigRes.desiccation_ploidy_BP_Annot[,-7]) #Drop transcript column and keep only unique rows
+head(sigRes.desiccation_ploidy_BP_Annot_noT) #Confirm formatting
+write.csv(sigRes.desiccation_ploidy_BP_Annot_noT, "GOterm_annotation/desiccation_ploidy/sigRes-Enrichched-desiccation_ploidy_BP-withoutTranscript.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+
+```
+
+```{r}
+
+all_genes       <- unique(desiccation_ploidy[,c(5,2)]) #Extract transcript ID
+DEG_list        <- all_genes$padj
+names(DEG_list) <- all_genes$product_accession
+# DEG_list        <- factor(as.integer(geneNames %in% DEG_list))
+# all_genes_list <- factor(as.integer(geneNames %in% all_genes))
+# names(all_genes_list) <- geneNames #PLOIDYGenes
+# str(all_genes_list)
+
+```
+
+```{r}
+options(scipen = 999)
+
+selection <- function(allScore){ return(allScore < 0.05)} # function that returns TRUE/FALSE for p-values<0.05
+
+# allGO2genes <- annFUN.org(whichOnto="BP", feasibleGenes=NULL, mapping="org.Hs.eg.db", ID="symbol")
+
+
+GOdata <- new("topGOdata",
+          ontology="BP",
+          allGenes=DEG_list,
+          annot=annFUN.gene2GO,
+          gene2GO=desiccation_ploidy_bg_topGO,
+          geneSel=selection,
+          nodeSize=10)
+
+results.ks <- runTest(GOdata, algorithm="classic", statistic="ks")
+
+# desiccation_ploidy_topGO <- new("topGOdata", ontology = "BP", allGenes = desiccation_ploidy_gene_list,
+#                             annot = annFUN.gene2GO, gene2GO = desiccation_ploidy_bg_topGO) #Create biological process topGO object
+
+
+```
+
+```{r}
+
+goEnrichment <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes = length(results.ks@score))
+goEnrichment$KS <- as.numeric(goEnrichment$KS)
+goEnrichment <- goEnrichment[goEnrichment$KS<0.05,]
+goEnrichment <- goEnrichment[,c("GO.ID","Term","KS")]
+
+goEnrichment$Term <- gsub(" [a-z]*\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- gsub("\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- paste(goEnrichment$GO.ID, goEnrichment$Term, sep=", ")
+goEnrichment$Term <- factor(goEnrichment$Term, levels=rev(goEnrichment$Term))
+if(goEnrichment > 20){goEnrichment <- goEnrichment[1:20,]}
+goEnrichment$cat <- 'other'
+
+# Assign color lables by GOterm keyword
+metabolism     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*metabol*"), Term)))
+metabolism$cat <- "regulation"
+regulation     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*regulation*"), Term)))
+regulation$cat <- "regulation"
+development    <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*develop*"), Term)))
+development$cat <- "development"
+
+goEnrichment <- anti_join(goEnrichment, metabolism, by = "GO.ID") %>% bind_rows(metabolism)
+goEnrichment <- anti_join(goEnrichment, regulation, by = "GO.ID") %>% bind_rows(regulation)
+goEnrichment <- anti_join(goEnrichment, development, by = "GO.ID") %>% bind_rows(development)
+
+# Manual assignment
+goEnrichment[c(1,5,8),'cat'] <- 'development'
+
+# plot
+p1 <- ggplot(goEnrichment, aes(x=Term, y=-log10(KS), fill=cat)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge") +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_y_continuous(breaks = round(seq(0, max(-log10(goEnrichment$KS)), by = 2), 1)) +
+             guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip() +
+             my_theme
+
+p1
+
+ggsave("GOterm_annotation/desiccation_ploidy/desiccation_ploidy_Kolmogorov-Smirnov.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+```
+
+
+## Semantic Similarity Plot
+```{r eval=FALSE, include=FALSE}
+# Calculate the semantic similarity matrix using the Rel method (default)
+mat_desiccation_ploidy_BP <- GO_similarity(go_id = sigRes.desiccation_ploidy_BP$GOID, ont = "BP")
+
+scores <- setNames(-log10(as.numeric(sigRes.desiccation_ploidy_BP$p.value)), sigRes.desiccation_ploidy_BP$GOID)
+reducedTerms <- reduceSimMatrix(mat_desiccation_ploidy_BP,
+                                scores,
+                                threshold=0.7,
+                                orgdb=desiccation_ploidy_bg_topGO)
+heatmapPlot(mat_desiccation_ploidy_BP,
+            reducedTerms,
+            annotateParent=TRUE,
+            annotationLabel="parentTerm",
+            fontsize=6)
+
+```
+
+```{r eval=FALSE, include=FALSE}
+pdf("GOterm_annotation/desiccation_ploidy/desiccation_ploidy-simplifyEnrichment-BP.pdf", width = 13, height = 9) #Save figure
+simplifyGO(mat_desiccation_ploidy_BP,
+           method = "binary_cut",
+           # column_title = "", 
+           # col = rev(plotColors), 
+           fontsize_range = c(10,25),
+           word_cloud_grob_param = list(max_width = 100)) #Plot GOterms based on semantic similarity. Do not include a column title. Set colors to be plot colors, and set fontsize to range from 10 to 40. Pass arguments to word_cloud_grob_param to dictate the colors of the words and maximum width
+dev.off()
+```
+
+```{r eval=FALSE, include=FALSE}
+df_desiccation_ploidy_BP <- simplifyGO(mat_desiccation_ploidy_BP, plot = FALSE) #Cluster GOterms by semantic similarity
+head(df_desiccation_ploidy_BP) #Dataframe with GOIDs, GOterms, and cluster
+sort(table(df_desiccation_ploidy_BP$cluster)) #Obtain size of clusters
+
+```

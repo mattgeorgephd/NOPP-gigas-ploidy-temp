@@ -1,0 +1,422 @@
+---
+title: "Process tagseq data"
+output: html_notebook
+---
+
+
+```{bash, engine.opts='-l'}
+echo $PATH
+```
+
+# Download genome feature table
+```{bash}
+
+cd sequences/
+
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt.gz https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/902/806/645/GCF_902806645.1_cgigas_uk_roslin_v1/GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt.gz \
+--no-check-certificate
+
+gunzip *.gz
+awk -F "\t" '$1 == "mRNA" {print $15, "\t", $14}' GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt
+
+```
+
+# Download Roslin genome files
+```{bash}
+#mkdir sequences/
+
+cd sequences/
+
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A cgigas_uk_roslin_v1_genomic-mito.fa https://gannet.fish.washington.edu/panopea/Cg-roslin/ \
+--no-check-certificate
+
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf https://gannet.fish.washington.edu/panopea/Cg-roslin/ \
+--no-check-certificate
+
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A cgigas_uk_roslin_v1_mRNA.gff https://gannet.fish.washington.edu/panopea/Cg-roslin/ \
+--no-check-certificate
+
+```
+
+
+```{bash}
+# Download tag-seq data
+mkdir raw-data/
+cd raw-data/
+
+wget -r -A .fastq.gz https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/022022-tagseq/ \
+--no-check-certificate
+```
+
+```{bash}
+# unzip .fastq.gz files
+cd raw-data/
+gunzip *.fastq.gz
+
+```
+
+# Run fastqc on untrimmed files
+```{bash}
+mkdir fastqc/
+mkdir fastqc/untrimmed/
+
+/home/shared/FastQC/fastqc \
+raw-data/*.fastq \
+--outdir fastqc/untrimmed/ \
+--quiet
+
+```
+
+# Run multiqc on untrimmed files
+```{bash}
+eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
+conda activate
+
+cd fastqc/untrimmed/
+
+multiqc .
+```
+
+```{bash}
+# trim adapter sequences
+
+mkdir trim-fastq/
+cd raw-data/
+
+for F in *.fastq
+do
+#strip .fastq and directory structure from each file, then
+# add suffice .trim to create output name for each file
+results_file="$(basename -a $F)"
+
+# run cutadapt on each file, hard trim first 15 bp, minimum length 20
+/home/shared/8TB_HDD_02/mattgeorgephd/.local/bin/cutadapt $F -a A{8} -a G{8} -a AGATCGG -u 15 -m 20 -o \
+/home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/trim-fastq/$results_file
+done
+
+```
+
+```{bash}
+# concatenate fastq files by lane
+
+cd trim-fastq/
+
+printf '%s\n' *.fastq | sed 's/^\([^_]*_[^_]*\).*/\1/' | uniq |
+while read prefix; do
+    cat "$prefix"*R1*.fastq >"${prefix}_R1.fastq"
+    # cat "$prefix"*R2*.fastq >"${prefix}_R2.fastq" # include if more than one run
+done
+
+# I moved files to trim-merge-fastq
+```
+# Run fastqc on trimmed files
+```{bash}
+# mkdir fastqc/
+mkdir fastqc/trim-merge/
+
+/home/shared/FastQC/fastqc \
+trim-merge-fastq/*.fastq \
+--outdir fastqc/trim-merge/ \
+--quiet
+
+```
+
+# Run multiqc on trimmed files
+```{bash}
+mkdir fastqc/trim-merge/
+
+eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
+conda activate
+
+cd fastqc/trim-merge/
+
+multiqc .
+```
+
+# RUN HISAT2 ----------------------------------------------------------------------------------------------------------------
+# create hisat2 index for cgigas genome (took 9 min on Raven)
+```{bash}
+/home/shared/hisat2-2.2.1/hisat2-build \
+-f /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_genomic-mito.fa  /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_hisat2.fa # called the reference genome (scaffolds)
+
+```
+
+# Run hisat2 on trimmed reads
+```{bash}
+mkdir hisat2_sam/
+mkdir hisat2_bam/
+cd trim-merge-fastq/
+
+# This script exports alignments as bam files
+# sorts the bam file because Stringtie takes a sorted file for input (--dta)
+# removes the sam file because it is no longer needed
+array=($(ls *.fastq)) # call the sequences - make an array to align
+for i in ${array[@]}; do
+       sample_name=`echo $i| awk -F [.] '{print $1}'`
+	/home/shared/hisat2-2.2.1/hisat2 \
+	  -p 16 \
+	  --dta \
+	  -x /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_hisat2.fa \
+	  -U ${i} \
+	  -S /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2_sam/${sample_name}.sam 
+	  
+	  /home/shared/samtools-1.12/samtools sort -@ 8 -o                /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2_bam/${sample_name}.bam /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2_sam/${sample_name}.sam
+    		echo "${i} bam-ified!"
+        # rm ${sample_name}.sam
+done >> hisat2out.txt 2>&1
+
+```
+
+```{bash}
+# check % alignment from Hisat2
+
+grep "overall alignment rate" /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2out.txt
+
+# 20220906 - average alignment rate = 72.98 +/- 3.07 sd
+
+```
+
+
+# Calculate chromosome lengths
+```{bash}
+head sequences/cgigas_uk_roslin_v1_genomic-mito.fa
+
+awk '$0 ~ ">" {print c; c=0;printf substr($0,2,14) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' \
+sequences/cgigas_uk_roslin_v1_genomic-mito.fa \
+| sed 's/Cr//g' \
+| awk '{print $1"\t"$2}' \
+| tail -n +2 \
+> sequences/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-sequence-lengths.txt
+
+head sequences/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-sequence-lengths.txt
+```
+
+# Generate mRNA feature track from genomic_sequence
+```{bash}
+head sequences/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf
+
+grep -e "Gnomon	mRNA" -e "RefSeq	mRNA" -e "cmsearch	mRNA" -e "tRNAscan-SE	mRNA" \
+sequences/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf \
+| /home/shared/bedtools2/bin/sortBed \
+-faidx sequences/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-sequence-lengths.txt \
+> sequences/GCF_902806645.1_cgigas_uk_roslin_v1_mRNA.gff
+
+head sequences/GCF_902806645.1_cgigas_uk_roslin_v1_mRNA.gff
+```
+```{bash}
+head sequences/cgigas_uk_roslin_v1_mRNA.gff
+```
+
+# Assemble hisat2 alignments w/ stringtie2 using mRNA genome feature track (took 14 min on Raven)
+```{bash}
+array=($(ls /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2_bam/*.bam))
+
+for i in ${array[@]}; do
+        sample_name=`echo $i| awk -F [.] '{print $1}'`
+	      /home/shared/stringtie-2.2.1.Linux_x86_64/stringtie \
+	      -p 48 \
+	      -e \
+	      -B \
+	      -G /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_mRNA.gff \
+	      -A ${sample_name}.gene_abund.tab \
+	      -o ${sample_name}.gtf ${i} \
+
+        echo "StringTie assembly for seq file ${i}" $(date)
+done
+
+echo "StringTie assembly COMPLETE, starting assembly analysis" $(date)
+
+# 20220607 - I could not figure out how to designate the output. All outputs ended up in hisat2_bam folder.
+
+```
+
+```{bash}
+
+cd /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/hisat2_bam
+
+# make gtf list file (needed for stringtie merge function)
+for filename in *.gtf; do 
+  echo $PWD/$filename; 
+  done > gtf_list.txt
+
+# make listGTF file (needed for count matrix), two columns w/ sample ID
+for filename in *.gtf; do 
+  echo $filename $PWD/$filename; 
+  done > listGTF.txt
+
+# merge GTFs into a single file
+/home/shared/stringtie-2.2.1.Linux_x86_64/stringtie \
+  --merge \
+  -p 48 \
+	-G /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_mRNA.gff \
+	-o gigas_merged.gtf gtf_list.txt #Merge GTFs to form $
+
+echo "Stringtie merge complete" $(date)
+
+# Compute accuracy of gff
+# gffcompare -r ../../../refs/Panopea-generosa-v1.0.a4.mRNA_SJG.gff3 -G -o merged Pgenerosa_merged.gtf #Compute the accuracy and pre$
+# echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
+
+# Compile gene count matrix from GTFs
+/home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py \
+  -g gigas_gene_count_matrix.csv \
+  -i listGTF.txt #Compile the gene count matrix
+
+echo "Gene count matrix compiled." $(date)
+
+```
+
+
+# RUN BOWTIE2 ----------------------------------------------------------------------------------------------------------------
+
+```{bash}
+# create bowtie2 index for cgigas genome (took 8 min on Raven)
+
+/home/shared/bowtie2-2.4.4-linux-x86_64/bowtie2-build \
+/home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_genomic-mito.fa \
+/home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_roslin_v1.fa
+
+```
+
+```{bash}
+# Run bowtie on trimmed reads, pre-set option= --sensitive-local
+
+mkdir bowtie_sam/
+cd bowtie_sam/
+
+for file in /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/trim-fastq/*.fastq
+do
+results_file="$(basename -a $file).sam"
+
+# run Bowtie2 on each file
+/home/shared/bowtie2-2.4.4-linux-x86_64/bowtie2 \
+--local \
+-x /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_roslin_v1.fa \
+--sensitive-local \
+--threads 48 \
+--no-unal \
+-k 5 \
+-U $file \
+-S $results_file; \
+done >> bowtieout.txt 2>&1
+
+
+```
+
+```{bash}
+# check % alignment from Bowtie
+
+grep "overall alignment rate" /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_sam/bowtieout.txt
+
+# average alignment rate = 87.8% +/- 1.3
+
+```
+
+
+```{bash}
+# Convert .sam files to .bam files, create bam indices
+
+mkdir bowtie_bam/
+cd bowtie_bam/
+
+for file in /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_sam/*.sam
+do
+results_file="$(basename -a $file)_sorted.bam"
+/home/shared/samtools-1.12/samtools view -b $file | /home/shared/samtools-1.12/samtools sort -o /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_bam/$results_file
+done
+
+```
+
+```{bash}
+# check % alignment from bowtie2
+
+grep "overall alignment rate" /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_sam/bowtieout.txt
+
+```
+
+
+```{bash}
+
+#mkdir fastqc/
+#mkdir fastqc/trimmed/
+
+/home/shared/FastQC/fastqc \
+/home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/trim-fastq/*.fastq \
+--outdir /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/fastqc/trimmed/ \
+--quiet
+
+```
+
+
+
+```{bash}
+# Assemble bowtie alignments w/ stringtie2 using mRNA genome feature track
+array=($(ls /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_bam/*.bam))
+
+for i in ${array[@]}; do
+        sample_name=`echo $i| awk -F [.] '{print $1}'`
+	      /home/shared/stringtie-2.2.1.Linux_x86_64/stringtie \
+	      -p 48 \
+	      -e \
+	      -B \
+	      -G /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_mRNA.gff \
+	      -A ${sample_name}.gene_abund.tab \
+	      -o ${sample_name}.gtf ${i} \
+
+        echo "StringTie assembly for seq file ${i}" $(date)
+done
+
+echo "StringTie assembly COMPLETE, starting assembly analysis" $(date)
+
+# 20220607 - I could not figure out how to designate the output. All outputs ended up in bowtie output folder.
+
+```
+
+```{bash}
+
+cd /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/bowtie_bam
+
+# make gtf list file (needed for stringtie merge function)
+for filename in *.gtf; do 
+  echo $PWD/$filename; 
+  done > gtf_list.txt
+
+# make listGTF file (needed for count matrix), two columns w/ sample ID
+for filename in *.gtf; do 
+  echo $filename $PWD/$filename; 
+  done > listGTF.txt
+
+# merge GTFs into a single file
+/home/shared/stringtie-2.2.1.Linux_x86_64/stringtie \
+  --merge \
+  -p 48 \
+	-G /home/shared/8TB_HDD_02/mattgeorgephd/NOPP-gigas-ploidy-temp/sequences/cgigas_uk_roslin_v1_mRNA.gff \
+	-o cgigas_merged.gtf gtf_list.txt #Merge GTFs to form $
+
+echo "Stringtie merge complete" $(date)
+
+# Compute accuracy of gff
+# gffcompare -r ../../../refs/Panopea-generosa-v1.0.a4.mRNA_SJG.gff3 -G -o merged Pgenerosa_merged.gtf #Compute the accuracy and pre$
+# echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
+
+# Compile gene count matrix from GTFs
+/home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py \
+  -g cgigas_gene_count_matrix.csv \
+  -i listGTF.txt #Compile the gene count matrix
+
+echo "Gene count matrix compiled." $(date)
+
+```
+

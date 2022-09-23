@@ -1,0 +1,262 @@
+GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0002934,desmosome organization,9,9,0.02,0.00000000000000000000000011
+GO:0086042,cardiac muscle cell-cardiac muscle cell ...,9,9,0.02,0.00000000000000000000000011
+GO:0086073,bundle of His cell-Purkinje myocyte adhe...,9,9,0.02,0.00000000000000000000000011
+GO:0098911,regulation of ventricular cardiac muscle...,9,9,0.02,0.00000000000000000000000011
+GO:0086069,bundle of His cell to Purkinje myocyte c...,11,9,0.02,0.00000000000000000000000577
+GO:0071896,protein localization to adherens junctio...,16,9,0.03,0.00000000000000000000119137
+GO:0150105,protein localization to cell-cell juncti...,16,9,0.03,0.00000000000000000000119137
+GO:0003223,ventricular compact myocardium morphogen...,18,9,0.03,0.00000000000000000000504954
+GO:0045109,intermediate filament organization,30,9,0.05,0.00000000000000000146181216
+GO:0018149,peptide cross-linking,38,9,0.07,0.00000000000000001647495226
+GO:0055010,ventricular cardiac muscle tissue morpho...,38,9,0.07,0.00000000000000001647495226
+GO:0003229,ventricular cardiac muscle tissue develo...,41,9,0.07,0.00000000000000003526344162
+GO:0045103,intermediate filament-based process,51,9,0.09,0.00000000000000030207657876
+GO:0045104,intermediate filament cytoskeleton organ...,51,9,0.09,0.00000000000000030207657876
+GO:0003208,cardiac ventricle morphogenesis,56,9,0.1,0.00000000000000074712348772
+GO:0034113,heterotypic cell-cell adhesion,60,9,0.11,0.00000000000000144995195359
+GO:0086005,ventricular cardiac muscle cell action p...,66,9,0.12,0.00000000000000360083336281
+GO:1902414,protein localization to cell junction,74,9,0.13,0.00000000000001063547542041
+GO:0017055,negative regulation of RNA polymerase II...,5,5,0.01,0.00000000000001623001729838
+GO:0060633,negative regulation of transcription ini...,5,5,0.01,0.00000000000001623001729838
+GO:2000143,negative regulation of DNA-templated tra...,5,5,0.01,0.00000000000001623001729838
+GO:0086002,cardiac muscle cell action potential inv...,86,9,0.16,0.00000000000004353286430374
+GO:0055008,cardiac muscle tissue morphogenesis,88,9,0.16,0.00000000000005394028157277
+GO:0034332,adherens junction organization,89,9,0.16,0.00000000000005992679919430
+GO:0086065,cell communication involved in cardiac c...,89,9,0.16,0.00000000000005992679919430
+GO:0098901,regulation of cardiac muscle cell action...,99,9,0.18,0.00000000000016099091954294
+GO:0060415,muscle tissue morphogenesis,100,9,0.18,0.00000000000017667200356571
+GO:0086004,regulation of cardiac muscle cell contra...,100,9,0.18,0.00000000000017667200356571
+GO:1903115,regulation of actin filament-based movem...,100,9,0.18,0.00000000000017667200356571
+GO:0003231,cardiac ventricle development,106,9,0.19,0.00000000000030250744998222
+GO:0086091,regulation of heart rate by cardiac cond...,109,9,0.2,0.00000000000039113964594222
+GO:0030216,keratinocyte differentiation,118,9,0.21,0.00000000000081025122499625
+GO:0045898,regulation of RNA polymerase II transcri...,8,5,0.01,0.00000000000090514582250126
+GO:0003206,cardiac chamber morphogenesis,144,9,0.26,0.00000000000497232863052005
+GO:0048644,muscle organ morphogenesis,145,9,0.26,0.00000000000529414981368225
+GO:0008348,negative regulation of antimicrobial hum...,11,5,0.02,0.00000000000743676568122607
+GO:0002027,regulation of heart rate,153,9,0.28,0.00000000000860651384757745
+GO:0086003,cardiac muscle cell contraction,164,9,0.3,0.00000000001609857990143625
+GO:0055117,regulation of cardiac muscle contraction,167,9,0.3,0.00000000001895117105961305
+GO:0098900,regulation of action potential,174,9,0.32,0.00000000002740797066536384
+GO:0002921,negative regulation of humoral immune re...,15,5,0.03,0.00000000004807430412056100
+GO:0003205,cardiac chamber development,206,9,0.37,0.00000000012392255526521823
+GO:0070252,actin-mediated cell contraction,207,9,0.38,0.00000000012937853484667932
+GO:0086001,cardiac muscle cell action potential,212,9,0.38,0.00000000015996182429913966
+GO:0061337,cardiac conduction,216,9,0.39,0.00000000018884561730553342
+GO:0006268,DNA unwinding involved in DNA replicatio...,20,5,0.04,0.00000000024650232294857496
+GO:0051123,RNA polymerase II preinitiation complex ...,21,5,0.04,0.00000000032309055612175680
+GO:0060048,cardiac muscle contraction,233,9,0.42,0.00000000036945042834086962
+GO:0060260,regulation of transcription initiation f...,23,5,0.04,0.00000000053279635415967948
+GO:0048738,cardiac muscle tissue development,244,9,0.44,0.00000000055517611125383580
+GO:0006937,regulation of muscle contraction,352,10,0.64,0.00000000070878855029877210
+GO:0006942,regulation of striated muscle contractio...,254,9,0.46,0.00000000079080701396848471
+GO:0002920,regulation of humoral immune response,106,7,0.19,0.00000000091556574153145193
+GO:0030048,actin filament-based movement,259,9,0.47,0.00000000093866657205781841
+GO:0032102,negative regulation of response to exter...,370,10,0.67,0.00000000114623173388711602
+GO:0043588,skin development,269,9,0.49,0.00000000130899841545191917
+GO:0009913,epidermal cell differentiation,273,9,0.5,0.00000000148979552290588142
+GO:0014706,striated muscle tissue development,273,9,0.5,0.00000000148979552290588142
+GO:0070897,transcription preinitiation complex asse...,29,5,0.05,0.00000000186493976983099044
+GO:0050708,regulation of protein secretion,391,10,0.71,0.00000000194784774258583102
+GO:0001508,action potential,284,9,0.52,0.00000000210503177821379465
+GO:2000142,regulation of DNA-templated transcriptio...,30,5,0.05,0.00000000223485859589401342
+GO:0045216,cell-cell junction organization,316,9,0.57,0.00000000533637908853885825
+GO:0008016,regulation of heart contraction,317,9,0.57,0.00000000548480127772875708
+GO:0035637,multicellular organismal signaling,322,9,0.58,0.00000000628258449101338639
+GO:0051224,negative regulation of protein transport,141,7,0.26,0.00000000676397745380437368
+GO:1904950,negative regulation of establishment of ...,141,7,0.26,0.00000000676397745380437368
+GO:0002759,regulation of antimicrobial humoral resp...,38,5,0.07,0.00000000778578873653102539
+GO:0034109,homotypic cell-cell adhesion,332,9,0.6,0.00000000818884010312161425
+GO:0006941,striated muscle contraction,337,9,0.61,0.00000000931938090743021066
+GO:0070162,adiponectin secretion,14,4,0.03,0.00000000954319517058936751
+GO:0070163,regulation of adiponectin secretion,14,4,0.03,0.00000000954319517058936751
+GO:0070165,positive regulation of adiponectin secre...,14,4,0.03,0.00000000954319517058936751
+GO:1903522,regulation of blood circulation,338,9,0.61,0.00000000956122081265374376
+GO:0090257,regulation of muscle system process,480,10,0.87,0.00000001371514558508967322
+GO:0050709,negative regulation of protein secretion,89,6,0.16,0.00000001384131379650785564
+GO:0009306,protein secretion,499,10,0.91,0.00000001977722460163799080
+GO:0035592,establishment of protein localization to...,499,10,0.91,0.00000001977722460163799080
+GO:0043388,positive regulation of DNA binding,47,5,0.09,0.00000002350140726266579426
+GO:0035356,cellular triglyceride homeostasis,18,4,0.03,0.00000002901656866813351626
+GO:0071692,protein localization to extracellular re...,521,10,0.94,0.00000002966469441134719727
+GO:0071638,negative regulation of monocyte chemotac...,19,4,0.03,0.00000003670495213684470541
+GO:0060047,heart contraction,396,9,0.72,0.00000003731676797996875083
+GO:0003015,heart process,399,9,0.72,0.00000003980332561567535090
+GO:0008544,epidermis development,417,9,0.76,0.00000005799494549821334778
+GO:0051223,regulation of protein transport,756,11,1.37,0.00000009326278183829907711
+GO:0032879,regulation of localization,3940,23,7.15,0.00000010038340192404379819
+GO:0006936,muscle contraction,595,10,1.08,0.00000010234833566646596611
+GO:0032970,regulation of actin filament-based proce...,768,11,1.39,0.00000010925052988311970279
+GO:0070201,regulation of establishment of protein l...,773,11,1.4,0.00000011660131329937544087
+GO:1903828,negative regulation of protein localizat...,214,7,0.39,0.00000011948696590493598248
+GO:0007379,segment specification,66,5,0.12,0.00000013339921809506278455
+GO:0045721,negative regulation of gluconeogenesis,27,4,0.05,0.00000016441776587549074445
+GO:0071605,monocyte chemotactic protein-1 productio...,27,4,0.05,0.00000016441776587549074445
+GO:0071637,regulation of monocyte chemotactic prote...,27,4,0.05,0.00000016441776587549074445
+GO:0042058,regulation of epidermal growth factor re...,136,6,0.25,0.00000017540020233719813903
+GO:1901184,regulation of ERBB signaling pathway,138,6,0.25,0.00000019124193631348228035
+GO:0032682,negative regulation of chemokine product...,29,4,0.05,0.00000022191485264168519282
+GO:0032508,DNA duplex unwinding,75,5,0.14,0.00000025446546831241814949
+GO:0032392,DNA geometric change,77,5,0.14,0.00000029050320893592244177
+GO:0002832,negative regulation of response to bioti...,83,5,0.15,0.00000042339994661771657328
+GO:0003012,muscle system process,717,10,1.3,0.00000056705176980229562850
+GO:0071103,DNA conformation change,88,5,0.16,0.00000056738413578209062047
+GO:0042060,wound healing,549,9,1,0.00000058720577216312482517
+GO:0006111,regulation of gluconeogenesis,37,4,0.07,0.00000061048708440030392563
+GO:0050777,negative regulation of immune response,90,5,0.16,0.00000063477567990370052948
+GO:1903531,negative regulation of secretion by cell,171,6,0.31,0.00000067576768139523428255
+GO:0055090,acylglycerol homeostasis,38,4,0.07,0.00000068139311918428014441
+GO:0070328,triglyceride homeostasis,38,4,0.07,0.00000068139311918428014441
+GO:0003007,heart morphogenesis,559,9,1.01,0.00000068217463341752625438
+GO:0032101,regulation of response to external stimu...,1142,12,2.07,0.00000074010251174647776794
+GO:0051048,negative regulation of secretion,185,6,0.34,0.00000107000452201652838360
+GO:0051270,regulation of cellular component movemen...,1422,13,2.58,0.00000113008621382039508836
+GO:0008015,blood circulation,605,9,1.1,0.00000131125343983960576536
+GO:1903530,regulation of secretion by cell,789,10,1.43,0.00000134608389799775721456
+GO:0006959,humoral immune response,307,7,0.56,0.00000135390363150982871710
+GO:0003013,circulatory system process,615,9,1.12,0.00000150044113519179864204
+GO:0060986,endocrine hormone secretion,48,4,0.09,0.00000177222184278035364835
+GO:0042391,regulation of membrane potential,630,9,1.14,0.00000182836489242424116933
+GO:0051101,regulation of DNA binding,114,5,0.21,0.00000205169127727343642053
+GO:0006367,transcription initiation from RNA polyme...,123,5,0.22,0.00000298273714944474885747
+GO:0034036,purine ribonucleoside bisphosphate biosy...,2,2,0,0.00000322900112535766440052
+GO:0046963,3'-phosphoadenosine 5'-phosphosulfate tr...,2,2,0,0.00000322900112535766440052
+GO:0050428,3'-phosphoadenosine 5'-phosphosulfate bi...,2,2,0,0.00000322900112535766440052
+GO:0051046,regulation of secretion,875,10,1.59,0.00000338717917848298116041
+GO:0044057,regulation of system process,877,10,1.59,0.00000345635225050719132396
+GO:0010677,negative regulation of cellular carbohyd...,57,4,0.1,0.00000355450817433035282577
+GO:0050728,negative regulation of inflammatory resp...,129,5,0.23,0.00000376832518608960557972
+GO:0006094,gluconeogenesis,59,4,0.11,0.00000408448153237010676058
+GO:0045912,negative regulation of carbohydrate meta...,64,4,0.12,0.00000566397145227825762285
+GO:0032642,regulation of chemokine production,66,4,0.12,0.00000640753411677979943430
+GO:0019319,hexose biosynthetic process,67,4,0.12,0.00000680522138760081344178
+GO:0032602,chemokine production,67,4,0.12,0.00000680522138760081344178
+GO:0048583,regulation of response to stimulus,5411,24,9.81,0.00000762450073857491719860
+GO:0019730,antimicrobial humoral response,153,5,0.28,0.00000866499632903044804746
+GO:0060537,muscle tissue development,773,9,1.4,0.00000956682696431209989279
+GO:0065004,protein-DNA complex assembly,157,5,0.28,0.00000982124378323961904486
+GO:0032880,regulation of protein localization,1222,11,2.22,0.00001005033552301705791591
+GO:0050886,endocrine process,74,4,0.13,0.00001012035255499596268780
+GO:0007517,muscle organ development,784,9,1.42,0.00001070781740910022278128
+GO:0006352,DNA-templated transcription, initiation,160,5,0.29,0.00001076493820954853605385
+GO:0007173,epidermal growth factor receptor signali...,277,6,0.5,0.00001091112519795656304079
+GO:0038127,ERBB signaling pathway,287,6,0.52,0.00001333850102740168238041
+GO:0060429,epithelium development,2379,15,4.31,0.00001431306916795320162633
+GO:0033036,macromolecule localization,4825,22,8.75,0.00001484180966134152806005
+GO:0046364,monosaccharide biosynthetic process,82,4,0.15,0.00001521964003720281887475
+GO:0009611,response to wounding,830,9,1.51,0.00001683205657777819933300
+GO:0031333,negative regulation of protein-containin...,302,6,0.55,0.00001778242301744620271382
+GO:0035218,leg disc development,181,5,0.33,0.00001952159792495348475221
+GO:0031348,negative regulation of defense response,182,5,0.33,0.00002004557718478705815538
+GO:0062014,negative regulation of small molecule me...,88,4,0.16,0.00002012853309747257636239
+GO:0008104,protein localization,4221,20,7.66,0.00002535815399408751155685
+GO:0070206,protein trimerization,95,4,0.17,0.00002722310437266323913941
+GO:0051051,negative regulation of transport,489,7,0.89,0.00002808071488976458576856
+GO:0002831,regulation of response to biotic stimulu...,496,7,0.9,0.00003073744749154158466004
+GO:0006261,DNA-templated DNA replication,201,5,0.36,0.00003225756979713020054009
+GO:0097435,supramolecular fiber organization,1698,12,3.08,0.00004168523187743519258820
+GO:0051099,positive regulation of binding,213,5,0.39,0.00004252536125864760682518
+GO:0030855,epithelial cell differentiation,1188,10,2.15,0.00004760108915270626144759
+GO:0051503,adenine nucleotide transport,6,2,0.01,0.00004820984424709043487944
+GO:0071824,protein-DNA complex subunit organization,222,5,0.4,0.00005176084750718036684314
+GO:0002683,negative regulation of immune system pro...,381,6,0.69,0.00006495093117948014217137
+GO:0043255,regulation of carbohydrate biosynthetic ...,119,4,0.22,0.00006575293157695913143397
+GO:0051239,regulation of multicellular organismal p...,3460,17,6.28,0.00008370828966608445925041
+GO:0055088,lipid homeostasis,127,4,0.23,0.00008466284304804701850433
+GO:0006338,chromatin remodeling,251,5,0.46,0.00009239636178217907193193
+GO:0045444,fat cell differentiation,278,5,0.5,0.00015
+GO:0072359,circulatory system development,1965,12,3.56,0.00017
+GO:0046887,positive regulation of hormone secretion,152,4,0.28,0.00017
+GO:0050727,regulation of inflammatory response,295,5,0.54,0.00020
+GO:0015865,purine nucleotide transport,12,2,0.02,0.00021
+GO:0015868,purine ribonucleotide transport,12,2,0.02,0.00021
+GO:0048585,negative regulation of response to stimu...,2023,12,3.67,0.00022
+GO:0061077,chaperone-mediated protein folding,65,3,0.12,0.00023
+GO:0000413,protein peptidyl-prolyl isomerization,13,2,0.02,0.00025
+GO:0031347,regulation of defense response,696,7,1.26,0.00025
+GO:0009888,tissue development,3418,16,6.2,0.00026
+GO:0043254,regulation of protein-containing complex...,710,7,1.29,0.00028
+GO:0001818,negative regulation of cytokine producti...,178,4,0.32,0.00031
+GO:0048729,tissue morphogenesis,1512,10,2.74,0.00034
+GO:0007507,heart development,1233,9,2.24,0.00034
+GO:0034330,cell junction organization,1241,9,2.25,0.00036
+GO:0050776,regulation of immune response,994,8,1.8,0.00040
+GO:0050896,response to stimulus,13390,37,24.29,0.00040
+GO:0050714,positive regulation of protein secretion,198,4,0.36,0.00046
+GO:0003008,system process,2874,14,5.21,0.00047
+GO:0061061,muscle structure development,1309,9,2.37,0.00053
+GO:0018208,peptidyl-proline modification,19,2,0.03,0.00054
+GO:0048523,negative regulation of cellular process,6113,22,11.09,0.00057
+GO:0006862,nucleotide transport,20,2,0.04,0.00060
+GO:0032940,secretion by cell,1645,10,2.98,0.00066
+GO:0030029,actin filament-based process,1961,11,3.56,0.00068
+GO:0098609,cell-cell adhesion,1368,9,2.48,0.00073
+GO:0140352,export from cell,1686,10,3.06,0.00080
+GO:0019538,protein metabolic process,7665,25,13.9,0.00088
+GO:0006457,protein folding,238,4,0.43,0.00092
+GO:0016051,carbohydrate biosynthetic process,239,4,0.43,0.00093
+GO:0006325,chromatin organization,438,5,0.79,0.00118
+GO:0051098,regulation of binding,441,5,0.8,0.00121
+GO:0007444,imaginal disc development,443,5,0.8,0.00124
+GO:0046903,secretion,1812,10,3.29,0.00139
+GO:0050427,3'-phosphoadenosine 5'-phosphosulfate me...,31,2,0.06,0.00145
+GO:0006260,DNA replication,462,5,0.84,0.00149
+GO:0043170,macromolecule metabolic process,13098,35,23.76,0.00164
+GO:0090365,regulation of mRNA modification,1,1,0,0.00181
+GO:0090367,negative regulation of mRNA modification,1,1,0,0.00181
+GO:2001144,regulation of phosphatidylinositol-3,4,5...,1,1,0,0.00181
+GO:2001145,negative regulation of phosphatidylinosi...,1,1,0,0.00181
+GO:0032502,developmental process,11043,31,20.03,0.00189
+GO:0006950,response to stress,5358,19,9.72,0.00196
+GO:0002682,regulation of immune system process,1581,9,2.87,0.00200
+GO:0007155,cell adhesion,2992,13,5.43,0.00222
+GO:0048519,negative regulation of biological proces...,6749,22,12.24,0.00224
+GO:0035282,segmentation,521,5,0.94,0.00251
+GO:0031327,negative regulation of cellular biosynth...,1671,9,3.03,0.00292
+GO:0009887,animal organ morphogenesis,2356,11,4.27,0.00296
+GO:0009890,negative regulation of biosynthetic proc...,1689,9,3.06,0.00313
+GO:0033866,nucleoside bisphosphate biosynthetic pro...,48,2,0.09,0.00345
+GO:0034030,ribonucleoside bisphosphate biosynthetic...,48,2,0.09,0.00345
+GO:0034033,purine nucleoside bisphosphate biosynthe...,48,2,0.09,0.00345
+GO:0006954,inflammatory response,564,5,1.02,0.00353
+GO:0046883,regulation of hormone secretion,347,4,0.63,0.00363
+GO:1901264,carbohydrate derivative transport,50,2,0.09,0.00374
+GO:0006464,cellular protein modification process,5711,19,10.36,0.00415
+GO:0036211,protein modification process,5711,19,10.36,0.00415
+GO:0010185,regulation of cellular defense response,53,2,0.1,0.00419
+GO:0072348,sulfur compound transport,53,2,0.1,0.00419
+GO:0071702,organic substance transport,4023,15,7.3,0.00429
+GO:0007275,multicellular organism development,9017,26,16.35,0.00436
+GO:1901564,organonitrogen compound metabolic proces...,9522,27,17.27,0.00442
+GO:0010906,regulation of glucose metabolic process,368,4,0.67,0.00446
+GO:0001868,regulation of complement activation, lec...,55,2,0.1,0.00451
+GO:0031324,negative regulation of cellular metaboli...,2866,12,5.2,0.00458
+GO:0051049,regulation of transport,2502,11,4.54,0.00470
+GO:0065003,protein-containing complex assembly,2523,11,4.58,0.00500
+GO:0030449,regulation of complement activation,60,2,0.11,0.00534
+GO:0023052,signaling,9645,27,17.49,0.00537
+GO:0009607,response to biotic stimulus,1852,9,3.36,0.00573
+GO:0010675,regulation of cellular carbohydrate meta...,397,4,0.72,0.00583
+GO:0044238,primary metabolic process,15105,37,27.4,0.00614
+GO:0007154,cell communication,9732,27,17.65,0.00615
+GO:0043412,macromolecule modification,5929,19,10.75,0.00634
+GO:0071705,nitrogen compound transport,3378,13,6.13,0.00635
+GO:1903532,positive regulation of secretion by cell,408,4,0.74,0.00641
+GO:0006968,cellular defense response,72,2,0.13,0.00761
+GO:0051047,positive regulation of secretion,429,4,0.78,0.00762
+GO:0046879,hormone secretion,433,4,0.79,0.00787
+GO:0006955,immune response,1950,9,3.54,0.00796
+GO:0010605,negative regulation of macromolecule met...,3078,12,5.58,0.00805
+GO:0023051,regulation of signaling,4771,16,8.65,0.00875
+GO:0001817,regulation of cytokine production,447,4,0.81,0.00878
+GO:0010646,regulation of cell communication,4776,16,8.66,0.00884
+GO:0051222,positive regulation of protein transport,449,4,0.81,0.00891
+GO:0009408,response to heat,236,3,0.43,0.00906
+GO:0006508,proteolysis,1993,9,3.61,0.00912
+GO:0009914,hormone transport,453,4,0.82,0.00919
+GO:0006109,regulation of carbohydrate metabolic pro...,454,4,0.82,0.00926
+GO:1904951,positive regulation of establishment of ...,454,4,0.82,0.00926
+GO:0044260,cellular macromolecule metabolic process,8537,24,15.48,0.00971
+GO:0007169,transmembrane receptor protein tyrosine ...,1331,7,2.41,0.00993
+GO:0071704,organic substance metabolic process,16043,38,29.1,0.00997

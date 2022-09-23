@@ -1,0 +1,220 @@
+GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0018026,peptidyl-lysine monomethylation,50,13,0.15,0.00000000000000000000022
+GO:0043516,regulation of DNA damage response, signa...,67,13,0.2,0.00000000000000000001479
+GO:0030330,DNA damage response, signal transduction...,131,13,0.39,0.00000000000000014526537
+GO:1901796,regulation of signal transduction by p53...,177,13,0.53,0.00000000000000766622186
+GO:0018022,peptidyl-lysine methylation,178,13,0.54,0.00000000000000825042140
+GO:0044332,Wnt signaling pathway involved in dorsal...,56,9,0.17,0.00000000000009017698283
+GO:0006479,protein methylation,229,13,0.69,0.00000000000021378567353
+GO:0008213,protein alkylation,229,13,0.69,0.00000000000021378567353
+GO:2001020,regulation of response to DNA damage sti...,233,13,0.7,0.00000000000026681480609
+GO:0042770,signal transduction in response to DNA d...,237,13,0.71,0.00000000000033165472333
+GO:1901629,regulation of presynaptic membrane organ...,23,7,0.07,0.00000000000041425653689
+GO:1901631,positive regulation of presynaptic membr...,23,7,0.07,0.00000000000041425653689
+GO:1903909,regulation of receptor clustering,23,7,0.07,0.00000000000041425653689
+GO:1903911,positive regulation of receptor clusteri...,23,7,0.07,0.00000000000041425653689
+GO:1904393,regulation of skeletal muscle acetylchol...,23,7,0.07,0.00000000000041425653689
+GO:1904395,positive regulation of skeletal muscle a...,23,7,0.07,0.00000000000041425653689
+GO:0072331,signal transduction by p53 class mediato...,260,13,0.78,0.00000000000107823961982
+GO:0018205,peptidyl-lysine modification,492,16,1.48,0.00000000000156595708244
+GO:0042475,odontogenesis of dentin-containing tooth,110,9,0.33,0.00000000004844835708215
+GO:0071340,skeletal muscle acetylcholine-gated chan...,43,7,0.13,0.00000000005186883615539
+GO:0030279,negative regulation of ossification,46,7,0.14,0.00000000008552931593901
+GO:0043414,macromolecule methylation,371,13,1.12,0.00000000009207086209812
+GO:0097105,presynaptic membrane assembly,48,7,0.14,0.00000000011708481188918
+GO:0099054,presynapse assembly,48,7,0.14,0.00000000011708481188918
+GO:0097104,postsynaptic membrane assembly,49,7,0.15,0.00000000013626757438592
+GO:0032259,methylation,385,13,1.16,0.00000000014521604522179
+GO:0051290,protein heterotetramerization,51,7,0.15,0.00000000018276875355294
+GO:0018193,peptidyl-amino acid modification,1652,23,4.97,0.00000000043447820577253
+GO:0042476,odontogenesis,147,9,0.44,0.00000000065594347049255
+GO:0090090,negative regulation of canonical Wnt sig...,152,9,0.46,0.00000000088296014101244
+GO:0099068,postsynapse assembly,66,7,0.2,0.00000000118545738722803
+GO:0097090,presynaptic membrane organization,67,7,0.2,0.00000000132055001736949
+GO:0099172,presynapse organization,74,7,0.22,0.00000000268658113710373
+GO:0051301,cell division,1553,21,4.67,0.00000000490321944369780
+GO:0043588,skin development,268,10,0.81,0.00000000856379391827713
+GO:0030178,negative regulation of Wnt signaling pat...,199,9,0.6,0.00000000942617673131990
+GO:0042733,embryonic digit morphogenesis,89,7,0.27,0.00000000991854299904683
+GO:0009950,dorsal/ventral axis specification,213,9,0.64,0.00000001700376353045432
+GO:0010224,response to UV-B,29,5,0.09,0.00000002471366806766948
+GO:0018153,isopeptide cross-linking via N6-(L-isogl...,3,3,0.01,0.00000002634813253460508
+GO:0018262,isopeptide cross-linking,3,3,0.01,0.00000002634813253460508
+GO:0050771,negative regulation of axonogenesis,106,7,0.32,0.00000003366240564737914
+GO:0001941,postsynaptic membrane organization,110,7,0.33,0.00000004353076620437657
+GO:1905477,positive regulation of protein localizat...,111,7,0.33,0.00000004634808377106935
+GO:0050731,positive regulation of peptidyl-tyrosine...,124,7,0.37,0.00000009953274870106222
+GO:0018199,peptidyl-glutamine modification,4,3,0.01,0.00000010516264112273130
+GO:0051124,synaptic assembly at neuromuscular junct...,125,7,0.38,0.00000010518165421318220
+GO:0001942,hair follicle development,133,7,0.4,0.00000016093176289251453
+GO:0043113,receptor clustering,138,7,0.42,0.00000020707680897556359
+GO:0071709,membrane assembly,141,7,0.42,0.00000023977370537218916
+GO:0060828,regulation of canonical Wnt signaling pa...,291,9,0.88,0.00000024412538564785986
+GO:0022405,hair cycle process,146,7,0.44,0.00000030391578119923706
+GO:0098773,skin epidermis development,150,7,0.45,0.00000036510972001034260
+GO:1905475,regulation of protein localization to me...,150,7,0.45,0.00000036510972001034260
+GO:0008544,epidermis development,416,10,1.25,0.00000051510705039864928
+GO:0030509,BMP signaling pathway,160,7,0.48,0.00000056493428419339620
+GO:0044091,membrane biogenesis,161,7,0.48,0.00000058918206089265249
+GO:0042633,hair cycle,162,7,0.49,0.00000061429824208375246
+GO:0080135,regulation of cellular response to stres...,924,14,2.78,0.00000066417454235078558
+GO:0071772,response to BMP,166,7,0.5,0.00000072395268749712996
+GO:0071773,cellular response to BMP stimulus,166,7,0.5,0.00000072395268749712996
+GO:0050730,regulation of peptidyl-tyrosine phosphor...,168,7,0.51,0.00000078466286445761193
+GO:0007049,cell cycle,3342,27,10.06,0.00000101905487186187106
+GO:0010975,regulation of neuron projection developm...,826,13,2.49,0.00000113978936209443468
+GO:0009953,dorsal/ventral pattern formation,360,9,1.08,0.00000143421924687065363
+GO:0051291,protein heterooligomerization,187,7,0.56,0.00000160712721548592499
+GO:0051262,protein tetramerization,273,8,0.82,0.00000176193427214000463
+GO:0060070,canonical Wnt signaling pathway,371,9,1.12,0.00000183612058068728591
+GO:0030278,regulation of ossification,194,7,0.58,0.00000205210553744802991
+GO:0070268,cornification,9,3,0.03,0.00000218444312548986906
+GO:0097264,self proteolysis,9,3,0.03,0.00000218444312548986906
+GO:0099173,postsynapse organization,201,7,0.6,0.00000259574715299455891
+GO:0000122,negative regulation of transcription by ...,899,13,2.71,0.00000289347666184593080
+GO:0030326,embryonic limb morphogenesis,207,7,0.62,0.00000315288542882099049
+GO:0035113,embryonic appendage morphogenesis,210,7,0.63,0.00000346684807633059051
+GO:0022404,molting cycle process,211,7,0.64,0.00000357712554288504581
+GO:0010977,negative regulation of neuron projection...,229,7,0.69,0.00000612239428543228956
+GO:0009954,proximal/distal pattern formation,231,7,0.7,0.00000648041684282481668
+GO:0030111,regulation of Wnt signaling pathway,438,9,1.32,0.00000705159942964434125
+GO:0006974,cellular response to DNA damage stimulus,1148,14,3.45,0.00000822740477256667197
+GO:0035108,limb morphogenesis,244,7,0.73,0.00000925779625392561259
+GO:0042303,molting cycle,251,7,0.76,0.00001112216091372185417
+GO:0050770,regulation of axonogenesis,261,7,0.79,0.00001431694005865766807
+GO:0080134,regulation of response to stress,1758,17,5.29,0.00001697553912272813215
+GO:0060173,limb development,275,7,0.83,0.00002003431761296742229
+GO:0009798,axis specification,523,9,1.57,0.00002865895621506635874
+GO:0031345,negative regulation of cell projection o...,292,7,0.88,0.00002939037316863532716
+GO:0031424,keratinization,21,3,0.06,0.00003369368909619299397
+GO:0018108,peptidyl-tyrosine phosphorylation,300,7,0.9,0.00003489843917023772307
+GO:0018212,peptidyl-tyrosine modification,305,7,0.92,0.00003875288002081968855
+GO:0007178,transmembrane receptor protein serine/th...,419,8,1.26,0.00003941896535952845462
+GO:0007601,visual perception,308,7,0.93,0.00004122883975644809365
+GO:0007528,neuromuscular junction development,311,7,0.94,0.00004383330484046343785
+GO:0001556,oocyte maturation,24,3,0.07,0.00005094116353928830485
+GO:0051259,protein complex oligomerization,856,11,2.58,0.00005241118396986034527
+GO:0061365,positive regulation of triglyceride lipa...,4,2,0.01,0.00005352328118603576153
+GO:0007416,synapse assembly,328,7,0.99,0.00006127278911183175135
+GO:0050953,sensory perception of light stimulus,329,7,0.99,0.00006245346721586282027
+GO:0050768,negative regulation of neurogenesis,347,7,1.04,0.00008710257114412013776
+GO:0030301,cholesterol transport,77,4,0.23,0.00008769456034266861827
+GO:0006897,endocytosis,1271,13,3.83,0.00011
+GO:0015918,sterol transport,82,4,0.25,0.00011
+GO:0051961,negative regulation of nervous system de...,366,7,1.1,0.00012
+GO:0045892,negative regulation of transcription, DN...,1288,13,3.88,0.00012
+GO:1902679,negative regulation of RNA biosynthetic ...,1291,13,3.89,0.00013
+GO:1903507,negative regulation of nucleic acid-temp...,1291,13,3.89,0.00013
+GO:0010721,negative regulation of cell development,386,7,1.16,0.00017
+GO:0050807,regulation of synapse organization,387,7,1.16,0.00017
+GO:0072657,protein localization to membrane,664,9,2,0.00018
+GO:0018149,peptide cross-linking,37,3,0.11,0.00019
+GO:0120035,regulation of plasma membrane bounded ce...,1361,13,4.1,0.00021
+GO:0031344,regulation of cell projection organizati...,1363,13,4.1,0.00022
+GO:0050896,response to stimulus,13317,57,40.08,0.00023
+GO:0051253,negative regulation of RNA metabolic pro...,1393,13,4.19,0.00027
+GO:0016055,Wnt signaling pathway,702,9,2.11,0.00027
+GO:0198738,cell-cell signaling by wnt,702,9,2.11,0.00027
+GO:0001503,ossification,563,8,1.69,0.00030
+GO:0030299,intestinal cholesterol absorption,9,2,0.03,0.00032
+GO:0098856,intestinal lipid absorption,9,2,0.03,0.00032
+GO:0048813,dendrite morphogenesis,433,7,1.3,0.00034
+GO:0050803,regulation of synapse structure or activ...,442,7,1.33,0.00038
+GO:0061580,colon epithelial cell migration,10,2,0.03,0.00040
+GO:0031327,negative regulation of cellular biosynth...,1666,14,5.01,0.00044
+GO:0009890,negative regulation of biosynthetic proc...,1685,14,5.07,0.00049
+GO:0051668,localization within membrane,765,9,2.3,0.00050
+GO:0071493,cellular response to UV-B,12,2,0.04,0.00058
+GO:1904948,midbrain dopaminergic neuron differentia...,12,2,0.04,0.00058
+GO:1904953,Wnt signaling pathway involved in midbra...,12,2,0.04,0.00058
+GO:1903829,positive regulation of protein localizat...,629,8,1.89,0.00062
+GO:0010976,positive regulation of neuron projection...,349,6,1.05,0.00066
+GO:0045934,negative regulation of nucleobase-contai...,1543,13,4.64,0.00070
+GO:0016358,dendrite development,643,8,1.94,0.00072
+GO:0009411,response to UV,235,5,0.71,0.00073
+GO:0048583,regulation of response to stimulus,5370,29,16.16,0.00076
+GO:0009650,UV protection,14,2,0.04,0.00080
+GO:0042420,dopamine catabolic process,14,2,0.04,0.00080
+GO:0042424,catecholamine catabolic process,14,2,0.04,0.00080
+GO:0044241,lipid digestion,14,2,0.04,0.00080
+GO:1905114,cell surface receptor signaling pathway ...,828,9,2.49,0.00087
+GO:0006357,regulation of transcription by RNA polym...,2005,15,6.03,0.00090
+GO:0006589,octopamine biosynthetic process,15,2,0.05,0.00092
+GO:0042421,norepinephrine biosynthetic process,15,2,0.05,0.00092
+GO:0042439,ethanolamine-containing compound metabol...,15,2,0.05,0.00092
+GO:0044340,canonical Wnt signaling pathway involved...,15,2,0.05,0.00092
+GO:0046333,octopamine metabolic process,15,2,0.05,0.00092
+GO:0060535,trachea cartilage morphogenesis,15,2,0.05,0.00092
+GO:0010558,negative regulation of macromolecule bio...,1591,13,4.79,0.00093
+GO:0034392,negative regulation of smooth muscle cel...,16,2,0.05,0.00105
+GO:0044335,canonical Wnt signaling pathway involved...,16,2,0.05,0.00105
+GO:0060534,trachea cartilage development,16,2,0.05,0.00105
+GO:0090118,receptor-mediated endocytosis involved i...,16,2,0.05,0.00105
+GO:0031175,neuron projection development,2275,16,6.85,0.00115
+GO:0019336,phenol-containing compound catabolic pro...,17,2,0.05,0.00118
+GO:0019614,catechol-containing compound catabolic p...,17,2,0.05,0.00118
+GO:0061582,intestinal epithelial cell migration,17,2,0.05,0.00118
+GO:0090009,primitive streak formation,17,2,0.05,0.00118
+GO:0001822,kidney development,540,7,1.63,0.00123
+GO:0042415,norepinephrine metabolic process,18,2,0.05,0.00133
+GO:0090244,Wnt signaling pathway involved in somito...,18,2,0.05,0.00133
+GO:0035107,appendage morphogenesis,547,7,1.65,0.00133
+GO:0051130,positive regulation of cellular componen...,1870,14,5.63,0.00135
+GO:0007600,sensory perception,886,9,2.67,0.00140
+GO:0090245,axis elongation involved in somitogenesi...,19,2,0.06,0.00148
+GO:1904886,beta-catenin destruction complex disasse...,19,2,0.06,0.00148
+GO:0021794,thalamus development,21,2,0.06,0.00181
+GO:0035261,external genitalia morphogenesis,21,2,0.06,0.00181
+GO:0060059,embryonic retina morphogenesis in camera...,21,2,0.06,0.00181
+GO:0048736,appendage development,578,7,1.74,0.00182
+GO:0048593,camera-type eye morphogenesis,292,5,0.88,0.00191
+GO:0071363,cellular response to growth factor stimu...,940,9,2.83,0.00209
+GO:0060439,trachea morphogenesis,23,2,0.07,0.00217
+GO:0006366,transcription by RNA polymerase II,2191,15,6.59,0.00218
+GO:0003344,pericardium morphogenesis,24,2,0.07,0.00237
+GO:0051597,response to methylmercury,24,2,0.07,0.00237
+GO:0009713,catechol-containing compound biosyntheti...,26,2,0.08,0.00278
+GO:0014029,neural crest formation,26,2,0.08,0.00278
+GO:0042423,catecholamine biosynthetic process,26,2,0.08,0.00278
+GO:0070848,response to growth factor,987,9,2.97,0.00290
+GO:0034390,smooth muscle cell apoptotic process,27,2,0.08,0.00299
+GO:0034391,regulation of smooth muscle cell apoptot...,27,2,0.08,0.00299
+GO:0050767,regulation of neurogenesis,634,7,1.91,0.00305
+GO:0010712,regulation of collagen metabolic process,28,2,0.08,0.00322
+GO:0009268,response to pH,101,3,0.3,0.00355
+GO:0003002,regionalization,1018,9,3.06,0.00355
+GO:0048666,neuron development,2548,16,7.67,0.00366
+GO:0030182,neuron differentiation,3034,18,9.13,0.00369
+GO:0042136,neurotransmitter biosynthetic process,31,2,0.09,0.00393
+GO:2000053,regulation of Wnt signaling pathway invo...,31,2,0.09,0.00393
+GO:2000055,positive regulation of Wnt signaling pat...,31,2,0.09,0.00393
+GO:0060536,cartilage morphogenesis,32,2,0.1,0.00419
+GO:0015850,organic hydroxy compound transport,219,4,0.66,0.00437
+GO:0060193,positive regulation of lipase activity,33,2,0.1,0.00445
+GO:0030917,midbrain-hindbrain boundary development,34,2,0.1,0.00472
+GO:0001934,positive regulation of protein phosphory...,878,8,2.64,0.00498
+GO:0009966,regulation of signal transduction,4158,22,12.51,0.00514
+GO:0030216,keratinocyte differentiation,117,3,0.35,0.00535
+GO:0007156,homophilic cell adhesion via plasma memb...,373,5,1.12,0.00543
+GO:0050892,intestinal absorption,37,2,0.11,0.00557
+GO:0009719,response to endogenous stimulus,2198,14,6.61,0.00587
+GO:0010656,negative regulation of muscle cell apopt...,38,2,0.11,0.00587
+GO:0021903,rostrocaudal neural tube patterning,38,2,0.11,0.00587
+GO:0048699,generation of neurons,3176,18,9.56,0.00596
+GO:0060325,face morphogenesis,39,2,0.12,0.00617
+GO:0048251,elastic fiber assembly,40,2,0.12,0.00649
+GO:0001932,regulation of protein phosphorylation,1329,10,4,0.00660
+GO:0050808,synapse organization,740,7,2.23,0.00700
+GO:0071542,dopaminergic neuron differentiation,42,2,0.13,0.00713
+GO:0048468,cell development,4295,22,12.93,0.00755
+GO:0042133,neurotransmitter metabolic process,44,2,0.13,0.00780
+GO:0000902,cell morphogenesis,2275,14,6.85,0.00787
+GO:0030901,midbrain development,45,2,0.14,0.00815
+GO:0043627,response to estrogen,46,2,0.14,0.00851
+GO:0042327,positive regulation of phosphorylation,964,8,2.9,0.00856
+GO:0048598,embryonic morphogenesis,1383,10,4.16,0.00863
+GO:0022008,neurogenesis,3557,19,10.7,0.00876
+GO:0071397,cellular response to cholesterol,47,2,0.14,0.00887
+GO:0070723,response to cholesterol,48,2,0.14,0.00923
+GO:0036315,cellular response to sterol,49,2,0.15,0.00961
+GO:0072001,renal system development,787,7,2.37,0.00964

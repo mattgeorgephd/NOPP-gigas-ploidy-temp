@@ -1,0 +1,296 @@
+---
+title: "morphometrics_analysis"
+author: "Matt George"
+date: '2022-09-01'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load packages; set ggplot theme
+```{r message=TRUE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","bestNormalize","agricolae","nlme","multcomp","rstatix","lme4","lmerTest") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.2),
+                  rect              = element_rect(size=1.2),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.2),
+                  legend.key        = element_blank(), # removes background of legend bullets
+                  legend.position   = "none"
+                  ) 
+```
+### Define SE function
+```{r}
+
+summary_se <- function(.data, measure_var, ..., .ci = 0.95, na.rm = FALSE) {
+  
+  measure_var <- dplyr::enquo(measure_var)
+  group_var <- dplyr::enquos(...)
+  
+  .data %>%
+    group_by(!!! group_var) %>%
+    summarise(mean = mean(!! measure_var, na.rm = na.rm),
+              sd = sd(!! measure_var, na.rm = na.rm),
+              n = n(),
+              se = sd/sqrt(n),
+              ci = se * qt(.ci/2 + 0.5, n-1)) %>%
+    ungroup()
+  
+}
+
+```
+
+### LOAD data set
+```{r}
+# Load datasets
+key             <- read_excel("morphometrics/EXP2_morphometrics.xlsx", 
+                              sheet = "summary", col_names = TRUE)
+
+
+
+# summarize by ploidy * treatment
+# key %>% group_by(ploidy_trt) %>% summarise(mean=mean(shell_length,na.rm = TRUE), sd=sd(shell_length,na.rm = TRUE), count=n())
+
+
+
+shell_length <- key %>% group_by(trt_list) %>% summary_se(shell_length, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+shell_length$parameter <- "shell_length"
+
+
+shell_width <- key %>% group_by(trt_list) %>% summary_se(shell_width, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+shell_width$parameter <- "shell_width"
+
+shell_height <- key %>% group_by(trt_list) %>% summary_se(shell_height, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+shell_height$parameter <- "shell_height"
+
+dry_weight <- key %>% group_by(trt_list) %>% summary_se(dry_weight, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+dry_weight$parameter <- "dry_weight"
+
+shell_volume <- key %>% group_by(trt_list) %>% summary_se(shell_volume, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+shell_volume$parameter <- "shell_volume"
+
+calc_dry_weight <- key %>% group_by(trt_list) %>% summary_se(calc_dry_weight, # response variable
+                                   trt_list  , # group variable
+                                   .ci = 0.95) # confidence interval
+calc_dry_weight$parameter <- "calc_dry_weight"
+
+
+output <- rbind(shell_length,shell_width,shell_height,dry_weight,shell_volume,calc_dry_weight)
+
+
+# save output
+write.table(output, file = "stats/morphometrics.csv", row.names = FALSE)
+
+```
+
+
+
+### Statistical Testing
+```{R}
+# Define dataset for analysis, factors
+dat_stat <- key
+test_me <- dat_stat$shell_length
+
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+dat_stat$group_list <- factor(dat_stat$group_list)
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ group_list * ploidy, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+tx <- with(dat_stat, interaction(group_list, ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary[[1]],  file = "stats/aov_shell_length.csv",  row.names = TRUE)
+write.table(mult_comp$groups,      file = "stats/HSD_shell_length.csv",  row.names = TRUE)
+
+
+```
+### Statistical Testing
+```{R}
+# Define dataset for analysis, factors
+dat_stat <- key
+test_me <- dat_stat$shell_height
+
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+dat_stat$group_list <- factor(dat_stat$group_list)
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ group_list * ploidy, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+tx <- with(dat_stat, interaction(group_list, ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary[[1]],  file = "stats/aov_shell_height.csv",  row.names = TRUE)
+write.table(mult_comp$groups,      file = "stats/HSD_shell_height.csv",  row.names = TRUE)
+
+
+```
+
+### Statistical Testing
+```{R}
+# Define dataset for analysis, factors
+dat_stat <- key
+test_me <- dat_stat$shell_width
+
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+dat_stat$group_list <- factor(dat_stat$group_list)
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ group_list * ploidy, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+tx <- with(dat_stat, interaction(group_list, ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary[[1]],  file = "stats/aov_shell_width.csv",  row.names = TRUE)
+write.table(mult_comp$groups,      file = "stats/HSD_shell_width.csv",  row.names = TRUE)
+
+
+```
+
+
+### Statistical Testing
+```{R}
+# Define dataset for analysis, factors
+dat_stat <- key
+test_me <- dat_stat$shell_volume
+
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+dat_stat$group_list <- factor(dat_stat$group_list)
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ group_list * ploidy, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+tx <- with(dat_stat, interaction(group_list, ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary[[1]],  file = "stats/aov_shell_volume.csv",  row.names = TRUE)
+write.table(mult_comp$groups,      file = "stats/HSD_shell_volume.csv",  row.names = TRUE)
+
+
+```

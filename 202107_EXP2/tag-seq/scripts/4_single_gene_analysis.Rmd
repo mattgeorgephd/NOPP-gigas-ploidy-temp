@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 # List of packages we want to install (run every time)
-load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","agricolae","multcomp","nlme","Johnson","jtrans","nortest")
+load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","agricolae","multcomp","nlme","Johnson","jtrans","nortest","beepr")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -62,27 +62,27 @@ my_theme <- theme(line              = element_line(size=1.5),
 ```{r load_data, inlcude = TRUE}
 
 # Load LOCID to gene description tables, compare, find gigas and mito genes
-a1 <- read.delim("../data/GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt", header = TRUE)
+a1 <- read.delim("data/GCF_902806645.1_cgigas_uk_roslin_v1_feature_table.txt", header = TRUE)
 a1 <- a1 %>% filter(X..feature == "CDS")
 a1 <- a1[,c("symbol","name")]
 colnames(a1) <- c("LOCID","description")
 a1 <- distinct(a1, LOCID, .keep_all = TRUE)
-a2 <- read.delim("../data/LOCID_38222_Roslin_Gigas_mito.txt", header = TRUE)
+a2 <- read.delim("data/LOCID_38222_Roslin_Gigas_mito.txt", header = TRUE)
 colnames(a2) <- c("LOCID","description")
 a3 <- anti_join(a2,a1, by="LOCID")
 a1$feature <- 'genome'
 a3$feature <- 'mito'
 LOCID_Roslin_gigas_gene_mito_table <- as.data.frame(rbind(a1,a3))
 LOCID_Roslin_gigas_gene_mito_table <- distinct(LOCID_Roslin_gigas_gene_mito_table, LOCID, .keep_all = TRUE)
-write.table(LOCID_Roslin_gigas_gene_mito_table, "../data/LOCID_Roslin_gigas_gene_mito.txt")
+write.table(LOCID_Roslin_gigas_gene_mito_table, "data/LOCID_Roslin_gigas_gene_mito.txt")
 rm(a1,a2,a3)
 
 # Import experimental design information
-trt_list <- read.csv("../data/treatments.csv", sep=',', header=TRUE, row.names = "ID")
+trt_list <- read.csv("data/treatments.csv", sep=',', header=TRUE, row.names = "ID")
 coldata <- trt_list[,c("ploidy","condition")]
 
 # Import gene_count_matrix
-cts <- as.matrix(read.csv("../data/20220608_gene_count_matrix.csv", sep=',', header=TRUE, row.names = "gene_id"))
+cts <- as.matrix(read.csv("data/20220906_HISAT2_gene_count_matrix.csv", sep=',', header=TRUE, row.names = "gene_id"))
 colnames(cts) <- row.names(trt_list) #!make sure column and row names for coldata and cts match
 all(colnames(cts) %in% rownames(coldata))
 
@@ -92,11 +92,12 @@ coldata$condition <- factor(coldata$condition)
 coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
 
 # Remove bad samples
-# MuliQC report: N56, X44
-# Pheatmap: M43, N57, R53, R62, T62, X42, X44 
-coldata <- coldata[!(row.names(coldata) %in% c('N56', 'X44', 'M43', 'N57', 'R53', 'R62', 'T62', 'X42', 'X44')),]
-cts <- as.matrix(subset(cts, select=-c(N56, X44, M43, N57, R53, R62, T62, X42, X44)))
-coldata %>% count(group)
+# MuliQC report: D54, N56, X44
+# Pheatmap outliers: R53?
+# BIPLOT outliers: R53, M43, N54, X42 
+coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44', 'R53', 'M43', 'N54', 'X42')),]
+cts <- as.matrix(subset(cts, select=-c(D54, N56, X44, R53, M43, N54, X42)))
+coldata %>% dplyr::count(group)
 all(colnames(cts) %in% rownames(coldata))
 
 # Reorder cts/coldata by group for easy visualization in pcaexplorer
@@ -120,11 +121,8 @@ rownames(cts) <- output
 
 # Create output folders
 ```{bash}
-pwd
-cd ..
-pwd
 
-mkdir single_gene_plots
+# mkdir single_gene_plots
 mkdir single_gene_plots/control_ploidy
 mkdir single_gene_plots/heat_ploidy
 mkdir single_gene_plots/desiccation_ploidy
@@ -179,13 +177,13 @@ dds <- dds[keep,]
 # Load gene tables
 ```{r} 
 
-control_ploidy        <- read.delim("../gene_tables/control_ploidy_characterized.txt",       sep = "," , header = TRUE) 
-heat_ploidy           <- read.delim("../gene_tables/heat_ploidy_characterized.txt",          sep = "," , header = TRUE) 
-desiccation_ploidy    <- read.delim("../gene_tables/desiccation_ploidy_characterized.txt",   sep = "," , header = TRUE) 
-diploid_heat          <- read.delim("../gene_tables/diploid_heat_characterized.txt",         sep = "," , header = TRUE) 
-diploid_desiccation   <- read.delim("../gene_tables/diploid_desiccation_characterized.txt",  sep = "," , header = TRUE) 
-triploid_heat         <- read.delim("../gene_tables/triploid_heat_characterized.txt",        sep = "," , header = TRUE)
-triploid_desiccation  <- read.delim("../gene_tables/triploid_desiccation_characterized.txt", sep = "," , header = TRUE)
+control_ploidy        <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_characterized.txt",       sep = "," , header = TRUE) 
+heat_ploidy           <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_characterized.txt",          sep = "," , header = TRUE) 
+desiccation_ploidy    <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/desiccation_ploidy_characterized.txt",   sep = "," , header = TRUE) 
+diploid_heat          <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_heat_characterized.txt",         sep = "," , header = TRUE) 
+diploid_desiccation   <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_characterized.txt",  sep = "," , header = TRUE) 
+triploid_heat         <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_characterized.txt",        sep = "," , header = TRUE)
+triploid_desiccation  <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_characterized.txt", sep = "," , header = TRUE)
 
 ```
 
@@ -239,7 +237,7 @@ for (i in 1:nrow(control_ploidy)){
       #     dp$count <- x_transformed
       # }
 
-      ggsave(filename = paste("../single_gene_plots/control_ploidy/plots/",round(control_ploidy$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/control_ploidy/plots/",round(control_ploidy$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -248,7 +246,7 @@ for (i in 1:nrow(control_ploidy)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/control_ploidy/stats/", round(control_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/control_ploidy/stats/", round(control_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
@@ -293,7 +291,7 @@ for (i in 1:nrow(heat_ploidy)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/heat_ploidy/plots/",round(heat_ploidy$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/heat_ploidy/plots/",round(heat_ploidy$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -302,7 +300,7 @@ for (i in 1:nrow(heat_ploidy)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/heat_ploidy/stats/", round(heat_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/heat_ploidy/stats/", round(heat_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
@@ -346,7 +344,7 @@ for (i in 1:nrow(desiccation_ploidy)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/desiccation_ploidy/plots/",round(desiccation_ploidy$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/desiccation_ploidy/plots/",round(desiccation_ploidy$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -355,7 +353,7 @@ for (i in 1:nrow(desiccation_ploidy)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/desiccation_ploidy/stats/", round(desiccation_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/desiccation_ploidy/stats/", round(desiccation_ploidy$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
@@ -399,7 +397,7 @@ for (i in 1:nrow(diploid_heat)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/diploid_heat/plots/",round(diploid_heat$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/diploid_heat/plots/",round(diploid_heat$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -408,7 +406,7 @@ for (i in 1:nrow(diploid_heat)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/diploid_heat/stats/", round(diploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/diploid_heat/stats/", round(diploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
@@ -452,7 +450,7 @@ for (i in 1:nrow(diploid_desiccation)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/diploid_desiccation/plots/",round(diploid_desiccation$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/diploid_desiccation/plots/",round(diploid_desiccation$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -461,7 +459,7 @@ for (i in 1:nrow(diploid_desiccation)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/diploid_desiccation/stats/", round(diploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/diploid_desiccation/stats/", round(diploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
@@ -505,7 +503,7 @@ for (i in 1:nrow(triploid_heat)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/triploid_heat/plots/",round(triploid_heat$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/triploid_heat/plots/",round(triploid_heat$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -514,7 +512,7 @@ for (i in 1:nrow(triploid_heat)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/triploid_heat/stats/", round(triploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/triploid_heat/stats/", round(triploid_heat$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
       
   
   } else {print(paste("#NOT FOUND:", plot_title))}
@@ -559,7 +557,7 @@ for (i in 1:nrow(triploid_desiccation)){
       amod <- aov(count ~ tx, data=dp)
       stat_output <- HSD.test(amod, "tx", group=TRUE, console=FALSE)
       
-      ggsave(filename = paste("../single_gene_plots/triploid_desiccation/plots/",round(triploid_desiccation$log2FoldChange[i], 
+      ggsave(filename = paste("single_gene_plots/triploid_desiccation/plots/",round(triploid_desiccation$log2FoldChange[i], 
                                                                            digits = 2),"_",lookup,".png",sep=""),
              plot   = p,
              dpi    = 300,
@@ -568,13 +566,13 @@ for (i in 1:nrow(triploid_desiccation)){
              height = 5,
              units  = "in")
       
-      write.table(stat_output$groups, file = paste("../single_gene_plots/triploid_desiccation/stats/", round(triploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+      write.table(stat_output$groups, file = paste("single_gene_plots/triploid_desiccation/stats/", round(triploid_desiccation$log2FoldChange[i], digits = 2),"_",lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
       
   
   } else {print(paste("#NOT FOUND:", plot_title))}
 }
 
-
+beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 ```{r message=TRUE, include=FALSE}
 # ATP & CS & heat ---------------------------------------------------------
@@ -625,7 +623,7 @@ for (i in 1:nrow(LOCID_ATP_CS)){
   amod <- aov(count ~ tx, data=dp)
   stat_output <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
   
-  ggsave(filename = paste("../single_gene_plots/ATP_CS/plots/",lookup,".png",sep=""),
+  ggsave(filename = paste("single_gene_plots/ATP_CS/plots/",lookup,".png",sep=""),
          plot   = p,
          dpi    = 300,
          device = "png",
@@ -633,7 +631,7 @@ for (i in 1:nrow(LOCID_ATP_CS)){
          height = 5,
          units  = "in")
   
-  write.table(stat_output$groups, file = paste("../single_gene_plots/ATP_CS/stats/", lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
+  write.table(stat_output$groups, file = paste("single_gene_plots/ATP_CS/stats/", lookup,".txt", sep = ""), sep=",", quote = FALSE,                                                                        row.names = TRUE)
   
   
   } else {print(paste("#NOT FOUND:", plot_title))}

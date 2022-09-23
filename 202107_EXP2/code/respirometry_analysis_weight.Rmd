@@ -1,0 +1,342 @@
+---
+title: "respirometry_analysis"
+author: "Matt George"
+date: '2022-07-21'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load packages; set ggplot theme
+```{r message=TRUE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","bestNormalize","agricolae","nlme","multcomp","rstatix","lme4","lmerTest") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.2),
+                  rect              = element_rect(size=1.2),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.2),
+                  legend.key        = element_blank(), # removes background of legend bullets
+                  legend.position   = "none"
+                  ) 
+```
+
+### LOAD data set
+```{r}
+# Load datasets
+key             <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "key", col_names = TRUE)
+resp_plot       <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "combo", col_names = TRUE)
+trt_list        <- read_excel("respirometry/output/processed_summary_oyster.xlsx", 
+                              sheet = "trt_list", col_names = TRUE)
+resp_plot$trt_list  <- factor(resp_plot$trt_list,  levels = trt_list$trt_list         , ordered=TRUE)
+resp_plot$timepoint <- factor(resp_plot$timepoint, levels = c("-10","1","2","6","10") , ordered=TRUE)
+
+# set alpha for boxplots
+alpha_set = 0.9
+
+# summarize by ploidy * timepoint * treatment
+resp_plot %>% group_by(trt_list) %>% summarise(mean=mean(SMR_weight), sd=sd(SMR_weight), count=n())
+
+# define SE
+summary_se <- function(.data, measure_var, ..., .ci = 0.95, na.rm = FALSE) {
+  
+  measure_var <- dplyr::enquo(measure_var)
+  group_var <- dplyr::enquos(...)
+  
+  .data %>%
+    group_by(!!! group_var) %>%
+    summarise(mean = mean(!! measure_var, na.rm = na.rm),
+              sd = sd(!! measure_var, na.rm = na.rm),
+              n = n(),
+              se = sd/sqrt(n),
+              ci = se * qt(.ci/2 + 0.5, n-1)) %>%
+    ungroup()
+  
+}
+
+
+
+```
+
+### boxplots, controls
+```{r}
+resp_plot_controls <- resp_plot %>% filter(trt == "control")
+trt_list_controls  <- trt_list %>% filter(trt == "control")
+
+
+bp1 <-  ggplot(resp_plot_controls, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE, varwidth = TRUE, alpha = alpha_set) +
+        scale_fill_manual(values=trt_list_controls$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        xlab(NULL) + ylab(NULL) + 
+        my_theme
+
+bp1
+
+ggsave("analyses/respiration/bp_respiration_controls.png",
+       plot   = bp1,
+       dpi    = 1200,
+       device = "png",
+       width  = 3,
+       height = 4,
+       units  = "in")
+
+```
+
+### boxplots, diploids - treatment only
+```{r}
+resp_plot_diploids <- resp_plot %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+trt_list_diploids  <- trt_list %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+
+
+bp2 <-  ggplot(resp_plot_diploids, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE, varwidth = TRUE, alpha = alpha_set) +
+        # geom_point(aes(x=as.factor(timepoint), y=SMR_weight, group=as.factor(trt_list)),
+        #            position=position_dodge(width=0.75),
+        #            size = 3, shape = 19, fill = "black", alpha = 1/10) +
+        scale_fill_manual(values=trt_list_diploids$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+        xlab(NULL) + ylab(NULL) + 
+        my_theme
+
+bp2
+
+ggsave("analyses/respiration/bp_respiration_diploids.png",
+       plot   = bp2,
+       dpi    = 1200,
+       device = "png",
+       width  = 4.5,
+       height = 4,
+       units  = "in")
+
+```
+
+### boxplots, triploids - treatment only
+```{r}
+resp_plot_triploids <- resp_plot %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+trt_list_triploids  <- trt_list %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+
+
+bp3 <-  ggplot(resp_plot_triploids, aes(x=as.factor(timepoint), y=SMR_weight, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE, varwidth = TRUE, alpha = alpha_set) +
+        # geom_point(aes(x=as.factor(timepoint), y=SMR_weight, group=as.factor(trt_list)),
+        #            position=position_dodge(width=0.75),
+        #            size = 3, shape = 19, fill = "black", alpha = 1/10) +
+        scale_fill_manual(values=trt_list_triploids$trt_colors) +
+        scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        xlab(NULL) + ylab(NULL) + 
+        my_theme
+
+bp3
+
+ggsave("analyses/respiration/bp_respiration_triploids.png",
+       plot   = bp3,
+       dpi    = 1200,
+       device = "png",
+       width  = 4.5,
+       height = 4,
+       units  = "in")
+
+```
+
+### linegraph, diploids - treatment only
+```{r}
+resp_plot_diploids <- resp_plot %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+trt_list_diploids  <- trt_list %>% filter(group_list == "D_heat_only" | group_list == "D_desiccation")
+# resp_plot_diploids$timepoint <- factor(resp_plot_diploids$timepoint, levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p1 <- ggplot(resp_plot_diploids, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1, alpha = 1) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("royalblue4","royalblue1")) +
+      scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      xlab(NULL) + ylab(NULL) + my_theme
+
+p1
+
+ggsave("analyses/respiration/line_respiration_diploids.png",
+       plot   = p1,
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+```
+
+### linegraph, triploids - treatment only
+```{r}
+resp_plot_triploids <- resp_plot %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+trt_list_triploids  <- trt_list %>% filter(group_list == "T_heat_only" | group_list == "T_desiccation")
+# resp_plot_triploids$timepoint <- factor(resp_plot_triploids$timepoint,levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p2 <- ggplot(resp_plot_triploids, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1, alpha = 0.7) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("#c62200","orangered1")) +
+      scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      xlab(NULL) + ylab(NULL) + my_theme
+
+p2
+
+ggsave("analyses/respiration/line_respiration_triploids.png",
+       plot   = p2,
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+```
+
+### linegraph, both ploidy - desiccation
+```{r}
+resp_plot_desiccation <- resp_plot %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+trt_list_desiccation  <- trt_list %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+# resp_plot_desiccation$timepoint <- factor(resp_plot_desiccation$timepoint, 
+#                                         levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+p3 <- ggplot(resp_plot_desiccation, aes(x=timepoint, y=SMR_weight, group=as.factor(ID), color=group_list)) +
+      # geom_point() +
+      geom_line(size=1, alpha = 0.9) +
+      # facet_wrap(~ID) +
+      scale_color_manual(values=c("royalblue4","#c62200")) +
+      scale_y_continuous(breaks = seq(0, 2, 0.5), limits = c(0, 2.1)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      xlab(NULL) + ylab(NULL) + my_theme
+
+p3
+
+ggsave("analyses/respiration/line_respiration_desiccation.png",
+       plot   = p3,
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+```
+
+### linegraph, overview of main result
+```{r}
+resp_plot_overview           <- resp_plot %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+trt_list_overview            <- trt_list  %>% filter(group_list == "D_desiccation" | group_list == "T_desiccation")
+resp_plot_overview$timepoint <- factor(resp_plot_overview$timepoint, 
+                                        levels=c("-10","1","2","6","10"),ordered=TRUE)
+
+# calculate mean +/e sE
+SMR_mean <- resp_plot_overview %>% summary_se(SMR_weight, # response variable
+                                              trt_list  , # group variable
+                                              .ci = 0.95) # confidence interval
+SMR_mean$timepoint <- c(-10,1,2,5,10,-10,1,2,5,10)
+SMR_mean$ploidy    <- c(rep("D",5),rep("T",5))
+
+p4 <- ggplot(SMR_mean[c(1:3,6:8),], aes(x=as.factor(timepoint), y=mean, group = ploidy, color=ploidy)) +
+      geom_errorbar(aes(  ymin = mean - ci, 
+                          ymax = mean + ci ),
+                          position = position_dodge(0.2),
+                          width = 0,
+                          alpha = 1,
+                          size = 1) +
+      geom_point(size=3.3, position = position_dodge(0.2)) +
+      geom_line(size=1, 
+                alpha = 1, 
+                position = position_dodge(0.1))  +
+      scale_color_manual(values=c("royalblue4","#c62200")) +
+      scale_y_continuous(breaks = seq(0, 2, 0.2), limits = c(0, 1.3)) +
+      # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) +
+      xlab(NULL) + ylab(NULL) + my_theme
+
+p4
+
+ggsave("analyses/respiration/overview.png",
+       plot   = p4,
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+```
+
+### Statistical Testing
+```{R}
+# Define dataset for analysis, factors
+dat_stat <- resp_plot
+test_me <- dat_stat$SMR_weight
+
+dat_stat$ID         <- factor(dat_stat$ID)
+dat_stat$trt        <- factor(dat_stat$trt)
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+dat_stat$timepoint  <- factor(dat_stat$timepoint)
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ (timepoint * ploidy * trt) +
+                       Error(1/ID), # Error(1|(factor(ID)/factor(trt))),
+                       data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+tx <- with(dat_stat, interaction(timepoint,trt,ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary$`Error: Within`[[1]], file = "stats/AOV_respirometry.csv",      row.names = TRUE)
+write.table(mult_comp$groups,                     file = "stats/HSD_test_respirometry.csv", row.names = TRUE)
+
+
+```

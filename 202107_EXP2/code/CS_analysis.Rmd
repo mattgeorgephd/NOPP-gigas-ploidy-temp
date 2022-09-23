@@ -1,0 +1,133 @@
+---
+title: "CS_analysis"
+author: "Matt George"
+output: html_document
+date: "2022-08-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages; set ggplot theme
+```{r message=FALSE, warning=FALSE}
+## clear workspace
+rm(list=ls())
+
+## Load Packages
+load.lib<-c("readxl","tidyverse","bestNormalize","agricolae","nlme","multcomp","rstatix") # List of required packages
+install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
+for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
+sapply(load.lib,require,character=TRUE) # Load all packages.
+
+## Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.2),
+                  rect              = element_rect(size=1.2),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"), #,angle=90),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.2),
+                  legend.key        = element_blank(), # removes background of legend bullets
+                  legend.position   = "none"
+                  ) 
+```
+
+
+LOAD dataset
+```{r}
+getwd()
+CS_plot     <- read_excel("citrate_synthase/results/results_all.xls",
+                              sheet = "results_unique", col_names = TRUE)
+trt_list        <- read_excel("citrate_synthase/results/results_all.xls", 
+                              sheet = "trt_list", col_names = TRUE)
+CS_plot$trt_list  <- factor(CS_plot$trt_list,  levels = trt_list$trt_list         , ordered=TRUE)
+CS_plot$trt  <- factor(CS_plot$trt,  levels = c("control","heat","desiccation")         , ordered=TRUE)
+
+
+# set alpha for boxplots
+alpha_set = 0.8
+
+# summarize by ploidy * timepoint * treatment
+CS_plot %>% group_by(trt_list) %>% summarise(mean=mean(CS_activity), sd=sd(CS_activity), count=n())
+
+```
+
+boxplots, CS_all
+```{r}
+
+bp1 <-  ggplot(CS_plot, aes(x=as.factor(trt), y=CS_activity, 
+                                       group=as.factor(trt_list), fill=trt_list)) +
+        geom_boxplot(colour = "black", size = 0.8,outlier.colour="black", outlier.shape = 16,
+                     outlier.size=1, notch=FALSE, varwidth = TRUE, alpha = alpha_set) +
+        scale_fill_manual(values=trt_list$trt_colors_overview) +
+        scale_y_continuous(breaks = seq(0, 15, 5), limits = c(0, 16)) +
+        # scale_x_continuous(breaks = seq(0, 30, 5), limits = c(0, 32)) + 
+        my_theme
+
+bp1
+
+ggsave("analyses/CS/bp_CS_all.png",
+       plot   = bp1,
+       dpi    = 600,
+       device = "png",
+       width  = 4.5,
+       height = 4,
+       units  = "in")
+
+```
+
+
+Statistical Testing
+```{R}
+CS_plot     <- read_excel("citrate_synthase/results/results_all.xls",
+                              sheet = "results_unique", col_names = TRUE)
+dat_stat <- CS_plot
+test_me <- dat_stat$CS_activity
+
+dat_stat$Label         <- factor(dat_stat$Label)
+dat_stat$trt        <- factor(dat_stat$trt)
+dat_stat$ploidy     <- factor(dat_stat$ploidy)
+
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me 
+
+my_test <- aov(response ~ ploidy * trt, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+tx <- with(dat_stat, interaction(trt,ploidy))
+amod <- aov(response ~ tx, data = dat_stat)
+mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+write.table(my_test_summary[[1]],                      file = "stats/AOV_CS.csv",      row.names = TRUE)
+write.table(mult_comp$groups,                     file = "stats/HSD_test_CS.csv", row.names = TRUE)
+
+
+```
+
+
+
+
+
+
