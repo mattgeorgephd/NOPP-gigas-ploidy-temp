@@ -1,0 +1,7 @@
+﻿trt,start (n),end (n),% survival
+D-control,88,83,94.31818182
+D-desiccation,88,75,85.22727273
+D-heat,88,80,90.90909091
+T-control,88,68,77.27272727
+T-desiccation,88,56,63.63636364
+T-heat,88,80,90.90909091

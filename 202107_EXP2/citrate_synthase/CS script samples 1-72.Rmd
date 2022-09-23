@@ -4,6 +4,7 @@ output: pdf_document
 author: Olivia Catttau | oliviacattau@gmail.com
 ---
 # Citrate Sythase Enzyme Data Analysis
+## Load Samples
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -195,26 +196,14 @@ results_unique<-results_unique[-c(37),]
 
 u_plot<-ggplot(data=results_unique,(aes(x=Protein..mg.ul., y=CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 u_plot
+```
 
-boxplot<-ggplot(data=results_unique, aes(x=factor(trt), y=CS.activity..nmol..mg.min..))+
-  geom_boxplot(aes(x=factor(trt), y=CS.activity..nmol..mg.min.., color=ploidy))+
-  theme_bw()+
-  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group")+ 
-  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=19)+
-  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=17)+
-  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=23)+geom_line(data=xxy, aes(x=final_list, y=final_mort/3, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,34),
-    # Add a second axis and specify its features
-    sec.axis = sec_axis(~.*3, name="% survival")
-  ) +theme(axis.title.y.right = element_text(color="red"))
 
-boxplot
-
-comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c("D-desiccation", "T-desiccation"))
-
-boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(ploidy), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
-boxplot2 #not significant
-
+## Statistical Analysis 
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
 ###################Statistical Analysis########################
 
 #null hypothesis: groups are not significantly different from each other (i.e, they are the same)
@@ -251,15 +240,8 @@ library(ggplot2)
 library(dplyr)
 library(ggpubr)
 library(tidyr)
-#factors for GLM
-#-Shell Length
-#-Shell Width
-#-Shell Height
-#-Shell Volume 
-#-Calculated Dry Weights 
-#-Ploidy
-#-Heat (control/heat/desiccation) is trt
-#-Heat + Ploidy is ploidy.trt
+install.packages("faraway")
+library(faraway)
 
 morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/morphometrics_CS.csv")
 
@@ -285,22 +267,20 @@ filtered_morph<- as.data.frame(filter_my_data %>%
 #Alternative Hypothesis: if significant, then the significant variable explains some variation in the CS response
 
 #direct GLM
-morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+shell_length+shell_width+shell_height+sample_date+calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+date.of.sample)
+morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+filtered_morph$shell_length+filtered_morph$shell_width+filtered_morph$shell_height+filtered_morph$sample_date+filtered_morph$calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+filtered_morph$date.of.sample, digits=4)
 
-anova(morphANOVA)
+anova(morphANOVA)#trt, ploidy+trt, and sample_date are all significant while all shell morphometrics are not
 
 table2<-anova(morphANOVA)
 
 #interactions
-morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*shell_length+shell_width*shell_height+sample_date*calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*date.of.sample)
-anova(morphANOVA2)
+morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height+filtered_morph$sample_date*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample)
+
+anova(morphANOVA2) #calculated dry weight * date of sample are significant 
 
 table3<-anova(morphANOVA2)
 
-#make graphs
-barplot1<-ggplot(data=filtered_morph)+geom_bar(aes(x=(trt), y=sample_date))+theme_bw()+ylab("Date of Dissection")+xlab("Treatment Group")
-
-barplot1
+summary(morphANOVA2)$r.squared #0.61
 
 #mortality
 final_mort<-c(94.318, 90.909, 85.227, 77.272, 90.909, 63.636)
@@ -310,6 +290,53 @@ xxy<-data.frame(final_mort, final_list)
 mortality<-ggplot(data=xxy, aes(x=final_list, y=final_mort, group=1))+geom_line()+geom_point()+theme_bw()
 
 mortality
+
+#Linear Mixed Models
+## Linear Model
+fit_1<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$day)
+plot(fit_1, 5)
+summary(fit_1)
+summary(fit_1)$r.squared #0.33
+coef(fit_1)
+plot(residuals(fit_1))
+qqnorm(residuals(fit_1))#errors do not appear to be skewed but they are heavy-tailed 
+qqline(residuals(fit_1))
+acf(residuals(fit_1))
+
+fit_2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$sample_date+filtered_morph$calc_dry_weight)
+plot(fit_2, 5) #remove 57 (R53)
+summary(fit_2)
+summary(fit_2)$r.squared# 0.34
+
+new_morph_data<-filtered_morph[-c(57),]
+fit_3<-lm(new_morph_data$CS.activity..nmol..mg.min..~new_morph_data$sample_date+new_morph_data$calc_dry_weight+new_morph_data$ploidy.trt+new_morph_data$trt)#best simplified model
+plot(fit_3, 5) 
+plot(fit_3, 4) 
+summary(fit_3) 
+summary(fit_3)$r.squared #0.44
+```
+
+## Data Visualization 
+```{r}
+#### All plots
+boxplot<-ggplot(data=results_unique, aes(x=factor(trt), y=CS.activity..nmol..mg.min..))+
+  geom_boxplot(aes(x=factor(trt), y=CS.activity..nmol..mg.min.., color=ploidy))+
+  theme_bw()+
+  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
+  xlab("Treatment Group")+ 
+  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=19)+
+  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=17)+
+  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=23)+geom_line(data=xxy, aes(x=final_list, y=final_mort/3, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,34),
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(~.*3, name="% survival")
+  ) +theme(axis.title.y.right = element_text(color="red"))
+
+boxplot
+
+comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c("D-desiccation", "T-desiccation"))
+
+boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(ploidy), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
+boxplot2 #not significant
 ```
 
 # Results
