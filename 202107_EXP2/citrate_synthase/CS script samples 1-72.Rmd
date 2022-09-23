@@ -218,8 +218,6 @@ anova(oysterANOVA2) #no different between triploid and diploid
 table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
 #reject the null when p<0.05 for each pair-wise comparison 
 #cannot reject the null for everything except T-desiccation/T-heat/T-control (p=0.003 and 0.0002)
-
-#table_1<-write.csv(table1, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/TukeyHSD.csv")
 ```
 
 # Morphometrics Data Analysis
@@ -240,9 +238,10 @@ library(ggplot2)
 library(dplyr)
 library(ggpubr)
 library(tidyr)
-install.packages("faraway")
+#install.packages("faraway")
 library(faraway)
 
+#filter data
 morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/morphometrics_CS.csv")
 
 names<-results_unique$Label
@@ -254,8 +253,7 @@ filter_my_data<-morph %>%
 filter_my_data<-filter_my_data[-c(2,7)]
 names(filter_my_data)[1]<-'Label'
 
-
-#keep: ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight, ploidy.trt
+#keep: ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight, ploidy.trt, tank
 
 filtered_morph<- as.data.frame(filter_my_data %>%
   left_join(results_unique, by="Label")) %>% 
@@ -267,20 +265,24 @@ filtered_morph<- as.data.frame(filter_my_data %>%
 #Alternative Hypothesis: if significant, then the significant variable explains some variation in the CS response
 
 #direct GLM
-morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+filtered_morph$shell_length+filtered_morph$shell_width+filtered_morph$shell_height+filtered_morph$sample_date+filtered_morph$calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+filtered_morph$date.of.sample, digits=4)
+morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+filtered_morph$shell_length+filtered_morph$shell_width+filtered_morph$shell_height+filtered_morph$sample_date+filtered_morph$calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+filtered_morph$date.of.sample+filtered_morph$tank, digits=4)
 
 anova(morphANOVA)#trt, ploidy+trt, and sample_date are all significant while all shell morphometrics are not
 
 table2<-anova(morphANOVA)
 
+#Trt and Date
+trt_date<-ggplot(filtered_morph, aes(fill=trt, x=sample_date))+geom_bar()+theme_bw()
+trt_date #non-random distribution, pull it out of analysis 
+
 #interactions
-morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height+filtered_morph$sample_date*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample)
+morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample*filtered_morph$tank)
 
 anova(morphANOVA2) #calculated dry weight * date of sample are significant 
 
 table3<-anova(morphANOVA2)
 
-summary(morphANOVA2)$r.squared #0.61
+summary(morphANOVA2)$r.squared #0.98!
 
 #mortality
 final_mort<-c(94.318, 90.909, 85.227, 77.272, 90.909, 63.636)
@@ -337,6 +339,14 @@ comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c
 
 boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(ploidy), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
 boxplot2 #not significant
+
+#Trt and Date
+trt_date<-ggplot(filtered_morph, aes(fill=trt, x=sample_date))+geom_bar()+theme_bw()
+trt_date #non-random distribution, pull it out of analysis 
+
+#Calculated Dry Weight
+cdw<-ggplot(filtered_morph, aes(y=calc_dry_weight, x=trt))+geom_boxplot()+theme_bw()+ylab("Calculated Dry Weight")
+cdw
 ```
 
 # Results
