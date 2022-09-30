@@ -209,10 +209,10 @@ library(ggpubr)
 #null hypothesis: groups are not significantly different from each other (i.e, they are the same)
 #alternative hypothesis: group are significantly different from each other 
 
-oysterANOVA<-lm(results_unique$CS.activity..nmol..mg.min.. ~ trt, data=results_unique)
-oysterANOVA2<-lm(results_unique$CS.activity..nmol..mg.min..~ploidy, data=results_unique)
+oysterANOVA<-lm(results_unique$CS.activity..nmol..mg.min.. ~ trt, data=results_unique)#Citrate Synthase response to treatment explanatory
+oysterANOVA2<-lm(results_unique$CS.activity..nmol..mg.min..~ploidy, data=results_unique) # Citrate Synthase response to ploidy explanatory
 
-anova(oysterANOVA) #treatment is having a significant effect on CS results 
+anova(oysterANOVA) #heat treatment is having a significant effect on CS results 
 anova(oysterANOVA2) #no different between triploid and diploid 
 
 table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
@@ -264,7 +264,7 @@ filtered_morph<- as.data.frame(filter_my_data %>%
 #Null Hypothesis: none of the grouping variables, such as shell volume, should be significantly different from each other in regards to CS response
 #Alternative Hypothesis: if significant, then the significant variable explains some variation in the CS response
 
-#direct GLM
+#direct GLM (all variables)
 morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+filtered_morph$shell_length+filtered_morph$shell_width+filtered_morph$shell_height+filtered_morph$sample_date+filtered_morph$calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+filtered_morph$date.of.sample+filtered_morph$tank, digits=4)
 
 anova(morphANOVA)#trt, ploidy+trt, and sample_date are all significant while all shell morphometrics are not
@@ -273,12 +273,12 @@ table2<-anova(morphANOVA)
 
 #Trt and Date
 trt_date<-ggplot(filtered_morph, aes(fill=trt, x=sample_date))+geom_bar()+theme_bw()
-trt_date #non-random distribution, pull it out of analysis 
+trt_date #non-random distribution, pull it out of analysis so only trt and ploidy+trt are signficant
 
 #interactions
-morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt* filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample*filtered_morph$tank)
+morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt*filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample*filtered_morph$tank)
 
-anova(morphANOVA2) #calculated dry weight * date of sample are significant 
+anova(morphANOVA2) #calculated dry weight * date of sample are significant but since date of sample is a non-random distribution it violates the assumptions of the test and therefore cannot be used. 
 
 table3<-anova(morphANOVA2)
 
@@ -294,22 +294,6 @@ mortality<-ggplot(data=xxy, aes(x=final_list, y=final_mort, group=1))+geom_line(
 mortality
 
 #Linear Mixed Models
-## Linear Model
-fit_1<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$day)
-plot(fit_1, 5)
-summary(fit_1)
-summary(fit_1)$r.squared #0.33
-coef(fit_1)
-plot(residuals(fit_1))
-qqnorm(residuals(fit_1))#errors do not appear to be skewed but they are heavy-tailed 
-qqline(residuals(fit_1))
-acf(residuals(fit_1))
-
-fit_2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$sample_date+filtered_morph$calc_dry_weight)
-plot(fit_2, 5) #remove 57 (R53)
-summary(fit_2)
-summary(fit_2)$r.squared# 0.34
-
 new_morph_data<-filtered_morph[-c(57),]
 fit_3<-lm(new_morph_data$CS.activity..nmol..mg.min..~new_morph_data$sample_date+new_morph_data$calc_dry_weight+new_morph_data$ploidy.trt+new_morph_data$trt)#best simplified model
 plot(fit_3, 5) 
@@ -346,13 +330,18 @@ trt_date #non-random distribution, pull it out of analysis
 
 #Calculated Dry Weight
 cdw<-ggplot(filtered_morph, aes(y=calc_dry_weight, x=trt))+geom_boxplot()+theme_bw()+ylab("Calculated Dry Weight")
-cdw
+cdw #triploid animals have a larger range of dry weights than diploid animals but their averages are all similar. 
+filtered_morph
+oysterANOVA3<-lm(filtered_morph$calc_dry_weight~filtered_morph$ploidy.trt)
+anova(oysterANOVA3)#not significant
+cdw_table<-TukeyHSD(aov(oysterANOVA3))
+cdw_table #nothing is significant 
 ```
 
 # Results
-- sample_date is significant (one extra day before sampling)
+- sample_date is significant but non-random in distrubtion so it is thrown out of the analysis 
 - trt is almost significant at 0.06
-- ploidy trt is almost significant at 0.08
-- sample_date:calc_dry_weight interaction is significant at 0.02
+- ploidy*trt is almost significant at 0.08
+- calculated dry weight was not significant in regards to treatment response
 
 
