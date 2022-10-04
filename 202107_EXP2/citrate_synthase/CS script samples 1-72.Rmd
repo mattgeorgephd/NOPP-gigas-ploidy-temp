@@ -181,20 +181,22 @@ results_joined<-inner_join(results_joined, trt, by="Label")
 final_plot<-ggplot(data=results_joined,(aes(x=`Protein (ug/mL) `, y=`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 
 #write.csv(results_joined, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_72.csv")
-#########################Add redos from July 11-12##########################
+##################Add redos from July 11-12##########################
 #all samples including duplicates
 results_all<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_all.csv")
 
 results_all<-results_all[-c(40),]#removed outlier @ 160 CS (really high)
 
-all_plot<-ggplot(data=results_all,(aes(x=results_all$Protein..mg.ul., y=results_all$CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
+all_plot<-ggplot(data=results_all,(aes(x=results_all$Protein..mg.ul., y=results_all$CS_activity, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 
 #unique samples only
 results_unique<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_unique.csv")
 
 results_unique<-results_unique[-c(37),]
+results_unique['heat']<-NA
+results_unique$heat<-sub("..", "", results_unique$trt_list)
 
-u_plot<-ggplot(data=results_unique,(aes(x=Protein..mg.ul., y=CS.activity..nmol..mg.min.., color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
+u_plot<-ggplot(data=results_unique,(aes(x=Protein..mg.ul., y=CS_activity, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (mg/uL)")
 u_plot
 ```
 
@@ -204,20 +206,28 @@ u_plot
 library(ggplot2)
 library(dplyr)
 library(ggpubr)
+#see https://benwhalley.github.io/just-enough-r/anova.html for statistcal methods
 ###################Statistical Analysis########################
 
 #null hypothesis: groups are not significantly different from each other (i.e, they are the same)
 #alternative hypothesis: group are significantly different from each other 
 
-oysterANOVA<-lm(results_unique$CS.activity..nmol..mg.min.. ~ trt, data=results_unique)#Citrate Synthase response to treatment explanatory
-oysterANOVA2<-lm(results_unique$CS.activity..nmol..mg.min..~ploidy, data=results_unique) # Citrate Synthase response to ploidy explanatory
+oysterANOVA<-lm(CS_activity~heat, data=results_unique)#Citrate Synthase response to treatment explanatory
+oysterANOVA2<-lm(CS_activity~ploidy, data=results_unique) # Citrate Synthase response to ploidy explanatory
+oysterANOVA3<-lm(CS_activity~ploidy*heat, data=results_unique)
 
-anova(oysterANOVA) #heat treatment is having a significant effect on CS results 
-anova(oysterANOVA2) #no different between triploid and diploid 
+car::Anova(oysterANOVA) #heat treatment is having a significant effect on CS results 
+car::Anova(oysterANOVA2) #no different between triploid and diploid 
+car::Anova(oysterANOVA3) #combined heat+ploidy is NOT having a significant effect on CS results
 
-table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
+combinedANOVA<-lm(CS_activity~trt_list, data=results_unique)
+table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
+#Table 1 below
+combined.lsm<-emmeans::emmeans(combinedANOVA, pairwise~trt_list)
+combined.contrasts<-emmeans::contrast(combined.lsm, "eff")
+combined.contrasts$contrasts
 #reject the null when p<0.05 for each pair-wise comparison 
-#cannot reject the null for everything except T-desiccation/T-heat/T-control (p=0.003 and 0.0002)
+#cannot reject the null for everything except T-desiccation/T-heat/T-control and D-desiccation/D-heat (D-control and D-desiccation are at 0.053) 
 ```
 
 # Morphometrics Data Analysis
@@ -226,12 +236,12 @@ table1<-do.call(rbind.data.frame, (TukeyHSD(aov(oysterANOVA))))
 -Shell Width
 -Shell Height
 -Shell Volume 
--Calculated Dry Weights 
+-Calculated Dry Weights (based on actual Dry Weights of a sub-cohort)
 -Ploidy (triploid/diploid)
--Heat (control/heat/desiccation) is trt
--Heat + Ploidy is ploidy.trt
--Sample Date (7.12.21 or 7.13.21) or dissection date
--Date of Sample (3.22.22 or 7.11.22) or CS assay date
+-Heat (control/heat/desiccation) 
+-Heat + Ploidy is trt_list
+-Sample Date (7.12.21 or 7.13.21) is dissection date
+-Date (3.22.22 or 7.11.22) is CS assay date
 
 ```{r}
 library(ggplot2)
@@ -259,30 +269,32 @@ filtered_morph<- as.data.frame(filter_my_data %>%
   left_join(results_unique, by="Label")) %>% 
   mutate(sample_date = na_if(sample_date, "missing"))
 
+filtered_morph2<-filtered_morph[-c(44),]
+
 
 ######calculate GLM
 #Null Hypothesis: none of the grouping variables, such as shell volume, should be significantly different from each other in regards to CS response
 #Alternative Hypothesis: if significant, then the significant variable explains some variation in the CS response
 
 #direct GLM (all variables)
-morphANOVA<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt+ filtered_morph$shell_volume+filtered_morph$shell_length+filtered_morph$shell_width+filtered_morph$shell_height+filtered_morph$sample_date+filtered_morph$calc_dry_weight+filtered_morph$ploidy+filtered_morph$trt+filtered_morph$date.of.sample+filtered_morph$tank, digits=4)
+morphANOVA<-lm(CS_activity~ shell_length+shell_width+shell_height+date+calc_dry_weight+ploidy+tank+heat, data=filtered_morph2)
 
-anova(morphANOVA)#trt, ploidy+trt, and sample_date are all significant while all shell morphometrics are not
+car::Anova(morphANOVA)#shell morphometrics are not significant
 
-table2<-anova(morphANOVA)
+table2<-car::Anova(morphANOVA)
 
 #Trt and Date
-trt_date<-ggplot(filtered_morph, aes(fill=trt, x=sample_date))+geom_bar()+theme_bw()
-trt_date #non-random distribution, pull it out of analysis so only trt and ploidy+trt are signficant
+trt_date<-ggplot(filtered_morph, aes(fill=trt_list, x=sample_date))+geom_bar()+theme_bw()
+trt_date #non-random distribution, pull it out of analysis so only trt and ploidy+trt are significant
 
 #interactions
-morphANOVA2<-lm(filtered_morph$CS.activity..nmol..mg.min..~filtered_morph$ploidy.trt*filtered_morph$shell_volume*filtered_morph$shell_length+filtered_morph$shell_width*filtered_morph$shell_height*filtered_morph$calc_dry_weight*filtered_morph$ploidy*filtered_morph$trt*filtered_morph$date.of.sample*filtered_morph$tank)
+morphANOVA2<-lm(CS_activity~trt_list*shell_volume*shell_length+shell_width*shell_height*calc_dry_weight*ploidy*heat*ploidy*date*tank, data=filtered_morph2)
 
 anova(morphANOVA2) #calculated dry weight * date of sample are significant but since date of sample is a non-random distribution it violates the assumptions of the test and therefore cannot be used. 
 
-table3<-anova(morphANOVA2)
+supp1<-anova(morphANOVA2)
 
-summary(morphANOVA2)$r.squared #0.98!
+summary(morphANOVA2)$r.squared #0.99!
 
 #mortality
 final_mort<-c(94.318, 90.909, 85.227, 77.272, 90.909, 63.636)
@@ -292,21 +304,17 @@ xxy<-data.frame(final_mort, final_list)
 mortality<-ggplot(data=xxy, aes(x=final_list, y=final_mort, group=1))+geom_line()+geom_point()+theme_bw()
 
 mortality
-
-#Linear Mixed Models
-new_morph_data<-filtered_morph[-c(57),]
-fit_3<-lm(new_morph_data$CS.activity..nmol..mg.min..~new_morph_data$sample_date+new_morph_data$calc_dry_weight+new_morph_data$ploidy.trt+new_morph_data$trt)#best simplified model
-plot(fit_3, 5) 
-plot(fit_3, 4) 
-summary(fit_3) 
-summary(fit_3)$r.squared #0.44
 ```
 
 ## Data Visualization 
 ```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+library(tidyr)
 #### All plots
-boxplot<-ggplot(data=results_unique, aes(x=factor(trt), y=CS.activity..nmol..mg.min..))+
-  geom_boxplot(aes(x=factor(trt), y=CS.activity..nmol..mg.min.., color=ploidy))+
+boxplot<-ggplot(data=results_unique, aes(x=factor(trt_list), y=CS_activity))+
+  geom_boxplot(aes(x=factor(trt_list), y=CS_activity, color=ploidy))+
   theme_bw()+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
   xlab("Treatment Group")+ 
@@ -321,27 +329,27 @@ boxplot
 
 comparisons=list(c("T-heat", "T-desiccation"),c("T-desiccation", "T-control"), c("D-desiccation", "T-desiccation"))
 
-boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS.activity..nmol..mg.min..))+geom_boxplot(aes(x=factor(ploidy), y=CS.activity..nmol..mg.min.., color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
+boxplot2<-ggplot(data=results_unique, xaxt="n", aes(factor(ploidy), CS_activity))+geom_boxplot(aes(x=factor(ploidy), y=CS_activity, color=ploidy))+theme_bw()+ylab("CS Activity (nmol/(mg*min)")+xlab("Treatment Group")+stat_compare_means(comparisons = list(c("D", "T")), method= "wilcox.test", aes(label="..p.signif.."))
 boxplot2 #not significant
 
 #Trt and Date
-trt_date<-ggplot(filtered_morph, aes(fill=trt, x=sample_date))+geom_bar()+theme_bw()
+trt_date<-ggplot(filtered_morph, aes(fill=trt_list, x=sample_date))+geom_bar()+theme_bw()
 trt_date #non-random distribution, pull it out of analysis 
 
 #Calculated Dry Weight
-cdw<-ggplot(filtered_morph, aes(y=calc_dry_weight, x=trt))+geom_boxplot()+theme_bw()+ylab("Calculated Dry Weight")
+cdw<-ggplot(filtered_morph, aes(y=calc_dry_weight, x=trt_list))+geom_boxplot()+theme_bw()+ylab("Calculated Dry Weight")
 cdw #triploid animals have a larger range of dry weights than diploid animals but their averages are all similar. 
 filtered_morph
-oysterANOVA3<-lm(filtered_morph$calc_dry_weight~filtered_morph$ploidy.trt)
-anova(oysterANOVA3)#not significant
-cdw_table<-TukeyHSD(aov(oysterANOVA3))
+oysterANOVA4<-lm(calc_dry_weight~trt_list, data=filtered_morph)
+anova(oysterANOVA4)#not significant
+cdw_table<-TukeyHSD(aov(oysterANOVA4))
 cdw_table #nothing is significant 
 ```
 
 # Results
 - sample_date is significant but non-random in distrubtion so it is thrown out of the analysis 
-- trt is almost significant at 0.06
-- ploidy*trt is almost significant at 0.08
-- calculated dry weight was not significant in regards to treatment response
+-heat is significant
+-ploidy is NOT significant
+-heat*ploidy (aka treatment groups) is NOT significant 
 
 
