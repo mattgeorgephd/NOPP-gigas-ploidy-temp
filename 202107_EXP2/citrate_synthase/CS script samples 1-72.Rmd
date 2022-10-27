@@ -180,7 +180,6 @@ results_joined<-inner_join(results_joined, trt, by="Label")
 
 final_plot<-ggplot(data=results_joined,(aes(x=`Protein (ug/mL) `, y=`CS activity (nmol/(mg*min))`, color=trt)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 
-#write.csv(results_joined, file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/result_72.csv")
 ##################Add redos from July 11-12##########################
 #all samples including duplicates
 results_all<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/results/results_all.csv")
@@ -271,6 +270,8 @@ filtered_morph<- as.data.frame(filter_my_data %>%
 
 filtered_morph2<-filtered_morph[-c(44),]
 
+#Supplimentary Figure 1: 
+write.csv(filtered_morph2, file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/supplimentary-figures/supp1.csv")
 
 ######calculate GLM
 #Null Hypothesis: none of the grouping variables, such as shell volume, should be significantly different from each other in regards to CS response
