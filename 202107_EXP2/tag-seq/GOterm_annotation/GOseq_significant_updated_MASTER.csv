@@ -1,0 +1,15 @@
+group,GOcat,GOcat_color
+cell,cellular processes,#08306B
+cell,response to stimulus,#08519C
+cell,transport,#2171B5
+development,developmental processes,#6A51A3
+regulation,biological regulation,#FFFF00
+regulation,epigenetic regulation,#FFFF33
+metabolism,protein metabolism,#006D2C
+metabolism,RNA metabolism,#238B45
+metabolism,other metabolic processes,#41AB5D
+immune,immune system processes,#FED976
+stress,stress response,#FD8D3C
+stress,homeostasis,#FC4E2A
+stress,death,#E31A1C
+other,other biological processes,gray30

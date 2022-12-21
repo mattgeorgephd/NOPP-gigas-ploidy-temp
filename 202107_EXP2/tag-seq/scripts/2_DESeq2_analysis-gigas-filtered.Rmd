@@ -32,7 +32,7 @@ rm(list=ls())
 
 
 # List of packages we want to install (run every time)
-load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr","genefilter","ComplexHeatmap","circlize")
+load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr","genefilter","ComplexHeatmap","circlize","scales")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -62,6 +62,17 @@ my_theme <- theme(line              = element_line(size=1.5),
                   # axis.line         = element_line(color = "black", size = 0.1),
                   panel.border      = element_rect(color = "black", fill=NA, size=1.5),
                   legend.key        = element_blank()) # removes background of legend bullets
+
+blank_theme <-  theme_minimal()+
+                theme(
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                panel.border = element_blank(),
+                panel.grid=element_blank(),
+                axis.ticks = element_blank(),
+                plot.title=element_text(size=14, face="bold")
+                )
+
 ```
 
 #Load data
@@ -101,8 +112,8 @@ coldata$group <- factor(trt_list$group) # for individual pair-wise comparisons
 # MuliQC report: D54, N56, X44
 # Pheatmap outliers: R53?
 # BIPLOT outliers: R53, M43, N54, X42 
-coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44', 'R53', 'M43', 'N54', 'X42')),]
-cts <- as.matrix(subset(cts, select=-c(D54, N56, X44, R53, M43, N54, X42)))
+coldata <- coldata[!(row.names(coldata) %in% c('D54','N56', 'X44', 'R53', 'M43', 'N54', 'X42','T62')),]
+cts <- as.matrix(subset(cts, select=-c(D54, N56, X44, R53, M43, N54, X42, T62)))
 coldata %>% dplyr::count(group)
 all(colnames(cts) %in% rownames(coldata))
 
@@ -128,19 +139,19 @@ rownames(cts) <- output
 # Create output folders
 ```{bash}
 # make output folder
-mkdir output
+mkdir DESEQ2_output
 
 # samples included _ variable analyzed (when 1 specified, compared to control)
-mkdir output/all_treatments
-mkdir output/control_ploidy
-mkdir output/heat_ploidy
-mkdir output/desiccation_ploidy
-mkdir output/diploid_heat
-mkdir output/diploid_desiccation
-mkdir output/triploid_heat
-mkdir output/triploid_desiccation
-mkdir output/diploid
-mkdir output/triploid
+mkdir DESEQ2_output/all_treatments
+mkdir DESEQ2_output/control_ploidy
+mkdir DESEQ2_output/heat_ploidy
+mkdir DESEQ2_output/desiccation_ploidy
+mkdir DESEQ2_output/diploid_heat
+mkdir DESEQ2_output/diploid_desiccation
+mkdir DESEQ2_output/triploid_heat
+mkdir DESEQ2_output/triploid_desiccation
+mkdir DESEQ2_output/diploid
+mkdir DESEQ2_output/triploid
 
 ```
 
@@ -230,7 +241,7 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
-setwd("output/all_treatments")
+setwd("DESEQ2_output/all_treatments")
 
 ggexport(filename = "ALL-TREATMENTS-BIPLOT.png",
          plot   = bp0,
@@ -257,7 +268,7 @@ ggexport(filename = "ALL-TREATMENTS-pheatmap.png",
          height = 6000)
 
 # pcaExplorer(dds = dds_ploidy)
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+beep(2)
 ```
 
 # ALL treatments, diploids only
@@ -346,7 +357,7 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
-setwd("output/diploid")
+setwd("DESEQ2_output/diploid")
 
 ggexport(filename = "ALL-TREATMENTS-DIPLOID-BIPLOT.png",
          plot   = bp0,
@@ -377,7 +388,7 @@ setwd("..")
 
 # pcaExplorer(dds = dds_ploidy)
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+beep(2)
 
 ```
 
@@ -467,7 +478,7 @@ bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
 
-setwd("output/triploid")
+setwd("DESEQ2_output/triploid")
 
 ggexport(filename = "ALL-TREATMENTS-TRIPLOID-BIPLOT.png",
          plot   = bp0,
@@ -495,7 +506,7 @@ ggexport(filename = "ALL-TREATMENTS-TRIPLOID-pheatmap.png",
          height = 6000)
 
 # pcaExplorer(dds = dds_ploidy)
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+beep(2)
 ```
 
 # CONTROLS only - effect of ploidy
@@ -546,7 +557,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/control_ploidy/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/control_ploidy/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -613,14 +624,12 @@ sig_genes_normal           <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gen
 sig_genes_normal           <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "control_ploidy" 
 
-sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+sig_genes_apeglm <- res_table_apeglm %>% filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "control_ploidy" 
 
-sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+sig_genes_ashr <- res_table_ashr %>% filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "control_ploidy" 
@@ -672,10 +681,10 @@ for (i in 1:nrow(sig_genes_ashr)){
 }
 
 # Write outputs
-write.table(single_gene_expression_unshrunk, file = "output/control_ploidy/CONTROL_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/control_ploidy/CONTROL_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/control_ploidy/CONTROL_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/control_ploidy/CONTROL_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -697,15 +706,15 @@ row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","ge
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/control_ploidy/CONTROL_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/control_ploidy/CONTROL_PLOIDY-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/control_ploidy/CONTROL_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -716,33 +725,33 @@ bp0 <- biplot(p, showLoadings = FALSE, colby = 'group',
 
 bp0
 
- bp1 <- biplot(p, x = "PC1", y = "PC2",
-               colby = 'ploidy',
-               colkey = c('diploid' = 'royalblue1', 'triploid' = 'green1'),
-               shape = 'ploidy',
-               shapekey = c('diploid' = 19, 'triploid' = 17),
-               pointSize = 4,
-               showLoadings = FALSE,
-               lab = NULL,
-               drawConnectors = FALSE,
-               ellipse = TRUE,
-               ellipseLevel = 0.95,
-               ellipseFill = FALSE,
-               # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
-               ellipseAlpha = 1/4,
-               ellipseLineSize = 1,
-               xlim = c(-125,145), ylim = c(-100, 80),
-               gridlines.major = FALSE,
-               gridlines.minor = FALSE,
-               borderWidth = 1,
-               legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) +
-               theme(axis.text.x       = element_text(size=16,color="black"),
-                     axis.text.y       = element_text(size=16,color="black"),
-                     axis.ticks.x      = element_line(color="black"),
-                     axis.ticks.y      = element_line(color="black"))
- bp1
+bp1 <- biplot(p, x = "PC1", y = "PC2",
+              colby = 'ploidy',
+              colkey = c('diploid' = 'royalblue1', 'triploid' = 'green1'),
+              shape = 'ploidy',
+              shapekey = c('diploid' = 19, 'triploid' = 17),
+              pointSize = 4,
+              showLoadings = FALSE,
+              lab = NULL,
+              drawConnectors = FALSE,
+              ellipse = TRUE,
+              ellipseLevel = 0.95,
+              ellipseFill = FALSE,
+              # ellipseFillKey = c('diploid' = 'blue', 'triploid' = 'green'),
+              ellipseAlpha = 1/4,
+              ellipseLineSize = 1,
+              xlim = c(-125,145), ylim = c(-100, 80),
+              gridlines.major = FALSE,
+              gridlines.minor = FALSE,
+              borderWidth = 1,
+              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) +
+              theme(axis.text.x       = element_text(size=16,color="black"),
+                    axis.text.y       = element_text(size=16,color="black"),
+                    axis.ticks.x      = element_line(color="black"),
+                    axis.ticks.y      = element_line(color="black"))
+bp1
 
- bp2 <- pairsplot(p,
+bp2 <- pairsplot(p,
                  components = getComponents(p, c(1:5)),
                  triangle = TRUE, trianglelabSize = 12,
                  hline = 0, vline = 0,
@@ -751,48 +760,91 @@ bp0
                  colby = 'ploidy',
                  title = 'Pairs plot', plotaxes = FALSE,
                  margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
- bp2
+bp2
 
- # Plot pheatmap
- rld <- rlog(dds, blind=T)
- rld_mat <- assay(rld)
- pca <- prcomp(t(rld_mat))
- rld_cor <- cor(rld_mat)
- bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
+# Plot pheatmap
+rld <- rlog(dds, blind=T)
+rld_mat <- assay(rld)
+pca <- prcomp(t(rld_mat))
+rld_cor <- cor(rld_mat)
+bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
- bp3
+bp3
+ 
+setwd("DESEQ2_output/control_ploidy")
+
+ggexport(filename = "control_ploidy-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "control_ploidy-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "control_ploidy-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "control_ploidy-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
  
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all %>% filter(padj < padj.cutoff)
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
-# Keep the X number of  
-num_keep <- 10
+# Keep the X number of genes
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -809,6 +861,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/control_ploidy/control_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -839,136 +902,233 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/control_ploidy/control_ploidy_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
- 
-setwd("output/control_ploidy")
 
-ggexport(filename = "CONTROL-PLOIDY-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "CONTROL-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "CONTROL-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "CONTROL-PLOIDY-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
+# Plot heatmap
+png(filename = "DESEQ2_output/control_ploidy/control_ploidy_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 10000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("green1", 11)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
-
+             geom_point(aes(color=log2FoldChange>0), show.legend = FALSE) + my_theme
 
 # Save plots
-ggsave("output/control_ploidy/Volcano_all_genes.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/control_ploidy/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/control_ploidy/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all %>% filter(padj < padj.cutoff) # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+count_unchar <- as.numeric(nrow(sigs[sigs$cat == "uncharacterized",]))
+count_char <- as.numeric(nrow(sigs[sigs$cat == "characterized",]))
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+count_plus <- as.numeric(nrow(sigs[sigs$plus_minus == "1",]))
+count_minus <- as.numeric(nrow(sigs[sigs$plus_minus == "-1",]))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "control_ploidy"
+sigs_pval_lfc$analysis <- "control_ploidy"
+write.table(sigs, file = "DESEQ2_output/control_ploidy/control_ploidy-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/control_ploidy/control_ploidy-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/control_ploidy/control_ploidy_DEG_uncharacterized_pval_apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 2500,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/control_ploidy/control_ploidy-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/control_ploidy/control_ploidy-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+ggsave("DESEQ2_output/control_ploidy/control_ploidy-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/control_ploidy/Volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+
+beep(2)
 ```
 
 # HEAT only - effect of ploidy
@@ -1019,7 +1179,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/heat_ploidy/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/heat_ploidy/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -1078,7 +1238,7 @@ all_genes_ashr$treatment <- "heat_ploidy"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "heat_ploidy" 
@@ -1090,13 +1250,13 @@ sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "heat_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "heat_ploidy" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "heat_ploidy" 
@@ -1147,10 +1307,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/heat_ploidy/HEAT_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/heat_ploidy/HEAT_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/heat_ploidy/HEAT_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/heat_ploidy/HEAT_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -1167,20 +1327,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/heat_ploidy/HEAT_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/heat_ploidy/HEAT_PLOIDY-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/heat_ploidy/HEAT_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -1242,42 +1402,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/heat_ploidy")
 
+ggexport(filename = "heat_ploidy-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "heat_ploidy-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "heat_ploidy-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "heat_ploidy-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -1294,6 +1494,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/heat_ploidy/heat_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -1324,73 +1535,48 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/heat_ploidy/heat_ploidy_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
- 
-setwd("output/heat_ploidy")
 
-ggexport(filename = "HEAT-PLOIDY-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "HEAT-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "HEAT-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "HEAT-PLOIDY-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/heat_ploidy/heat_ploidy_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("green1", 10)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/heat_ploidy/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/heat_ploidy/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
@@ -1398,7 +1584,7 @@ ggsave("output/heat_ploidy/Volcano_all_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
@@ -1406,7 +1592,7 @@ ggsave("output/heat_ploidy/Volcano_all_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
@@ -1414,7 +1600,7 @@ ggsave("output/heat_ploidy/Volcano_all_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
@@ -1422,7 +1608,7 @@ ggsave("output/heat_ploidy/Volcano_all_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
@@ -1430,7 +1616,7 @@ ggsave("output/heat_ploidy/Volcano_sig_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
@@ -1438,7 +1624,7 @@ ggsave("output/heat_ploidy/Volcano_sig_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
@@ -1446,7 +1632,7 @@ ggsave("output/heat_ploidy/Volcano_sig_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/heat_ploidy/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/heat_ploidy/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
@@ -1454,7 +1640,122 @@ ggsave("output/heat_ploidy/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-5, 5, by = 2), limits = c(-5,5)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "heat_ploidy"
+sigs_pval_lfc$analysis <- "heat_ploidy"
+write.table(sigs, file = "DESEQ2_output/heat_ploidy/heat_ploidy-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/heat_ploidy/heat_ploidy-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/heat_ploidy/heat_ploidy-DEG-uncharacterized-pval-apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/heat_ploidy/heat_ploidy-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/heat_ploidy/heat_ploidy-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/heat_ploidy/heat_ploidy-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/heat_ploidy/heat_ploidy-volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+beep(2)
 ```
 
 # DESICCATION only - effect of ploidy
@@ -1505,7 +1806,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/desiccation_ploidy/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/desiccation_ploidy/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -1564,7 +1865,7 @@ all_genes_ashr$treatment <- "desiccation_ploidy"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "desiccation_ploidy" 
@@ -1576,13 +1877,13 @@ sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "desiccation_ploidy" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "desiccation_ploidy" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "desiccation_ploidy" 
@@ -1633,10 +1934,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -1653,20 +1954,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/desiccation_ploidy/DESICCATION_PLOIDY-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -1718,7 +2019,7 @@ bp2 <- pairsplot(p,
                 title = 'Pairs plot', plotaxes = FALSE,
                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
 bp2
-# 
+ 
 # Plot pheatmap
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
@@ -1727,42 +2028,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/desiccation_ploidy")
 
+ggexport(filename = "desiccation_ploidy-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "desiccation_ploidy-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "desiccation_ploidy-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "desiccation_ploidy-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -1779,6 +2120,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/desiccation_ploidy/desiccation_ploidy_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -1809,138 +2161,232 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/desiccation_ploidy/desiccation_ploidy_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
 
-
-setwd("output/desiccation_ploidy")
-
-ggexport(filename = "DESICCATION-PLOIDY-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DESICCATION-PLOIDY-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DESICCATION-PLOIDY-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "DESICCATION-PLOIDY-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/desiccation_ploidy/desiccation_ploidy_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 10), rep("green1", 11)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/desiccation_ploidy/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/desiccation_ploidy/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/desiccation_ploidy/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+count_unchar <- as.numeric(nrow(sigs[sigs$cat == "uncharacterized",]))
+count_char <- as.numeric(nrow(sigs[sigs$cat == "characterized",]))
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+count_plus <- as.numeric(nrow(sigs[sigs$plus_minus == "1",]))
+count_minus <- as.numeric(nrow(sigs[sigs$plus_minus == "-1",]))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "desiccation_ploidy"
+sigs_pval_lfc$analysis <- "desiccation_ploidy"
+write.table(sigs, file = "DESEQ2_output/desiccation_ploidy/desiccation_ploidy-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/desiccation_ploidy/desiccation_ploidy-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/desiccation_ploidy/desiccation_ploidy_DEG_uncharacterized_pval_apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 2500,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/desiccation_ploidy/desiccation_ploidy-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/desiccation_ploidy/desiccation_ploidy-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+ggsave("DESEQ2_output/desiccation_ploidy/desiccation_ploidy-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/desiccation_ploidy/desiccation_ploidy_Volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+beep(2)
 ```
 
 # DIPLOID only - effect of temperature
@@ -1991,7 +2437,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/diploid_heat/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/diploid_heat/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -2050,7 +2496,7 @@ all_genes_ashr$treatment <- "diploid_heat"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "diploid_heat" 
@@ -2062,13 +2508,13 @@ sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "diploid_heat" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "diploid_heat" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "diploid_heat" 
@@ -2119,10 +2565,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/diploid_heat/DIPLOID_HEAT-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/diploid_heat/DIPLOID_HEAT-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/diploid_heat/DIPLOID_HEAT-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/diploid_heat/DIPLOID_HEAT-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -2139,20 +2585,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/diploid_heat/DIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/diploid_heat/DIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/diploid_heat/DIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/diploid_heat/DIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/diploid_heat/DIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/diploid_heat/DIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/diploid_heat/DIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/diploid_heat/DIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/diploid_heat/DIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -2204,7 +2650,7 @@ bp2 <- pairsplot(p,
                 title = 'Pairs plot', plotaxes = FALSE,
                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
 bp2
-#
+
 # Plot pheatmap
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
@@ -2213,42 +2659,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/diploid_heat")
 
+ggexport(filename = "diploid_heat-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "diploid_heat-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "diploid_heat-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "diploid_heat-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -2265,6 +2751,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/diploid_heat/diploid_heat_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -2295,137 +2792,232 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/diploid_heat/diploid_heat_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
 
-setwd("output/diploid_heat")
-
-ggexport(filename = "DIPLOID-HEAT-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-HEAT-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-HEAT-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "DIPLOID-HEAT-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/diploid_heat/diploid_heat_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("orangered1", 11)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/diploid_heat/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/diploid_heat/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_heat/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/diploid_heat/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+count_unchar <- as.numeric(nrow(sigs[sigs$cat == "uncharacterized",]))
+count_char <- as.numeric(nrow(sigs[sigs$cat == "characterized",]))
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+count_plus <- as.numeric(nrow(sigs[sigs$plus_minus == "1",]))
+count_minus <- as.numeric(nrow(sigs[sigs$plus_minus == "-1",]))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "diploid_heat"
+sigs_pval_lfc$analysis <- "diploid_heat"
+write.table(sigs, file = "DESEQ2_output/diploid_heat/diploid_heat-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/diploid_heat/diploid_heat-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/diploid_heat/diploid_heat_DEG_uncharacterized_pval_apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 2500,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_heat/diploid_heat-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_heat/diploid_heat-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_heat/diploid_heat-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_heat/diploid_heat-volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+beep(2)
 ```
 
 # DIPLOID only - effect of desiccation
@@ -2476,7 +3068,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/diploid_desiccation/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/diploid_desiccation/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -2535,7 +3127,7 @@ all_genes_ashr$treatment <- "diploid_desiccation"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "diploid_desiccation" 
@@ -2547,13 +3139,13 @@ sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "diploid_desiccation" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "diploid_desiccation" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "diploid_desiccation" 
@@ -2604,10 +3196,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/diploid_desiccation/DIPLOID_DESICCATION-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/diploid_desiccation/DIPLOID_DESICCATION-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/diploid_desiccation/DIPLOID_DESICCATION-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/diploid_desiccation/DIPLOID_DESICCATION-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -2624,20 +3216,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/diploid_desiccation/DIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -2698,42 +3290,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/diploid_desiccation")
 
+ggexport(filename = "diploid_desiccation-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "diploid_desiccation-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "diploid_desiccation-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "diploid_desiccation-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -2750,6 +3382,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/diploid_desiccation/diploid_desiccation_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -2780,72 +3423,48 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/diploid_desiccation/diploid_desiccation_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
 
-setwd("output/diploid_desiccation")
-ggexport(filename = "DIPLOID-DESICCATION-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-DESICCATION-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "DIPLOID-DESICCATION-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "DIPLOID-DESICCATION-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/diploid_desiccation/diploid_desiccation_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("orangered1", 10)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/diploid_desiccation/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
@@ -2853,7 +3472,7 @@ ggsave("output/diploid_desiccation/Volcano_all_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
@@ -2861,7 +3480,7 @@ ggsave("output/diploid_desiccation/Volcano_all_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
@@ -2869,7 +3488,7 @@ ggsave("output/diploid_desiccation/Volcano_all_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
@@ -2877,7 +3496,7 @@ ggsave("output/diploid_desiccation/Volcano_all_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
@@ -2885,7 +3504,7 @@ ggsave("output/diploid_desiccation/Volcano_sig_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
@@ -2893,7 +3512,7 @@ ggsave("output/diploid_desiccation/Volcano_sig_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
@@ -2901,7 +3520,7 @@ ggsave("output/diploid_desiccation/Volcano_sig_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/diploid_desiccation/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/diploid_desiccation/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
@@ -2909,7 +3528,124 @@ ggsave("output/diploid_desiccation/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "diploid_desiccation"
+sigs_pval_lfc$analysis <- "diploid_desiccation"
+write.table(sigs, file = "DESEQ2_output/diploid_desiccation/diploid_desiccation-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/diploid_desiccation/diploid_desiccation-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/diploid_desiccation/diploid_desiccation-DEG-uncharacterized-pval-apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_desiccation/diploid_desiccation-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_desiccation/diploid_desiccation-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_desiccation/diploid_desiccation-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/diploid_desiccation/diploid_desiccation-volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+
+beep(2)
 ```
 
 # TRIPLOID only - effect of temperature
@@ -2960,7 +3696,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/triploid_heat/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/triploid_heat/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -3002,7 +3738,6 @@ colnames(LOCID_Roslin_gigas_gene_mito_table) <- c("gene","description","feature"
 all_genes           <- left_join(res_table, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 all_genes           <- all_genes %>% arrange(-log2FoldChange)
 all_genes$treatment <- "triploid_heat"
-# all_genes_pvalue    <- cbind(gene=all_genes$gene,padj=all_genes$padj)
 
 all_genes_normal           <- left_join(res_table_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 all_genes_normal           <- all_genes_normal %>% arrange(-log2FoldChange)
@@ -3010,7 +3745,6 @@ all_genes_normal$treatment <- "triploid_heat"
 
 all_genes_apeglm           <- left_join(res_table_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 all_genes_apeglm           <- all_genes_apeglm %>% arrange(-log2FoldChange)
-# all_genes_apeglm           <- left_join(all_genes_apeglm, as.data.frame(all_genes_pvalue), by = "gene")
 all_genes_apeglm$treatment <- "triploid_heat"
 
 all_genes_ashr           <- left_join(res_table_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
@@ -3019,25 +3753,25 @@ all_genes_ashr$treatment <- "triploid_heat"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "triploid_heat" 
 
 sig_genes_normal <- res_table_normal %>%
-  filter(abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_normal <- left_join(sig_genes_normal, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "triploid_heat" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "triploid_heat" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "triploid_heat" 
@@ -3088,10 +3822,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/triploid_heat/TRIPLOID_HEAT-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/triploid_heat/TRIPLOID_HEAT-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/triploid_heat/TRIPLOID_HEAT-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/triploid_heat/TRIPLOID_HEAT-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -3108,20 +3842,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/triploid_heat/TRIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/triploid_heat/TRIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/triploid_heat/TRIPLOID_HEAT-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -3173,7 +3907,7 @@ bp2 <- pairsplot(p,
                 title = 'Pairs plot', plotaxes = FALSE,
                 margingaps = unit(c(-0.01, -0.01, -0.01, -0.01), 'cm'))
 bp2
-# 
+ 
 # Plot pheatmap
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
@@ -3182,45 +3916,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/triploid_heat")
 
+ggexport(filename = "triploid_heat-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "triploid_heat-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "triploid_heat-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "triploid_heat-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOCNA*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, gene)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -3237,6 +4008,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/triploid_heat/triploid_heat_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -3267,73 +4049,48 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/triploid_heat/triploid_heat_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
 
-setwd("output/triploid_heat")
-
-ggexport(filename = "TRIPLOID-HEAT-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-HEAT-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         # device = "png",
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-HEAT-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "TRIPLOID-HEAT-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/triploid_heat/triploid_heat_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("orangered1", 10)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/triploid_heat/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/triploid_heat/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
@@ -3341,7 +4098,7 @@ ggsave("output/triploid_heat/Volcano_all_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
@@ -3349,7 +4106,7 @@ ggsave("output/triploid_heat/Volcano_all_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
@@ -3357,7 +4114,7 @@ ggsave("output/triploid_heat/Volcano_all_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
@@ -3365,7 +4122,7 @@ ggsave("output/triploid_heat/Volcano_all_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
@@ -3373,7 +4130,7 @@ ggsave("output/triploid_heat/Volcano_sig_genes.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
@@ -3381,7 +4138,7 @@ ggsave("output/triploid_heat/Volcano_sig_genes_normal.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
@@ -3389,7 +4146,7 @@ ggsave("output/triploid_heat/Volcano_sig_genes_ashr.png",
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_heat/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/triploid_heat/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
@@ -3397,7 +4154,124 @@ ggsave("output/triploid_heat/Volcano_sig_genes_apeglm.png",
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-5, 5, by = 2), limits = c(-5,5)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "triploid_heat"
+sigs_pval_lfc$analysis <- "triploid_heat"
+write.table(sigs, file = "DESEQ2_output/triploid_heat/triploid_heat-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/triploid_heat/triploid_heat-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/triploid_heat/triploid_heat-DEG-uncharacterized-pval-apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 1200,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_heat/triploid_heat-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_heat/triploid_heat-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_heat/triploid_heat-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_heat/triploid_heat-volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+
+beep(2)
 ```
 
 # TRIPLOID only - effect of desiccation
@@ -3448,7 +4322,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(res_table_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
-pdf(file= "output/triploid_desiccation/MA_plots.pdf" )
+pdf(file= "DESEQ2_output/triploid_desiccation/MA_plots.pdf" )
 par(mfrow=c(1,3), mar=c(4,4,2,1))
 xlim <- c(1,1e5); ylim <- c(-3,3)
 DESeq2::plotMA(res_table_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
@@ -3507,7 +4381,7 @@ all_genes_ashr$treatment <- "triploid_desiccation"
 
 # Filter results by
 sig_genes <- res_table %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes <- left_join(sig_genes, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes <- sig_genes %>% arrange(-log2FoldChange)
 sig_genes$treatment <- "triploid_desiccation" 
@@ -3519,13 +4393,13 @@ sig_genes_normal <- sig_genes_normal %>% arrange(-log2FoldChange)
 sig_genes_normal$treatment <- "triploid_desiccation" 
 
 sig_genes_apeglm <- res_table_apeglm %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_apeglm <- left_join(sig_genes_apeglm, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_apeglm <- sig_genes_apeglm %>% arrange(-log2FoldChange)
 sig_genes_apeglm$treatment <- "triploid_desiccation" 
 
 sig_genes_ashr <- res_table_ashr %>%
-  filter(padj < padj.cutoff & abs(log2FoldChange) > lfc.cutoff)
+  filter(padj < padj.cutoff)
 sig_genes_ashr <- left_join(sig_genes_ashr, LOCID_Roslin_gigas_gene_mito_table, by = "gene")
 sig_genes_ashr <- sig_genes_ashr %>% arrange(-log2FoldChange)
 sig_genes_ashr$treatment <- "triploid_desiccation" 
@@ -3576,10 +4450,10 @@ for (i in 1:nrow(sig_genes_ashr)){
   rm(gene_counts_data)
 }
 
-write.table(single_gene_expression_unshrunk, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-unshrunk-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_normal, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-normal-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_apeglm, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-apeglm-single-gene-counts.csv", row.names = FALSE)
-write.table(single_gene_expression_ashr, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-ashr-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_unshrunk, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-unshrunk-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_normal, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-normal-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_apeglm, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-apeglm-single-gene-counts.csv", row.names = FALSE)
+write.table(single_gene_expression_ashr, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ashr-single-gene-counts.csv", row.names = FALSE)
 
 print(paste("# genes before filtering:", nrow(cts))) # count number of genes before filtering
 print(paste("# genes after filtering:", length(dds))) # count number of genes after filtering
@@ -3596,20 +4470,20 @@ gene_counts <- as.data.frame(c(nrow(cts),length(dds),(nrow(cts)-length(dds)),nro
 row.names(gene_counts) <- c("genes_before_filtering","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes","DEGs_all-genes-normal",
                             "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
-                            "DEG_unshrunken-p0.05_lfc1.5","DEG_normal-lfc1.5",
-                            "DEG_apeglm-s0.005_lfc1.5","DEG_ashr-p0.05_lfc1.5")
+                            "DEG_unshrunken-p0.05","DEG_normal-p0.05",
+                            "DEG_apeglm-p0.05","DEG_ashr-p0.05")
 colnames(gene_counts) <- "count"
 
 # Output tables of DEGs
-write.table(all_genes,        file = "output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
-write.table(all_genes_normal, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
-write.table(all_genes_apeglm, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
-write.table(all_genes_ashr,   file = "output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
-write.table(sig_genes,        file = "output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
-write.table(sig_genes_normal, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
-write.table(sig_genes_apeglm, file = "output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
-write.table(sig_genes_ashr,   file = "output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
-write.table(gene_counts,      file = "output/triploid_desiccation/TRIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
+write.table(all_genes,        file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG.csv",            row.names = FALSE)
+write.table(all_genes_normal, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-normal.csv",     row.names = FALSE)
+write.table(all_genes_apeglm, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv",     row.names = FALSE)
+write.table(all_genes_ashr,   file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-ashr.csv",       row.names = FALSE)
+write.table(sig_genes,        file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-unshrunken.csv", row.names = FALSE)
+write.table(sig_genes_normal, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-normal.csv",     row.names = FALSE)
+write.table(sig_genes_apeglm, file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-apeglm.csv",     row.names = FALSE)
+write.table(sig_genes_ashr,   file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-SIG-DEG-ashr.csv",       row.names = FALSE)
+write.table(gene_counts,      file = "DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-gene-counts.csv",        row.names = TRUE)
 
 # Plot PCA
 p <- pca(assay(vst(dds)), metadata = coldata_trt)
@@ -3671,45 +4545,82 @@ rld_cor <- cor(rld_mat)
 bp3 <- pheatmap(rld_cor, annotation = coldata_trt[,1:2])
 
 bp3
+ 
+ 
+setwd("DESEQ2_output/triploid_desiccation")
 
+ggexport(filename = "triploid_desiccation-BIPLOT.png",
+         plot   = bp0,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "triploid_desiccation-PCA.png",
+         plot   = bp1,
+         res    = 600,
+         width  = 4000,
+         height = 5000)
+
+ggexport(filename = "triploid_desiccation-PAIRS.png",
+         plot   = bp2,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+ggexport(filename = "triploid_desiccation-pheatmap.png",
+         plot   = bp3,
+         res    = 600,
+         width  = 6000,
+         height = 6000)
+
+setwd("..")
+setwd("..")
+ 
 # Gene expression heatmap
 # Useful: https://www.datanovia.com/en/lessons/heatmap-in-r-static-and-interactive-visualization/#:~:text=%2C%20Colv%20%3D%20Colv)-,Complex%20heatmap,different%20data%20from%20different%20sources.
 # From: https://github.com/mousepixels/sanbomics/blob/main/tutorial_complex_Heatmap.Rmd
 
-sigs <- na.omit(res_table_apeglm)
-sigs <- sigs[sigs$padj < 0.05,]
+# Grab all results from DESeq2 results table
+all <- na.omit(res_table_apeglm)
+sigs <- all[all$padj < 0.05,]
+# sigs <- all[all$baseMean > 50,]
 sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
-
-# Remove genes w/ uncharacterized and/or low quality proteins from plot
-grx <- glob2rx("unchar*")
+# filter by uncharacterized (remove for top-20 graph)
+grx <- glob2rx("unchar*") 
 sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(grx, description)))
 sigs_characterized   <- anti_join(sigs, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOW*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, description)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
-grx <- glob2rx("LOCNA*")
-sigs_uncharacterized <- with(sigs_characterized, subset(sigs_characterized, subset = grepl(grx, gene)))
-sigs_characterized   <- anti_join(sigs_characterized, sigs_uncharacterized, by = 'gene')
 
+# Get list of genes and associated metadata
 df <- as.data.frame(sigs_characterized)
 row.names(df) <- df$gene
-
+df_sigs <- as.data.frame(sigs)
+row.names(df_sigs) <- df_sigs$gene
+df_all <- as.data.frame(all)
+row.names(df_all) <- df_all$gene
 df.top <- df[ (df$baseMean > 10) & (abs(df$log2FoldChange) > 1.5),]
 df.top <- df.top[order(df.top$log2FoldChange, decreasing = TRUE),]
-head(df.top)
+# head(df.top)
 
 # Get normalized count data from dds object
 rlog_out <- rlog(dds, blind=FALSE) 
-mat<-assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
+mat     <- assay(rlog_out)[rownames(df.top), rownames(coldata_trt)] #sig genes x samples
 colnames(mat) <- rownames(coldata_trt)
 base_mean <- rowMeans(mat)
+mat_all <- assay(rlog_out)[rownames(df_all), rownames(coldata_trt)]
+colnames(mat_all) <- rownames(coldata_trt)
+mat_sigs <- assay(rlog_out)[rownames(df_sigs), rownames(coldata_trt)]
+colnames(mat_sigs) <- rownames(coldata_trt)
 
 # Generate Z-score
 mat.scaled <- t(apply(mat, 1, scale)) #center and scale each column (Z-score) then transpose
 colnames(mat.scaled)<-colnames(mat)
+mat.scaled_all <- t(apply(mat_all, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_all)<-colnames(mat_all)
+mat.scaled_sigs <- t(apply(mat_sigs, 1, scale)) #center and scale each column (Z-score) then transpose
+colnames(mat.scaled_sigs)<-colnames(mat_sigs)
 
 # Keep the X number of  
-num_keep <- 10
+if(nrow(df.top)>20){num_keep <- 10} else {num_keep <- nrow(df.top)/2}
 rows_keep <- c(seq(1:num_keep), seq((nrow(mat.scaled)-num_keep), nrow(mat.scaled)) )
 l2_val <- as.matrix(df.top[rows_keep,]$log2FoldChange) #getting log2 value for each gene we are keeping
 colnames(l2_val)<-"logFC"
@@ -3726,6 +4637,17 @@ LOCID <- as.data.frame(rownames(mat.scaled[rows_keep,]))
 colnames(LOCID) <- 'gene'
 LOCID <- left_join(LOCID, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
 
+LOCID_complete <- as.data.frame(rownames(mat.scaled))
+colnames(LOCID_complete) <- 'gene'
+LOCID_complete <- left_join(LOCID_complete, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+LOCID_sigs <- as.data.frame(rownames(mat.scaled_sigs))
+colnames(LOCID_sigs) <- 'gene'
+LOCID_sigs <- left_join(LOCID_sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene')
+
+# Plot heatmap + annotations of top X number of DEGs (w/ lfc and pvalue cutoff)
+png(filename = "DESEQ2_output/triploid_desiccation/triploid_desiccation_gene_heatmap.png", 
+    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # Z-score matrix
 h1 <- Heatmap(mat.scaled[rows_keep,], 
             column_labels       = colnames(mat.scaled),
@@ -3756,140 +4678,236 @@ h3 <- Heatmap(mean, row_labels = df.top$symbol[rows_keep],
             })
 h<-h1+h2+h3
 h
-
-png(filename = "output/triploid_desiccation/triploid_desiccation_gene_heatmap.png", 
-    res = 600, width = 6000, height = 4000, units = "px", pointsize = 6)
 # par(mar=c(5,8,4,1)+.1)
 print(h)
 dev.off()
 
-
-setwd("output/triploid_desiccation")
-
-ggexport(filename = "TRIPLOID-DESICCATION-BIPLOT.png",
-         plot   = bp0,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-DESICCATION-PCA.png",
-         plot   = bp1,
-         res    = 600,
-         width  = 4000,
-         height = 5000)
-
-ggexport(filename = "TRIPLOID-DESICCATION-PAIRS.png",
-         plot   = bp2,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-ggexport(filename = "TRIPLOID-DESICCATION-pheatmap.png",
-         plot   = bp3,
-         res    = 600,
-         width  = 6000,
-         height = 6000)
-
-setwd("..")
-setwd("..")
-
-# pcaExplorer(dds = dds_ploidy)
+# Plot heatmap
+png(filename = "DESEQ2_output/triploid_desiccation/triploid_desiccation_heatmap_pval_genes_apeglm.png", 
+    res = 1200, width = 6000, height = 6000, units = "px", pointsize = 6)
+# par(mar=c(5,8,4,1)+.1)
+col <- colorRampPalette(brewer.pal(11, "RdYlBu"))(256)
+heatmap(mat.scaled_sigs, scale = "none", col =  col, 
+        ColSideColors = c(rep("royalblue1", 11), rep("red3", 11)))
+dev.off()
 
 # Volcano plots
 # All genes
 p1 <- ggplot(all_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p2 <- ggplot(all_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p3 <- ggplot(all_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p4 <- ggplot(all_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 # Significant Genes
 p5 <- ggplot(sig_genes, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p6 <- ggplot(sig_genes_normal, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p7 <- ggplot(sig_genes_ashr, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
 p8 <- ggplot(sig_genes_apeglm, aes(x = log2FoldChange, y = -log10(pvalue))) +
-             geom_point(aes(color=log2FoldChange>0))
+             geom_point(aes(color=log2FoldChange>0)) + my_theme
 
-ggsave("output/triploid_desiccation/Volcano_all_genes.png",
+# Save plots
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_all_genes.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_all_genes_normal.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_all_genes_normal.png",
        plot   = p2,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_all_genes_ashr.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_all_genes_ashr.png",
        plot   = p3,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_all_genes_apeglm.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_all_genes_apeglm.png",
        plot   = p4,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_sig_genes.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_pval_lfc_genes.png",
        plot   = p5,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_sig_genes_normal.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_pval_lfc_genes_normal.png",
        plot   = p6,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_sig_genes_ashr.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_pval_lfc_genes_ashr.png",
        plot   = p7,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-ggsave("output/triploid_desiccation/Volcano_sig_genes_apeglm.png",
+ggsave("DESEQ2_output/triploid_desiccation/Volcano_pval_lfc_genes_apeglm.png",
        plot   = p8,
        dpi    = 600,
        device = "png",
-       width  = 6,
+       width  = 4,
        height = 4,
        units  = "in")
 
-beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
+### Pie chart of unknown vs known DEG
+# Prepare dataframe for plot
+all <- na.omit(res_table_apeglm) # Grab all DEGs, using apeglm shrinkage estimator
+sigs <- all[all$padj < 0.05,] # filter for significant DEGs
+# sigs <- all[all$baseMean > 50,]
+# sigs <- sigs[abs(sigs$log2FoldChange)>1.5,]
+sigs$cat <- "characterized"
+sigs <- left_join(sigs, LOCID_Roslin_gigas_gene_mito_table, by = 'gene') # add information from gene master table
+sigs_uncharacterized <- with(sigs, subset(sigs, subset = grepl(glob2rx("*unchar*"), description))) # find uncharacterized DEGs
+if(nrow(sigs_uncharacterized) > 0){sigs_uncharacterized$cat <- "uncharacterized"} # add category label
+sigs <- anti_join(sigs, sigs_uncharacterized,  by = "gene") %>% bind_rows(sigs_uncharacterized) # merge unchar and characterized
+
+count_unchar <- as.numeric(nrow(sigs[sigs$cat == "uncharacterized",]))
+count_char <- as.numeric(nrow(sigs[sigs$cat == "characterized",]))
+
+sigs$count <- 1
+bp4  <- ggplot(sigs, aes(x=factor(1),y=count, fill=cat)) +
+        geom_bar(width = 1, stat = "identity", show.legend = FALSE) +
+        scale_fill_manual(values = c("gray12",'azure4')) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme + theme(axis.title.x=element_blank(),
+                                                     axis.title.y=element_blank(),
+                                                     axis.text.x=element_blank(),
+                                                     axis.text.y=element_blank(),
+                                                     axis.ticks.y=element_blank())
+bp4
+
+### Pie chart of unknown of up or down regulated
+sigs$plus_minus <- as.character(sign(sigs$log2FoldChange))
+count_plus <- as.numeric(nrow(sigs[sigs$plus_minus == "1",]))
+count_minus <- as.numeric(nrow(sigs[sigs$plus_minus == "-1",]))
+
+bp5  <- ggplot(sigs, aes(x=factor(1),y=plus_minus, fill=plus_minus)) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("lightskyblue","indianred")) + labs(NULL) +
+        coord_polar("y", start=0) + my_theme
+bp5
+
+### Characterized sigs bar chart
+sigs_pval_lfc <- sigs %>% filter(cat == "characterized") %>% filter(abs(log2FoldChange)>1.5) %>% 
+  arrange(desc(log2FoldChange))
+sigs_pval_lfc$gene <- factor(sigs_pval_lfc$gene, ordered = TRUE) 
+
+# Keep the X number of genes (up/down)
+num_keep = 10
+if(nrow(sigs_pval_lfc)>20){num_keep <- 10} else {num_keep <- nrow(sigs_pval_lfc)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(sigs_pval_lfc)-num_keep+1), nrow(sigs_pval_lfc)))
+
+bp6 <- ggplot(sigs_pval_lfc[rows_keep,], aes(x=as.numeric(row.names(sigs_pval_lfc[rows_keep,])), 
+                                             y=log2FoldChange, fill=plus_minus)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp6
+
+bp7 <- ggplot(sigs_characterized, aes(x=as.numeric(row.names(sigs_characterized)), 
+                                             y=log2FoldChange, fill=feature)) +
+             geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+             scale_x_continuous(breaks = NULL) + xlab("") +
+             coord_flip() + my_theme
+bp7
+
+# volcano plot pval/lfc
+p9 <- ggplot(sigs, aes(x = log2FoldChange, y = -log10(pvalue), color = plus_minus)) +
+             geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1","royalblue1")) +
+             scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20)) + my_theme + 
+             theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+
+# Output tables of DEGs
+sigs$analysis <- "triploid_desiccation"
+sigs_pval_lfc$analysis <- "triploid_desiccation"
+write.table(sigs, file = "DESEQ2_output/triploid_desiccation/triploid_desiccation-sig-genes-apeglm-pval-only.csv", row.names = F)
+write.table(sigs_pval_lfc, file = "DESEQ2_output/triploid_desiccation/triploid_desiccation-sig-genes-apeglm-pval-lfc.csv", row.names = F)
+
+# Save plots
+ggsave("DESEQ2_output/triploid_desiccation/triploid_desiccation_DEG_uncharacterized_pval_apeglm.png",
+       plot   = bp4, bg = "transparent",
+       dpi    = 1500,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_desiccation/triploid_desiccation-DEG-apeglm-updown-pie.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_desiccation/triploid_desiccation-DEG-apeglm-updown-bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_desiccation/triploid_desiccation-DEG-apeglm.png",
+       plot   = bp7,
+       dpi    = 600,
+       device = "png",
+       width  = 5,
+       height = 4,
+       units  = "in")
+
+ggsave("DESEQ2_output/triploid_desiccation/triploid_desiccation-volcano_pval_genes_apeglm.png",
+       plot   = p9,
+       dpi    = 600,
+       device = "png",
+       width  = 4,
+       height = 4,
+       units  = "in")
+
+
+beep(2)
 ```
 
-```{r}
+```{r, include = TRUE}
 beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
 
@@ -3897,13 +4915,13 @@ beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(
 ```{R eval=FALSE, include=FALSE}
 rm(list=ls())
 
-control_ploidy     <- read.table("output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
-heat_ploidy        <- read.table("output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
-desiccation_ploidy <- read.table("output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
-diploid_heat          <- read.table("output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
-diploid_desciccation  <- read.table("output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
-triploid_heat         <- read.table("output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
-triploid_desiccation  <- read.table("output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
+control_ploidy     <- read.table("DESEQ2_output/control_ploidy/CONTROL_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+heat_ploidy        <- read.table("DESEQ2_output/heat_ploidy/HEAT_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+desiccation_ploidy <- read.table("DESEQ2_output/desiccation_ploidy/DESICCATION_PLOIDY-ALL-DEG-apeglm.csv", header = TRUE)
+diploid_heat          <- read.table("DESEQ2_output/diploid_heat/DIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
+diploid_desciccation  <- read.table("DESEQ2_output/diploid_desiccation/DIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
+triploid_heat         <- read.table("DESEQ2_output/triploid_heat/TRIPLOID_HEAT-ALL-DEG-apeglm.csv", header = TRUE)
+triploid_desiccation  <- read.table("DESEQ2_output/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv", header = TRUE)
 
 control_ploidy       <- control_ploidy        %>% dplyr::select(treatment,gene,padj,log2FoldChange)
 heat_ploidy          <- heat_ploidy           %>% dplyr::select(treatment,gene,padj,log2FoldChange)
@@ -3927,7 +4945,7 @@ sum(nrow(control_ploidy),nrow(heat_ploidy),nrow(desiccation_ploidy ),
     nrow(triploid_desiccation))
 nrow(all_trt)
 
-write.table(all_trt, "output/2022_cgigas_DEG-all-treatments.txt", row.names = FALSE)
+write.table(all_trt, "DESEQ2_output/2022_cgigas_DEG-all-treatments.txt", row.names = FALSE)
 
 ```
 

@@ -1,0 +1,102 @@
+,GOID,over_represented_pvalue,under_represented_pvalue,numDEInCat,numInCat,term,ontology,GOSlim
+95,GO:0045785,0.043651769,0.986668026,7,18,positive regulation of cell adhesion,BP,biological regulation
+75,GO:0010719,0.03188899,0.995602387,4,7,negative regulation of epithelial to mesenchymal transition,BP,biological regulation
+5,GO:0007269,0.003571222,0.999014651,12,27,neurotransmitter secretion,BP,biological regulation
+18,GO:0048168,0.009539603,0.998898241,5,8,regulation of neuronal synaptic plasticity,BP,biological regulation
+50,GO:0051966,0.020872472,0.99360332,9,22,"regulation of synaptic transmission, glutamatergic",BP,biological regulation
+86,GO:0060079,0.038623988,0.988734215,7,17,excitatory postsynaptic potential,BP,biological regulation
+101,GO:0046928,0.049897812,0.988509664,5,11,regulation of neurotransmitter secretion,BP,biological regulation
+29,GO:0045669,0.01470889,0.994783056,12,32,positive regulation of osteoblast differentiation,BP,biological regulation
+46,GO:0048337,0.019735629,0.998045235,4,6,positive regulation of mesodermal cell fate specification,BP,biological regulation
+52,GO:0050768,0.021942351,0.992147185,11,29,negative regulation of neurogenesis,BP,biological regulation
+90,GO:0045316,0.040732452,0.991582251,5,10,negative regulation of compound eye photoreceptor development,BP,biological regulation
+4,GO:0008217,0.003498179,0.998848833,15,37,regulation of blood pressure,BP,biological regulation
+12,GO:0050793,0.005401867,0.998955978,8,15,regulation of developmental process,BP,biological regulation
+47,GO:0042663,0.019735629,0.998045235,4,6,regulation of endodermal cell fate specification,BP,biological regulation
+71,GO:0043114,0.031001938,0.992720993,6,13,regulation of vascular permeability,BP,biological regulation
+81,GO:0040018,0.035056409,0.986942369,10,28,positive regulation of multicellular organism growth,BP,biological regulation
+83,GO:0060279,0.035511947,0.994921045,4,7,positive regulation of ovulation,BP,biological regulation
+6,GO:0007166,0.004120841,0.997617059,47,164,cell surface receptor signaling pathway,BP,biological regulation
+10,GO:0007168,0.004726747,0.998970847,9,18,receptor guanylyl cyclase signaling pathway,BP,biological regulation
+27,GO:0046579,0.013333878,0.9971683,7,14,positive regulation of Ras protein signal transduction,BP,biological regulation
+39,GO:0046330,0.018198186,0.993245473,12,34,positive regulation of JNK cascade,BP,biological regulation
+42,GO:0046578,0.019384691,0.998091295,4,6,regulation of Ras protein signal transduction,BP,biological regulation
+55,GO:0043408,0.023407909,0.991950459,10,27,regulation of MAPK cascade,BP,biological regulation
+60,GO:0030948,0.02555124,0.995380862,5,10,negative regulation of vascular endothelial growth factor receptor signaling pathway,BP,biological regulation
+70,GO:0046426,0.030751677,0.99414173,5,10,negative regulation of receptor signaling pathway via JAK-STAT,BP,biological regulation
+93,GO:0007218,0.042532713,0.976355599,22,78,neuropeptide signaling pathway,BP,biological regulation
+24,GO:0016188,0.011664321,0.998578249,5,8,synaptic vesicle maturation,BP,cellular process
+67,GO:0033962,0.030041312,0.994315054,5,10,P-body assembly,BP,cellular process
+80,GO:0046847,0.034512739,0.993203814,5,10,filopodium assembly,BP,cellular process
+94,GO:0006334,0.043199227,0.983049432,10,30,nucleosome assembly,BP,cellular process
+97,GO:0051262,0.04427635,0.983792201,9,25,protein tetramerization,BP,cellular process
+16,GO:0060012,0.008988282,0.997488171,10,23,"synaptic transmission, glycinergic",BP,cellular process
+33,GO:0007267,0.016257146,0.993064298,16,47,cell-cell signaling,BP,cellular process
+87,GO:0046331,0.039260207,0.982091541,14,43,lateral inhibition,BP,cellular process
+48,GO:0021523,0.019735629,0.998045235,4,6,somatic motor neuron differentiation,BP,cellular process
+49,GO:0021531,0.019735629,0.998045235,4,6,spinal cord radial glial cell differentiation,BP,cellular process
+82,GO:0060487,0.035135381,0.994993096,4,7,lung epithelial cell differentiation,BP,cellular process
+84,GO:0007521,0.036977361,0.990920193,6,13,muscle cell fate determination,BP,cellular process
+17,GO:0016049,0.00924152,0.996823377,13,33,cell growth,BP,cellular process
+56,GO:0001709,0.023484909,0.992642753,9,22,cell fate determination,BP,cellular process
+63,GO:0048863,0.027124461,0.992007104,8,19,stem cell differentiation,BP,cellular process
+78,GO:0060718,0.032232823,0.995538879,4,7,chorionic trophoblast cell differentiation,BP,cellular process
+1,GO:0043524,0.001583433,0.999460511,18,46,negative regulation of neuron apoptotic process,BP,death
+11,GO:0006915,0.004939191,0.996629107,87,347,apoptotic process,BP,death
+28,GO:0006919,0.014019876,0.994313174,15,44,activation of cysteine-type endopeptidase activity involved in apoptotic process,BP,death
+41,GO:0070059,0.018756859,0.99486868,8,19,intrinsic apoptotic signaling pathway in response to endoplasmic reticulum stress,BP,death
+74,GO:0010942,0.031678134,0.991169261,7,17,positive regulation of cell death,BP,death
+19,GO:0007275,0.009983578,0.992968645,87,351,multicellular organism development,BP,developmental processes
+26,GO:0043588,0.012583886,0.996535017,9,21,skin development,BP,developmental processes
+34,GO:0001822,0.016464016,0.991845946,22,70,kidney development,BP,developmental processes
+36,GO:0021680,0.016996594,0.998396844,4,6,cerebellar Purkinje cell layer development,BP,developmental processes
+37,GO:0001942,0.017295415,0.993714702,12,32,hair follicle development,BP,developmental processes
+44,GO:0055016,0.019735629,0.998045235,4,6,hypochord development,BP,developmental processes
+45,GO:0001840,0.019735629,0.998045235,4,6,neural plate development,BP,developmental processes
+57,GO:0007517,0.023949614,0.989496683,15,46,muscle organ development,BP,developmental processes
+58,GO:0001890,0.024076067,0.993075847,8,19,placenta development,BP,developmental processes
+59,GO:0031018,0.025168567,0.993479347,7,16,endocrine pancreas development,BP,developmental processes
+65,GO:0021762,0.027500864,0.996390703,4,7,substantia nigra development,BP,developmental processes
+72,GO:0048596,0.03129619,0.994008035,5,10,embryonic camera-type eye morphogenesis,BP,developmental processes
+76,GO:0031016,0.032094023,0.990048699,8,20,pancreas development,BP,developmental processes
+92,GO:0009952,0.041864089,0.980719797,14,43,anterior/posterior pattern specification,BP,developmental processes
+98,GO:0009887,0.045644531,0.978628597,14,44,animal organ morphogenesis,BP,developmental processes
+30,GO:0007568,0.014727426,0.992504121,24,80,aging,BP,developmental processes
+3,GO:0045648,0.003430886,0.999640401,6,9,positive regulation of erythrocyte differentiation,BP,homeostasis
+7,GO:0045454,0.004282256,0.99834767,18,51,cell redox homeostasis,BP,homeostasis
+89,GO:0032469,0.040363686,0.991266465,5,11,endoplasmic reticulum calcium ion homeostasis,BP,homeostasis
+53,GO:0002315,0.022120663,0.994577022,7,15,marginal zone B cell differentiation,BP,immune system process
+91,GO:0009608,0.040751726,0.991577096,5,10,response to symbiont,BP,immune system process
+13,GO:0045475,0.006294628,0.999149084,6,10,locomotor rhythm,BP,other biological processes
+69,GO:0048771,0.030657091,0.990584009,8,20,tissue remodeling,BP,other biological processes
+88,GO:0007612,0.039704464,0.982516602,13,39,learning,BP,other biological processes
+66,GO:0016578,0.030012691,0.995944561,4,7,histone deubiquitination,BP,other metabolic processes
+21,GO:0042136,0.010525186,0.99875208,5,8,neurotransmitter biosynthetic process,BP,other metabolic processes
+8,GO:0042554,0.00440218,0.999655937,5,7,superoxide anion generation,BP,other metabolic processes
+14,GO:0045762,0.007008837,0.999028938,6,10,positive regulation of adenylate cyclase activity,BP,other metabolic processes
+40,GO:0042417,0.018619137,0.995012695,8,18,dopamine metabolic process,BP,other metabolic processes
+62,GO:0042421,0.026386229,0.994049156,6,13,norepinephrine biosynthetic process,BP,other metabolic processes
+68,GO:0009060,0.030271553,0.992713292,6,14,aerobic respiration,BP,other metabolic processes
+73,GO:0034356,0.031562762,0.99394232,5,10,NAD biosynthesis via nicotinamide riboside salvage pathway,BP,other metabolic processes
+85,GO:0006182,0.037680043,0.984236495,12,35,cGMP biosynthetic process,BP,other metabolic processes
+96,GO:0000272,0.043791385,0.988422957,6,14,polysaccharide catabolic process,BP,other metabolic processes
+99,GO:0030212,0.047274781,0.989286563,5,11,hyaluronan metabolic process,BP,other metabolic processes
+100,GO:0006650,0.048944969,0.991388078,4,8,glycerophospholipid metabolic process,BP,other metabolic processes
+20,GO:0044257,0.010360349,0.998776806,5,8,cellular protein catabolic process,BP,protein metabolism
+43,GO:0014070,0.019656363,0.991634657,15,45,response to organic cyclic compound,BP,response to stimulus
+15,GO:0000460,0.008200755,0.998726897,6,11,maturation of 5.8S rRNA,BP,RNA metabolism
+35,GO:0010944,0.016533789,0.998454416,4,6,negative regulation of transcription by competitive promoter binding,BP,RNA metabolism
+38,GO:0006401,0.017549799,0.996558656,6,12,RNA catabolic process,BP,RNA metabolism
+9,GO:0010225,0.004639235,0.99896633,9,19,response to UV-C,BP,stress response
+51,GO:0034097,0.021917808,0.992094392,11,30,response to cytokine,BP,stress response
+2,GO:0019221,0.001750828,0.99953438,13,29,cytokine-mediated signaling pathway,BP,stress response
+31,GO:0042542,0.015464039,0.996493053,7,15,response to hydrogen peroxide,BP,stress response
+54,GO:0050728,0.022871471,0.98884751,19,63,negative regulation of inflammatory response,BP,stress response
+77,GO:0048265,0.032204334,0.993783459,5,10,response to pain,BP,stress response
+22,GO:0048489,0.010682144,0.998237014,6,11,synaptic vesicle transport,BP,transport
+23,GO:0006811,0.010883807,0.99576337,15,42,ion transport,BP,transport
+25,GO:0007589,0.012414029,0.997877467,6,11,body fluid secretion,BP,transport
+32,GO:0006869,0.015582945,0.994118896,13,36,lipid transport,BP,transport
+61,GO:0015718,0.025786142,0.99037888,11,31,monocarboxylic acid transport,BP,transport
+64,GO:0006826,0.027279681,0.996429316,4,7,iron ion transport,BP,transport
+79,GO:0006855,0.032445471,0.992294053,6,13,xenobiotic transmembrane transport,BP,transport

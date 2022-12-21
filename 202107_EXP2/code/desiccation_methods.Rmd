@@ -91,6 +91,58 @@ ggsave("analyses/desiccation/tank_conditions.png",
 ```
 
 
+# Stats - Temp
+```{r}
+# stats
+# Define dataset for analysis, factors
+
+# define dataset
+dat_stat <- tank_plot
+
+# Assign factors
+dat_stat$trt  <- factor(dat_stat$group)
+
+# Select test variable
+test_me <- dat_stat$temp_mean
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ hour * group, data = dat_stat)
+
+# my_test_summary <- summary(my_test)
+summary(my_test)
+
+# # Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+# tx <- with(dat_stat, interaction(trt, time))
+# amod <- aov(response ~ tx, data = dat_stat)
+# mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+# write.table(my_test_summary[[1]],  file = "stats/treatment_conditions/aov_temp.csv",  row.names = TRUE)
+# write.table(mult_comp$groups,      file = "stats/treatment_conditions/HSD_temp.csv",  row.names = TRUE)
+
+beep(2)
+
+```
+
+
 Statistical Testing
 ```{R}
 
@@ -104,6 +156,9 @@ p2 <- ggplot(oyster_plot, aes(x=shell_volume, y=max_temp)) +
       my_theme
 
 p2
+
+linear_model <- lm(max_temp ~ shell_volume, data=oyster_plot)
+summary(linear_model)
 
 ggsave("analyses/desiccation/max_temp.png",
        plot   = p2,

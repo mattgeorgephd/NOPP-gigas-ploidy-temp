@@ -1,0 +1,51 @@
+,GOID,over_represented_pvalue,under_represented_pvalue,numDEInCat,numInCat,term,ontology,GOSlim
+34,GO:0010811,0.031762295,0.997503234,2,12,positive regulation of cell-substrate adhesion,BP,biological regulation
+9,GO:0048147,0.005251495,0.999147975,5,36,negative regulation of fibroblast proliferation,BP,biological regulation
+48,GO:0050775,0.045011942,0.992168482,3,26,positive regulation of dendrite morphogenesis,BP,biological regulation
+22,GO:0045907,0.01421616,0.99935166,2,7,positive regulation of vasoconstriction,BP,biological regulation
+36,GO:0045599,0.033518114,0.992784535,4,39,negative regulation of fat cell differentiation,BP,biological regulation
+4,GO:0070373,0.001828461,0.999649581,7,57,negative regulation of ERK1 and ERK2 cascade,BP,biological regulation
+32,GO:0031929,0.026675177,0.998147631,2,10,TOR signaling,BP,biological regulation
+33,GO:0045879,0.02686494,0.998096195,2,11,negative regulation of smoothened signaling pathway,BP,biological regulation
+26,GO:0051382,0.016966318,0.999118237,2,8,kinetochore assembly,BP,cellular process
+30,GO:0046785,0.022560042,0.998635125,2,8,microtubule polymerization,BP,cellular process
+38,GO:0030913,0.03519105,0.997075587,2,12,paranodal junction assembly,BP,cellular process
+49,GO:0051276,0.045110361,0.995706098,2,12,chromosome organization,BP,cellular process
+45,GO:0014003,0.040479177,0.996329293,2,13,oligodendrocyte development,BP,cellular process
+18,GO:0021670,0.010218916,0.999608271,2,7,lateral ventricle development,BP,developmental processes
+3,GO:0034162,0.001732978,0.999924894,3,9,toll-like receptor 9 signaling pathway,BP,immune system process
+25,GO:0034134,0.016649963,0.999143277,2,8,toll-like receptor 2 signaling pathway,BP,immune system process
+35,GO:0034142,0.032370455,0.997463198,2,11,toll-like receptor 4 signaling pathway,BP,immune system process
+43,GO:0043312,0.038171765,0.98781092,6,98,neutrophil degranulation,BP,immune system process
+19,GO:0042711,0.012012669,0.999498707,2,7,maternal behavior,BP,other biological processes
+41,GO:0000079,0.036445869,0.996953714,2,11,regulation of cyclin-dependent protein serine/threonine kinase activity,BP,other metabolic processes
+31,GO:0070124,0.026635853,0.996313202,3,20,mitochondrial translational initiation,BP,other metabolic processes
+6,GO:0006589,0.002883161,0.999837696,3,12,octopamine biosynthetic process,BP,other metabolic processes
+10,GO:0032481,0.006775142,0.999117167,4,28,positive regulation of type I interferon production,BP,other metabolic processes
+7,GO:0042420,0.00289457,0.999836824,3,12,dopamine catabolic process,BP,other metabolic processes
+8,GO:0042421,0.003607467,0.99977623,3,13,norepinephrine biosynthetic process,BP,other metabolic processes
+12,GO:0009190,0.007221025,0.999409417,3,15,cyclic nucleotide biosynthetic process,BP,other metabolic processes
+13,GO:0042325,0.008269911,0.999730942,2,6,regulation of phosphorylation,BP,other metabolic processes
+24,GO:0005978,0.014657238,0.999295021,2,8,glycogen biosynthetic process,BP,other metabolic processes
+29,GO:0030574,0.019232892,0.996502178,4,40,collagen catabolic process,BP,other metabolic processes
+1,GO:0018026,0.000334525,0.999982976,4,14,peptidyl-lysine monomethylation,BP,protein metabolism
+16,GO:0018023,0.008826187,0.999702909,2,6,peptidyl-lysine trimethylation,BP,protein metabolism
+28,GO:0018107,0.018989366,0.996549859,4,42,peptidyl-threonine phosphorylation,BP,protein metabolism
+20,GO:0019236,0.012048526,0.999496422,2,7,response to pheromone,BP,response to stimulus
+39,GO:0032869,0.035437793,0.992151489,4,48,cellular response to insulin stimulus,BP,response to stimulus
+44,GO:0002407,0.039394116,0.996447654,2,14,dendritic cell chemotaxis,BP,response to stimulus
+46,GO:0001975,0.0412428,0.996221618,2,13,response to amphetamine,BP,response to stimulus
+5,GO:0006366,0.002655084,0.999370781,8,95,transcription by RNA polymerase II,BP,RNA metabolism
+11,GO:0006355,0.006818463,0.996340034,28,654,"regulation of transcription, DNA-templated",BP,RNA metabolism
+14,GO:0006367,0.008680445,0.998375045,5,49,transcription initiation from RNA polymerase II promoter,BP,RNA metabolism
+21,GO:0045943,0.013933836,0.999347486,2,8,positive regulation of transcription by RNA polymerase I,BP,RNA metabolism
+23,GO:0060261,0.014358856,0.999341685,2,7,positive regulation of transcription initiation from RNA polymerase II promoter,BP,RNA metabolism
+47,GO:0006368,0.043703679,0.9923924,3,31,transcription elongation from RNA polymerase II promoter,BP,RNA metabolism
+50,GO:0001816,0.046384545,0.995516563,2,12,cytokine production,BP,stress response
+17,GO:0043516,0.009269029,0.999679908,2,6,"regulation of DNA damage response, signal transduction by p53 class mediator",BP,stress response
+2,GO:0050727,0.001369978,0.999838718,5,33,regulation of inflammatory response,BP,stress response
+15,GO:0002218,0.008733719,0.99922651,3,16,activation of innate immune response,BP,stress response
+27,GO:0006971,0.017944096,0.999074032,2,7,hypotonic response,BP,stress response
+37,GO:0033194,0.034075022,0.997186606,2,13,response to hydroperoxide,BP,stress response
+51,GO:0002230,0.047746854,0.991392046,3,31,positive regulation of defense response to virus by host,BP,stress response
+42,GO:0015695,0.038092809,0.996658395,2,13,organic cation transport,BP,transport

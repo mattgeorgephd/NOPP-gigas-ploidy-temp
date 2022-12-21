@@ -1,0 +1,292 @@
+GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0071470,cellular response to osmotic stress,56,8,1.49,0.00011
+GO:0007342,fusion of sperm to egg plasma membrane i...,19,5,0.5,0.00011
+GO:0036309,protein localization to M-band,19,5,0.5,0.00011
+GO:0035272,exocrine system development,162,14,4.3,0.00011
+GO:2000142,regulation of DNA-templated transcriptio...,30,6,0.8,0.00012
+GO:0001539,cilium or flagellum-dependent cell motil...,163,14,4.32,0.00012
+GO:1901576,organic substance biosynthetic process,7910,256,209.81,0.00012
+GO:0060544,regulation of necroptotic process,89,10,2.36,0.00013
+GO:0062098,regulation of programmed necrotic cell d...,89,10,2.36,0.00013
+GO:0031338,regulation of vesicle fusion,107,11,2.84,0.00013
+GO:0033209,tumor necrosis factor-mediated signaling...,107,11,2.84,0.00013
+GO:0048147,negative regulation of fibroblast prolif...,73,9,1.94,0.00013
+GO:0006954,inflammatory response,541,30,14.35,0.00014
+GO:0006244,pyrimidine nucleotide catabolic process,11,4,0.29,0.00014
+GO:0009223,pyrimidine deoxyribonucleotide catabolic...,11,4,0.29,0.00014
+GO:0010917,negative regulation of mitochondrial mem...,11,4,0.29,0.00014
+GO:0044211,CTP salvage,11,4,0.29,0.00014
+GO:0044539,long-chain fatty acid import into cell,11,4,0.29,0.00014
+GO:0045837,negative regulation of membrane potentia...,11,4,0.29,0.00014
+GO:0140354,lipid import into cell,11,4,0.29,0.00014
+GO:0045216,cell-cell junction organization,319,21,8.46,0.00014
+GO:0009058,biosynthetic process,8044,259,213.37,0.00015
+GO:0070372,regulation of ERK1 and ERK2 cascade,298,20,7.9,0.00015
+GO:0010556,regulation of macromolecule biosynthetic...,4744,164,125.83,0.00016
+GO:0003018,vascular process in circulatory system,92,10,2.44,0.00017
+GO:0033280,response to vitamin D,32,6,0.85,0.00017
+GO:1901522,positive regulation of transcription fro...,32,6,0.85,0.00017
+GO:0030277,maintenance of gastrointestinal epitheli...,5,3,0.13,0.00018
+GO:0035331,negative regulation of hippo signaling,5,3,0.13,0.00018
+GO:0060305,regulation of cell diameter,5,3,0.13,0.00018
+GO:0034162,toll-like receptor 9 signaling pathway,21,5,0.56,0.00019
+GO:0014003,oligodendrocyte development,46,7,1.22,0.00020
+GO:0048284,organelle fusion,327,21,8.67,0.00020
+GO:0048871,multicellular organismal homeostasis,450,26,11.94,0.00020
+GO:0034154,toll-like receptor 7 signaling pathway,12,4,0.32,0.00021
+GO:0034635,glutathione transport,12,4,0.32,0.00021
+GO:0042939,tripeptide transport,12,4,0.32,0.00021
+GO:0019219,regulation of nucleobase-containing comp...,4770,164,126.52,0.00021
+GO:0048793,pronephros development,47,7,1.25,0.00022
+GO:0031156,regulation of sorocarp development,62,8,1.64,0.00023
+GO:0071472,cellular response to salt stress,22,5,0.58,0.00023
+GO:0070266,necroptotic process,96,10,2.55,0.00024
+GO:0039528,cytoplasmic pattern recognition receptor...,79,9,2.1,0.00024
+GO:0031347,regulation of defense response,671,34,17.8,0.00028
+GO:0010138,pyrimidine ribonucleotide salvage,13,4,0.34,0.00029
+GO:0032262,pyrimidine nucleotide salvage,13,4,0.34,0.00029
+GO:0035726,common myeloid progenitor cell prolifera...,13,4,0.34,0.00029
+GO:0044206,UMP salvage,13,4,0.34,0.00029
+GO:0007527,adult somatic muscle development,23,5,0.61,0.00029
+GO:0048332,mesoderm morphogenesis,157,13,4.16,0.00030
+GO:0001821,histamine secretion,6,3,0.16,0.00035
+GO:0002349,histamine production involved in inflamm...,6,3,0.16,0.00035
+GO:0002441,histamine secretion involved in inflamma...,6,3,0.16,0.00035
+GO:0002553,histamine secretion by mast cell,6,3,0.16,0.00035
+GO:0019086,late viral transcription,6,3,0.16,0.00035
+GO:0042395,ecdysis, collagen and cuticulin-based cu...,6,3,0.16,0.00035
+GO:0045448,mitotic cell cycle, embryonic,6,3,0.16,0.00035
+GO:0060394,negative regulation of pathway-restricte...,6,3,0.16,0.00035
+GO:1903593,regulation of histamine secretion by mas...,6,3,0.16,0.00035
+GO:1903595,positive regulation of histamine secreti...,6,3,0.16,0.00035
+GO:1903608,protein localization to cytoplasmic stre...,6,3,0.16,0.00035
+GO:0046660,female sex differentiation,102,10,2.71,0.00039
+GO:0035864,response to potassium ion,37,6,0.98,0.00039
+GO:0006089,lactate metabolic process,14,4,0.37,0.00040
+GO:0009219,pyrimidine deoxyribonucleotide metabolic...,14,4,0.37,0.00040
+GO:0010940,positive regulation of necrotic cell dea...,14,4,0.37,0.00040
+GO:0035672,oligopeptide transmembrane transport,14,4,0.37,0.00040
+GO:0042182,ketone catabolic process,14,4,0.37,0.00040
+GO:0070509,calcium ion import,162,13,4.3,0.00040
+GO:0071277,cellular response to calcium ion,103,10,2.73,0.00042
+GO:0052652,cyclic purine nucleotide metabolic proce...,85,9,2.25,0.00042
+GO:0034111,negative regulation of homotypic cell-ce...,25,5,0.66,0.00044
+GO:0006367,transcription initiation from RNA polyme...,123,11,3.26,0.00044
+GO:0006952,defense response,1878,74,49.81,0.00045
+GO:0060788,ectodermal placode formation,38,6,1.01,0.00046
+GO:0071696,ectodermal placode development,38,6,1.01,0.00046
+GO:0071697,ectodermal placode morphogenesis,38,6,1.01,0.00046
+GO:0016050,vesicle organization,718,35,19.04,0.00046
+GO:0060261,positive regulation of transcription ini...,15,4,0.4,0.00053
+GO:0060992,response to fungicide,15,4,0.4,0.00053
+GO:0009713,catechol-containing compound biosyntheti...,26,5,0.69,0.00054
+GO:0042423,catecholamine biosynthetic process,26,5,0.69,0.00054
+GO:0045026,plasma membrane fusion,26,5,0.69,0.00054
+GO:0034121,regulation of toll-like receptor signali...,107,10,2.84,0.00057
+GO:0032502,developmental process,10931,334,289.94,0.00059
+GO:0036066,protein O-linked fucosylation,7,3,0.19,0.00060
+GO:0007297,ovarian follicle cell migration,213,15,5.65,0.00061
+GO:0007298,border follicle cell migration,213,15,5.65,0.00061
+GO:0043117,positive regulation of vascular permeabi...,27,5,0.72,0.00064
+GO:0097300,programmed necrotic cell death,109,10,2.89,0.00065
+GO:0036065,fucosylation,56,7,1.49,0.00067
+GO:0016334,establishment or maintenance of polarity...,41,6,1.09,0.00070
+GO:0043217,myelin maintenance,41,6,1.09,0.00070
+GO:0050729,positive regulation of inflammatory resp...,91,9,2.41,0.00070
+GO:0001992,regulation of systemic arterial blood pr...,2,2,0.05,0.00070
+GO:0006069,ethanol oxidation,2,2,0.05,0.00070
+GO:0010015,root morphogenesis,2,2,0.05,0.00070
+GO:0010101,post-embryonic root morphogenesis,2,2,0.05,0.00070
+GO:0010102,lateral root morphogenesis,2,2,0.05,0.00070
+GO:0010311,lateral root formation,2,2,0.05,0.00070
+GO:0042713,sperm ejaculation,2,2,0.05,0.00070
+GO:0043084,penile erection,2,2,0.05,0.00070
+GO:0048527,lateral root development,2,2,0.05,0.00070
+GO:0070488,neutrophil aggregation,2,2,0.05,0.00070
+GO:0080181,lateral root branching,2,2,0.05,0.00070
+GO:0090697,post-embryonic plant organ morphogenesis,2,2,0.05,0.00070
+GO:1903394,protein localization to kinetochore invo...,2,2,0.05,0.00070
+GO:1905393,plant organ formation,2,2,0.05,0.00070
+GO:2000428,regulation of neutrophil aggregation,2,2,0.05,0.00070
+GO:2000429,negative regulation of neutrophil aggreg...,2,2,0.05,0.00070
+GO:2000468,regulation of peroxidase activity,2,2,0.05,0.00070
+GO:2000469,negative regulation of peroxidase activi...,2,2,0.05,0.00070
+GO:0098542,defense response to other organism,1384,57,36.71,0.00073
+GO:0009889,regulation of biosynthetic process,4935,165,130.9,0.00075
+GO:0043114,regulation of vascular permeability,57,7,1.51,0.00075
+GO:0016477,cell migration,2332,87,61.86,0.00079
+GO:0031326,regulation of cellular biosynthetic proc...,4874,163,129.28,0.00081
+GO:0042127,regulation of cell population proliferat...,2142,81,56.82,0.00082
+GO:0030595,leukocyte chemotaxis,93,9,2.47,0.00082
+GO:0018027,peptidyl-lysine dimethylation,17,4,0.45,0.00089
+GO:0033700,phospholipid efflux,17,4,0.45,0.00089
+GO:2001023,regulation of response to drug,17,4,0.45,0.00089
+GO:0090335,regulation of brown fat cell differentia...,29,5,0.77,0.00091
+GO:0045610,regulation of hemocyte differentiation,177,13,4.69,0.00093
+GO:0006658,phosphatidylserine metabolic process,8,3,0.21,0.00094
+GO:0010989,negative regulation of low-density lipop...,8,3,0.21,0.00094
+GO:1903335,regulation of vacuolar transport,8,3,0.21,0.00094
+GO:0042386,hemocyte differentiation,178,13,4.72,0.00098
+GO:0006220,pyrimidine nucleotide metabolic process,77,8,2.04,0.00099
+GO:0097340,inhibition of cysteine-type endopeptidas...,115,10,3.05,0.00099
+GO:0097341,zymogen inhibition,115,10,3.05,0.00099
+GO:1990001,inhibition of cysteine-type endopeptidas...,115,10,3.05,0.00099
+GO:0060326,cell chemotaxis,180,13,4.77,0.00109
+GO:0034134,toll-like receptor 2 signaling pathway,18,4,0.48,0.00112
+GO:0042133,neurotransmitter metabolic process,45,6,1.19,0.00115
+GO:0032259,methylation,375,21,9.95,0.00117
+GO:0051646,mitochondrion localization,62,7,1.64,0.00125
+GO:0010467,gene expression,7347,232,194.88,0.00127
+GO:0098586,cellular response to virus,100,9,2.65,0.00138
+GO:0006857,oligopeptide transport,19,4,0.5,0.00139
+GO:0032968,positive regulation of transcription elo...,19,4,0.5,0.00139
+GO:0035809,regulation of urine volume,19,4,0.5,0.00139
+GO:0042256,mature ribosome assembly,9,3,0.24,0.00139
+GO:0060390,regulation of SMAD protein signal transd...,9,3,0.24,0.00139
+GO:0097264,self proteolysis,9,3,0.24,0.00139
+GO:0042136,neurotransmitter biosynthetic process,32,5,0.85,0.00144
+GO:0010468,regulation of gene expression,5752,186,152.57,0.00160
+GO:0090330,regulation of platelet aggregation,33,5,0.88,0.00166
+GO:0006222,UMP biosynthetic process,20,4,0.53,0.00170
+GO:0008655,pyrimidine-containing compound salvage,20,4,0.53,0.00170
+GO:0009173,pyrimidine ribonucleoside monophosphate ...,20,4,0.53,0.00170
+GO:0009174,pyrimidine ribonucleoside monophosphate ...,20,4,0.53,0.00170
+GO:0043097,pyrimidine nucleoside salvage,20,4,0.53,0.00170
+GO:0046049,UMP metabolic process,20,4,0.53,0.00170
+GO:2000144,positive regulation of DNA-templated tra...,20,4,0.53,0.00170
+GO:0007584,response to nutrient,213,14,5.65,0.00175
+GO:0043414,macromolecule methylation,362,20,9.6,0.00178
+GO:0099612,protein localization to axon,49,6,1.3,0.00181
+GO:0030587,sorocarp development,85,8,2.25,0.00189
+GO:0099120,socially cooperative development,85,8,2.25,0.00189
+GO:0044849,estrous cycle,34,5,0.9,0.00191
+GO:0050873,brown fat cell differentiation,34,5,0.9,0.00191
+GO:0001959,regulation of cytokine-mediated signalin...,105,9,2.79,0.00194
+GO:0000429,carbon catabolite regulation of transcri...,10,3,0.27,0.00194
+GO:0000436,carbon catabolite activation of transcri...,10,3,0.27,0.00194
+GO:0010985,negative regulation of lipoprotein parti...,10,3,0.27,0.00194
+GO:0019853,L-ascorbic acid biosynthetic process,10,3,0.27,0.00194
+GO:0033005,positive regulation of mast cell activat...,10,3,0.27,0.00194
+GO:0033008,positive regulation of mast cell activat...,10,3,0.27,0.00194
+GO:0043306,positive regulation of mast cell degranu...,10,3,0.27,0.00194
+GO:0045907,positive regulation of vasoconstriction,10,3,0.27,0.00194
+GO:0031114,regulation of microtubule depolymerizati...,50,6,1.33,0.00201
+GO:0045070,positive regulation of viral genome repl...,50,6,1.33,0.00201
+GO:0090630,activation of GTPase activity,148,11,3.93,0.00204
+GO:0009116,nucleoside metabolic process,106,9,2.81,0.00207
+GO:0001173,DNA-templated transcriptional start site...,3,2,0.08,0.00207
+GO:0001174,transcriptional start site selection at ...,3,2,0.08,0.00207
+GO:0001178,regulation of transcriptional start site...,3,2,0.08,0.00207
+GO:0009087,methionine catabolic process,3,2,0.08,0.00207
+GO:0033591,response to L-ascorbic acid,3,2,0.08,0.00207
+GO:0051771,negative regulation of nitric-oxide synt...,3,2,0.08,0.00207
+GO:0061300,cerebellum vasculature development,3,2,0.08,0.00207
+GO:0071460,cellular response to cell-matrix adhesio...,3,2,0.08,0.00207
+GO:1904293,negative regulation of ERAD pathway,3,2,0.08,0.00207
+GO:0071360,cellular response to exogenous dsRNA,51,6,1.35,0.00223
+GO:0006368,transcription elongation from RNA polyme...,69,7,1.83,0.00233
+GO:0009125,nucleoside monophosphate catabolic proce...,22,4,0.58,0.00245
+GO:0030195,negative regulation of blood coagulation,36,5,0.95,0.00247
+GO:0071622,regulation of granulocyte chemotaxis,36,5,0.95,0.00247
+GO:1900047,negative regulation of hemostasis,36,5,0.95,0.00247
+GO:0090304,nucleic acid metabolic process,6798,214,180.32,0.00249
+GO:0010955,negative regulation of protein processin...,130,10,3.45,0.00249
+GO:1903318,negative regulation of protein maturatio...,130,10,3.45,0.00249
+GO:0010988,regulation of low-density lipoprotein pa...,11,3,0.29,0.00262
+GO:0019376,galactolipid catabolic process,11,3,0.29,0.00262
+GO:0045991,carbon catabolite activation of transcri...,11,3,0.29,0.00262
+GO:0046015,regulation of transcription by glucose,11,3,0.29,0.00262
+GO:0050765,negative regulation of phagocytosis,11,3,0.29,0.00262
+GO:0032481,positive regulation of type I interferon...,90,8,2.39,0.00271
+GO:0033273,response to vitamin,90,8,2.39,0.00271
+GO:0009130,pyrimidine nucleoside monophosphate bios...,23,4,0.61,0.00291
+GO:0045444,fat cell differentiation,275,16,7.29,0.00296
+GO:0060759,regulation of response to cytokine stimu...,112,9,2.97,0.00301
+GO:0031532,actin cytoskeleton reorganization,227,14,6.02,0.00313
+GO:0030178,negative regulation of Wnt signaling pat...,203,13,5.38,0.00315
+GO:0045990,carbon catabolite regulation of transcri...,12,3,0.32,0.00342
+GO:0046549,retinal cone cell development,12,3,0.32,0.00342
+GO:0051608,histamine transport,12,3,0.32,0.00342
+GO:0006972,hyperosmotic response,39,5,1.03,0.00354
+GO:0009636,response to toxic substance,159,11,4.22,0.00355
+GO:0002753,cytoplasmic pattern recognition receptor...,115,9,3.05,0.00359
+GO:0043170,macromolecule metabolic process,12917,380,342.62,0.00359
+GO:0009415,response to water,56,6,1.49,0.00359
+GO:0010628,positive regulation of gene expression,871,37,23.1,0.00363
+GO:0006352,DNA-templated transcription, initiation,160,11,4.24,0.00373
+GO:0031033,myosin filament organization,95,8,2.52,0.00379
+GO:0006464,cellular protein modification process,5653,180,149.95,0.00380
+GO:0036211,protein modification process,5653,180,149.95,0.00380
+GO:0019852,L-ascorbic acid metabolic process,25,4,0.66,0.00399
+GO:0046134,pyrimidine nucleoside biosynthetic proce...,25,4,0.66,0.00399
+GO:0043154,negative regulation of cysteine-type end...,210,13,5.57,0.00419
+GO:0050775,positive regulation of dendrite morphoge...,77,7,2.04,0.00434
+GO:0002221,pattern recognition receptor signaling p...,312,17,8.28,0.00434
+GO:0042997,negative regulation of Golgi to plasma m...,13,3,0.34,0.00436
+GO:0045779,negative regulation of bone resorption,13,3,0.34,0.00436
+GO:0046851,negative regulation of bone remodeling,13,3,0.34,0.00436
+GO:0060576,intestinal epithelial cell development,13,3,0.34,0.00436
+GO:2000117,negative regulation of cysteine-type end...,211,13,5.6,0.00436
+GO:0010543,regulation of platelet activation,41,5,1.09,0.00441
+GO:0036071,N-glycan fucosylation,26,4,0.69,0.00461
+GO:0022612,gland morphogenesis,239,14,6.34,0.00494
+GO:0043207,response to external biotic stimulus,1738,64,46.1,0.00516
+GO:0051707,response to other organism,1738,64,46.1,0.00516
+GO:0032786,positive regulation of DNA-templated tra...,27,4,0.72,0.00530
+GO:0043174,nucleoside salvage,27,4,0.72,0.00530
+GO:0062207,regulation of pattern recognition recept...,145,10,3.85,0.00543
+GO:0010984,regulation of lipoprotein particle clear...,14,3,0.37,0.00544
+GO:0016267,O-glycan processing, core 1,14,3,0.37,0.00544
+GO:0006468,protein phosphorylation,2069,74,54.88,0.00551
+GO:0071674,mononuclear cell migration,123,9,3.26,0.00558
+GO:0006928,movement of cell or subcellular componen...,3826,126,101.48,0.00577
+GO:0009615,response to virus,487,23,12.92,0.00597
+GO:0002407,dendritic cell chemotaxis,28,4,0.74,0.00606
+GO:0034142,toll-like receptor 4 signaling pathway,28,4,0.74,0.00606
+GO:0046135,pyrimidine nucleoside catabolic process,28,4,0.74,0.00606
+GO:0071415,cellular response to purine-containing c...,28,4,0.74,0.00606
+GO:0071502,cellular response to temperature stimulu...,28,4,0.74,0.00606
+GO:0007424,open tracheal system development,324,17,8.59,0.00627
+GO:0007369,gastrulation,325,17,8.62,0.00646
+GO:0098703,calcium ion import across plasma membran...,104,8,2.76,0.00653
+GO:1902656,calcium ion import into cytosol,104,8,2.76,0.00653
+GO:0006354,DNA-templated transcription, elongation,83,7,2.2,0.00654
+GO:0009410,response to xenobiotic stimulus,83,7,2.2,0.00654
+GO:0002674,negative regulation of acute inflammator...,5,2,0.13,0.00666
+GO:0070486,leukocyte aggregation,5,2,0.13,0.00666
+GO:0070508,cholesterol import,5,2,0.13,0.00666
+GO:0051171,regulation of nitrogen compound metaboli...,6584,204,174.64,0.00666
+GO:0034104,negative regulation of tissue remodeling,15,3,0.4,0.00666
+GO:1901336,lactone biosynthetic process,15,3,0.4,0.00666
+GO:0006855,xenobiotic transmembrane transport,29,4,0.77,0.00688
+GO:0007019,microtubule depolymerization,64,6,1.7,0.00695
+GO:0071359,cellular response to dsRNA,64,6,1.7,0.00695
+GO:0006955,immune response,1893,68,50.21,0.00697
+GO:0021591,ventricular system development,84,7,2.23,0.00697
+GO:0071621,granulocyte chemotaxis,46,5,1.22,0.00724
+GO:0071675,regulation of mononuclear cell migration,46,5,1.22,0.00724
+GO:1901657,glycosyl compound metabolic process,129,9,3.42,0.00757
+GO:1901334,lactone metabolic process,30,4,0.8,0.00778
+GO:0010719,negative regulation of epithelial to mes...,16,3,0.42,0.00804
+GO:0034383,low-density lipoprotein particle clearan...,16,3,0.42,0.00804
+GO:0035881,amacrine cell differentiation,16,3,0.42,0.00804
+GO:0042711,maternal behavior,16,3,0.42,0.00804
+GO:0042996,regulation of Golgi to plasma membrane p...,16,3,0.42,0.00804
+GO:0060746,parental behavior,16,3,0.42,0.00804
+GO:0030707,ovarian follicle cell development,306,16,8.12,0.00811
+GO:0070613,regulation of protein processing,154,10,4.08,0.00820
+GO:1902531,regulation of intracellular signal trans...,2374,82,62.97,0.00844
+GO:0031398,positive regulation of protein ubiquitin...,179,11,4.75,0.00851
+GO:0009247,glycolipid biosynthetic process,67,6,1.78,0.00866
+GO:2000249,regulation of actin cytoskeleton reorgan...,67,6,1.78,0.00866
+GO:0016572,histone phosphorylation,48,5,1.27,0.00866
+GO:1902001,fatty acid transmembrane transport,31,4,0.82,0.00875
+GO:0042698,ovulation cycle,68,6,1.8,0.00929
+GO:1903317,regulation of protein maturation,157,10,4.16,0.00933
+GO:0002690,positive regulation of leukocyte chemota...,49,5,1.3,0.00944
+GO:0032715,negative regulation of interleukin-6 pro...,17,3,0.45,0.00958
+GO:0060575,intestinal epithelial cell differentiati...,17,3,0.45,0.00958
+GO:0009607,response to biotic stimulus,1792,64,47.53,0.00981
+GO:0048528,post-embryonic root development,6,2,0.16,0.00982
+GO:0090696,post-embryonic plant organ development,6,2,0.16,0.00982
+GO:1905392,plant organ morphogenesis,6,2,0.16,0.00982

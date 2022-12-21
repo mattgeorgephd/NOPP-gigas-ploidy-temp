@@ -14,12 +14,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Load packages; set ggplot theme
-```{r message=TRUE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 ## clear workspace
 rm(list=ls())
 
 ## Load Packages
-load.lib<-c("readxl","tidyverse","seacarb","AquaEnv") # List of required packages
+load.lib<-c("readxl","tidyverse","seacarb","AquaEnv","tidyverse","bestNormalize","agricolae","nlme","multcomp","rstatix","lme4","lmerTest","beepr") # List of required packages
 install.lib <- load.lib[!load.lib %in% installed.packages()] # Select missing packages
 for(lib in install.lib) install.packages(lib,dependencies=TRUE) # Install missing packages + dependencies
 sapply(load.lib,require,character=TRUE) # Load all packages.
@@ -41,7 +41,7 @@ my_theme <- theme(line              = element_line(size=1.2),
                   panel.border      = element_rect(color = "black", fill=NA, size=1.2),
                   legend.key        = element_blank(), # removes background of legend bullets
                   legend.position   = "none"
-                  ) 
+                  )
 ```
 LOAD dataset
 ```{r}
@@ -55,6 +55,27 @@ alpha_set = 0.8
 tank_cond %>% group_by(combo) %>% summarise(mean=mean(T1_temp), sd=sd(T1_temp), count=n())
 
 ```
+### Define SE function
+```{r}
+
+summary_se <- function(.data, measure_var, ..., .ci = 0.95, na.rm = FALSE) {
+  
+  measure_var <- dplyr::enquo(measure_var)
+  group_var <- dplyr::enquos(...)
+  
+  .data %>%
+    group_by(!!! group_var) %>%
+    summarise(mean = mean(!! measure_var, na.rm = na.rm),
+              sd = sd(!! measure_var, na.rm = na.rm),
+              n = n(),
+              se = sd/sqrt(n),
+              ci = se * qt(.ci/2 + 0.5, n-1)) %>%
+    ungroup()
+  
+}
+
+```
+
 # Calculate total alkalinity
 ```{r}
 # Salinity vs TA relationship from FHL
@@ -140,6 +161,8 @@ pHscale = "F"                  # free scale
 T3_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
 T3_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
 
+beep(2)
+
 ```
 
 # Seacarb - Tank 4
@@ -161,10 +184,17 @@ pHscale = "F"                  # free scale
 T4_result <- carb(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale)
 T4_error  <- errors(flag=flag, var1=var1, var2=var2, S=S, T=T, P=P, k1k2=k1k2, pHscale=pHscale, evar1=evar1, evar2=evar2)
 
+beep(2)
+
 ```
 
 # Add parameters
 ```{r}
+
+T1_result$tank <- "T1"
+T2_result$tank <- "T2"
+T3_result$tank <- "T3"
+T4_result$tank <- "T4"
 
 # convert talk
 tank_cond$T1_talk <- tank_cond$T1_talk*10^6
@@ -226,11 +256,439 @@ tank_cond$T4_Oca_error <- T4_error$OmegaCalcite
 
 write.table(tank_cond, file = "treatment_conditions/tank_conditions_w_calc.csv", row.names = FALSE)
 
+beep(2)
+
 ```
 
 ```{r}
 # summarize by hour
-tank_cond_hour_mean <- tank_cond %>% group_by(combo) %>% summarise_all(mean)
+tank_cond_hour_mean <- tank_cond %>% group_by(combo) %>% summarise_all(mean)  # %>% coalesce(treatment, 0L)
+
 write.table(tank_cond_hour_mean, file = "treatment_conditions/tank_conditions_hour_mean.csv", row.names = FALSE)
 
+beep(2)
+
 ```
+
+```{r}
+
+tank_cond_hour_mean <- read.csv("treatment_conditions/tank_conditions_hour_mean.csv", sep = ",")
+
+# Generate stats dataframe
+# define Tank_ID
+T1 <- data.frame(rep("T1", 1190))
+T2 <- data.frame(rep("T2", 1190))
+T3 <- data.frame(rep("T3", 1190))
+T4 <- data.frame(rep("T4", 1190))
+
+colnames(T1) <- "trt"
+colnames(T2) <- "trt"
+colnames(T3) <- "trt"
+colnames(T4) <- "trt"
+
+tank_ID <- rbind(T1,T2,T3,T4)
+
+# # get time
+# time    <- tank_cond_hour_mean[,1]
+# colnames(time) <- "time"
+
+# get temp
+T1_temp <- tank_cond_hour_mean[,8]
+T2_temp <- tank_cond_hour_mean[,9]
+T3_temp <- tank_cond_hour_mean[,10]
+T4_temp <- tank_cond_hour_mean[,11]
+
+# colnames(T1_temp) <- "temp"
+# colnames(T2_temp) <- "temp"
+# colnames(T3_temp) <- "temp"
+# colnames(T4_temp) <- "temp"
+
+temp <- rbind(T1_temp,T2_temp,T3_temp,T4_temp)
+
+# get Sal
+T1_sal <- tank_cond_hour_mean[,12]
+T2_sal <- tank_cond_hour_mean[,13]
+T3_sal <- tank_cond_hour_mean[,14]
+T4_sal <- tank_cond_hour_mean[,15]
+
+colnames(T1_sal) <- "sal"
+colnames(T2_sal) <- "sal"
+colnames(T3_sal) <- "sal"
+colnames(T4_sal) <- "sal"
+
+sal <- rbind(T1_sal,T2_sal,T3_sal,T4_sal)
+
+# get pH
+T1_pH <- tank_cond_hour_mean[,16]
+T2_pH <- tank_cond_hour_mean[,17]
+T3_pH <- tank_cond_hour_mean[,18]
+T4_pH <- tank_cond_hour_mean[,19]
+
+colnames(T1_pH) <- "pH"
+colnames(T2_pH) <- "pH"
+colnames(T3_pH) <- "pH"
+colnames(T4_pH) <- "pH"
+
+pH <- rbind(T1_pH,T2_pH,T3_pH,T4_pH)
+
+# get talk
+T1_talk <- tank_cond_hour_mean[,20]
+T2_talk <- tank_cond_hour_mean[,21]
+T3_talk <- tank_cond_hour_mean[,22]
+T4_talk <- tank_cond_hour_mean[,23]
+
+colnames(T1_talk) <- "talk"
+colnames(T2_talk) <- "talk"
+colnames(T3_talk) <- "talk"
+colnames(T4_talk) <- "talk"
+
+talk <- rbind(T1_talk,T2_talk,T3_talk,T4_talk)
+
+# get pCO2
+T1_pCO2 <- tank_cond_hour_mean[,24]
+T2_pCO2 <- tank_cond_hour_mean[,25]
+T3_pCO2 <- tank_cond_hour_mean[,26]
+T4_pCO2 <- tank_cond_hour_mean[,27]
+
+colnames(T1_pCO2) <- "pCO2"
+colnames(T2_pCO2) <- "pCO2"
+colnames(T3_pCO2) <- "pCO2"
+colnames(T4_pCO2) <- "pCO2"
+
+pCO2 <- rbind(T1_pCO2,T2_pCO2,T3_pCO2,T4_pCO2)
+
+# get CO3
+T1_CO3 <- tank_cond_hour_mean[,28]
+T2_CO3 <- tank_cond_hour_mean[,29]
+T3_CO3 <- tank_cond_hour_mean[,30]
+T4_CO3 <- tank_cond_hour_mean[,31]
+
+colnames(T1_CO3) <- "CO3"
+colnames(T2_CO3) <- "CO3"
+colnames(T3_CO3) <- "CO3"
+colnames(T4_CO3) <- "CO3"
+
+CO3 <- rbind(T1_CO3,T2_CO3,T3_CO3,T4_CO3)
+
+# get HCO3
+T1_HCO3 <- tank_cond_hour_mean[,32]
+T2_HCO3 <- tank_cond_hour_mean[,33]
+T3_HCO3 <- tank_cond_hour_mean[,34]
+T4_HCO3 <- tank_cond_hour_mean[,35]
+
+colnames(T1_HCO3) <- "HCO3"
+colnames(T2_HCO3) <- "HCO3"
+colnames(T3_HCO3) <- "HCO3"
+colnames(T4_HCO3) <- "HCO3"
+
+HCO3 <- rbind(T1_HCO3,T2_HCO3,T3_HCO3,T4_HCO3)
+
+# get Oar
+T1_Oar <- tank_cond_hour_mean[,36]
+T2_Oar <- tank_cond_hour_mean[,37]
+T3_Oar <- tank_cond_hour_mean[,38]
+T4_Oar <- tank_cond_hour_mean[,39]
+
+colnames(T1_Oar) <- "Oar"
+colnames(T2_Oar) <- "Oar"
+colnames(T3_Oar) <- "Oar"
+colnames(T4_Oar) <- "Oar"
+
+Oar <- rbind(T1_Oar,T2_Oar,T3_Oar,T4_Oar)
+
+# get Oca
+T1_Oca <- tank_cond_hour_mean[,36]
+T2_Oca <- tank_cond_hour_mean[,37]
+T3_Oca <- tank_cond_hour_mean[,38]
+T4_Oca <- tank_cond_hour_mean[,39]
+
+colnames(T1_Oca) <- "Oca"
+colnames(T2_Oca) <- "Oca"
+colnames(T3_Oca) <- "Oca"
+colnames(T4_Oca) <- "Oca"
+
+Oca <- rbind(T1_Oca,T2_Oca,T3_Oca,T4_Oca)
+
+
+dat_stat      <- cbind(time, tank_ID, temp, sal, pH, talk, CO3, HCO3, pCO2, Oca, Oar)
+dat_stat$hour<- seq(1:length(dat_stat$time)) 
+
+
+write.table(dat_stat, file = "treatment_conditions/tank_conditions_stats.csv", row.names = FALSE)
+
+```
+
+
+```{r}
+
+dat_stat <- read.csv("treatment_conditions/dat_stat.csv", sep = ",")
+
+# dat_stat_T1 <- dat_stat %>% filter(trt == "T1" )
+# dat_stat_T1 <- dat_stat_T1 %>% group_by(combo) %>% summarise_all(mean)  # %>% coalesce(treatment, 0L)
+
+# tank_cond_hour_day <- dat_stat %>% group_by(time) %>% summarise_all(mean)  # %>% coalesce(treatment, 0L)
+
+
+dat_stat <- dat_stat %>% filter(trt == "T2" | trt == "T3" | trt == "T4")
+
+
+# temperature
+
+p1 <- ggplot(data = dat_stat, aes(x=time, y=temp, color=trt)) +
+             geom_line() +
+             # geom_point(show.legend = FALSE) +
+             scale_color_manual(values = c("salmon1", "royalblue1", "orangered1")) +
+             # scale_x_continuous(breaks = seq(-4, 4, by = 2), limits = c(-5.5,5.5)) + 
+             # scale_y_continuous(breaks = seq(4, 20, by = 4), limits = c(2.5,20))
+             my_theme
+
+p1
+
+# Save plots
+ggsave("plots/treatment_temperatures.png",
+       plot   = p1, bg = "transparent",
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 5,
+       units  = "in")
+
+
+```
+
+
+```{r}
+
+# Calculate average temp
+temp <- dat_stat %>% group_by(trt) %>% summary_se(temp, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+temp$parameter <- "temp"
+
+# Calculate average sal
+sal <- dat_stat %>% group_by(trt) %>% summary_se(sal, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+sal$parameter <- "sal"
+
+# Calculate average pH
+pH <- dat_stat %>% group_by(trt) %>% summary_se(pH, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+pH$parameter <- "pH"
+
+# Calculate average talk
+talk <- dat_stat %>% group_by(trt) %>% summary_se(talk, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+talk$parameter <- "talk"
+
+# Calculate average CO3
+CO3 <- dat_stat %>% group_by(trt) %>% summary_se(CO3, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+CO3$parameter <- "CO3"
+
+# Calculate average HCO3
+HCO3 <- dat_stat %>% group_by(trt) %>% summary_se(HCO3, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+HCO3$parameter <- "HCO3"
+
+# Calculate average pCO2
+pCO2 <- dat_stat %>% group_by(trt) %>% summary_se(pCO2, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+pCO2$parameter <- "pCO2"
+
+# Calculate average Oca
+Oca <- dat_stat %>% group_by(trt) %>% summary_se(Oca, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+Oca$parameter <- "Oca"
+
+# Calculate average Oar
+Oar <- dat_stat %>% group_by(trt) %>% summary_se(Oar, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+Oar$parameter <- "Oar"
+
+
+output <- rbind(temp,sal,pH,talk,CO3,HCO3,pCO2,Oca,Oar)
+
+
+# save output
+write.table(output, file = "stats/treatment_conditions/treatment_summary.csv", row.names = FALSE)
+
+```
+
+
+
+```{r}
+
+dat_stat_acclimation <- read.csv("treatment_conditions/acclimation.csv", sep = ",")
+
+# Calculate average temp
+temp <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(temp, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+temp$parameter <- "temp"
+
+# Calculate average sal
+sal <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(sal, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+sal$parameter <- "sal"
+
+# Calculate average pH
+pH <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(pH, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+pH$parameter <- "pH"
+
+# Calculate average talk
+talk <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(talk, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+talk$parameter <- "talk"
+
+# Calculate average CO3
+CO3 <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(CO3, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+CO3$parameter <- "CO3"
+
+# Calculate average HCO3
+HCO3 <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(HCO3, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+HCO3$parameter <- "HCO3"
+
+# Calculate average pCO2
+pCO2 <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(pCO2, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+pCO2$parameter <- "pCO2"
+
+# Calculate average Oca
+Oca <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(Oca, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+Oca$parameter <- "Oca"
+
+# Calculate average Oar
+Oar <- dat_stat_acclimation %>% group_by(trt) %>% summary_se(Oar, # response variable
+                                   trt  , # group variable
+                                   .ci = 0.95) # confidence interval
+Oar$parameter <- "Oar"
+
+
+output <- rbind(temp,sal,pH,talk,CO3,HCO3,pCO2,Oca,Oar)
+
+
+# save output
+write.table(output, file = "stats/treatment_conditions/treatment_summary_acclimation.csv", row.names = FALSE)
+```
+
+
+# Stats - Temp
+```{r}
+# stats
+# Define dataset for analysis, factors
+
+# define dataset
+dat_stat <- dat_stat
+
+# Assign factors
+dat_stat$trt  <- factor(dat_stat$trt)
+
+# Select test variable
+test_me <- dat_stat$temp
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ trt, data = dat_stat)
+
+# my_test_summary <- summary(my_test)
+summary(my_test)
+
+# # Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+# tx <- with(dat_stat, interaction(trt, time))
+# amod <- aov(response ~ tx, data = dat_stat)
+# mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+# write.table(my_test_summary[[1]],  file = "stats/treatment_conditions/aov_temp.csv",  row.names = TRUE)
+# write.table(mult_comp$groups,      file = "stats/treatment_conditions/HSD_temp.csv",  row.names = TRUE)
+
+beep(2)
+
+```
+# Stats - sal
+```{r}
+# stats
+# Define dataset for analysis, factors
+
+# define dataset
+dat_stat <- dat_stat
+
+# Assign factors
+dat_stat$trt  <- factor(dat_stat$trt)
+
+# Select test variable
+test_me <- dat_stat$sal
+
+# Test for normality
+qqnorm(test_me) # check linearity of transformed data
+qqline(test_me)
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+print(norm_test$p.value)
+
+# Normalize data if normality test failed
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+
+dat_stat$response <- test_me
+
+# Run repeated measures anova using oyster ID has random effect
+# https://www.r-bloggers.com/2015/08/two-way-anova-with-repeated-measures/
+my_test <- aov(response ~ trt * hour, data = dat_stat)
+
+my_test_summary <- summary(my_test)
+summary(my_test)
+
+# # Significant interaction observed between timepoint:trt:ploidy. Proceed with HSD test.
+# tx <- with(dat_stat, interaction(trt, hour))
+# amod <- aov(response ~ tx, data = dat_stat)
+# mult_comp <- HSD.test(amod, "tx", group=TRUE, console=TRUE)
+
+# save output
+write.table(my_test_summary[[1]],  file = "stats/treatment_conditions/aov_sal.csv",  row.names = TRUE)
+# write.table(mult_comp$groups,      file = "stats/treatment_conditions/HSD_sal.csv",  row.names = TRUE)
+
+beep(2)
+
+```
+

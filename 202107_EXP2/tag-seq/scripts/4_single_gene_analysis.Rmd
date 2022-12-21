@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Load libraries
 ```{r load_libraries, inlcude = TRUE}
+## clear
+rm(list=ls())
 
 ## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
 # install.packages("BiocManager")
@@ -574,12 +576,13 @@ for (i in 1:nrow(triploid_desiccation)){
 
 beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(2); Sys.sleep(0.3); beep(4)
 ```
+
 ```{r message=TRUE, include=FALSE}
 # ATP & CS & heat ---------------------------------------------------------
 
 LOCID_cs <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("citrate synthase*"), description)))
 
-LOCID_ATP <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("ATP synthase*"), description)))
+LOCID_ATP <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("ATP*"), description)))
 
 LOCID_HEAT <- with(LOCID_Roslin_gigas_gene_mito_table, subset(LOCID_Roslin_gigas_gene_mito_table, subset = grepl(glob2rx("heat shock*"), description)))
 

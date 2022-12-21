@@ -1,0 +1,741 @@
+---
+title: "6_GOseq"
+author: "Matt George"
+date: "2022-09-08"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = FALSE, cache = TRUE)
+```
+
+```{bash, engine.path="C:/Windows/System32/bash.exe"}
+echo $PATH
+```
+
+### Load libraries
+```{r load_libraries, inlcude = TRUE}
+
+## clear
+rm(list=ls())
+
+## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
+# BiocManager::install(version = "3.13")
+# BiocManager::install("BiocGenerics")
+# BiocManager::install("graph")
+# BiocManager::install("Biobase")
+# BiocManager::install("AnnotationDbi")
+# BiocManager::install("GO.db")
+# BiocManager::install("topGO", force = TRUE)
+# BiocManager::install("simplifyEnrichment") #Needs newest R Version (4.1.0)
+# BiocManager::install("rrvgo", force = TRUE)
+
+# List of packages we want to install (run every time)
+load.lib<-c("tidyverse","genefilter","DESeq2","RColorBrewer","WGCNA","gridExtra","ComplexHeatmap","goseq","dplyr","pheatmap","magrittr","readxl")
+
+# Select only the packages that aren't currently installed (run every time)
+install.lib <- load.lib[!load.lib %in% installed.packages()]
+
+# And finally we install the missing packages, including their dependency.
+for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# After the installation process completes, we load all packages.
+sapply(load.lib,require,character=TRUE)
+
+```
+#Set ggplot theme
+```{r ggplot_theme, include=FALSE}
+
+my_theme <- theme(line              = element_line(size=1),
+                  rect              = element_rect(size=1),
+                  text              = element_text(size=9,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_blank(),
+                  axis.text.y       = element_blank(),
+                  axis.title.x      = element_blank(),
+                  axis.title.y      = element_blank(),
+                  axis.ticks.x      = element_blank(),
+                  axis.ticks.y      = element_blank(),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1),
+                  legend.key        = element_blank()) # removes background of legend bullets
+```
+
+#####
+#
+# https://wikis.utexas.edu/display/bioiteam/GO+Enrichment+using+goseq#:~:text=goseq%20is%20an%20R%20package,in%20our%20differentially%20expressed%20genes.
+# https://bioconductor.org/packages/devel/bioc/vignettes/goseq/inst/doc/goseq.pdf
+#
+#####
+
+
+### GOterms: diploid, single-stressor, unique DEG only only in diploids, BP
+```{r}
+
+diploid_SS_unique <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_SS_unique.txt", 
+                               header = TRUE, quote = "", sep = "\t") 
+nrow(diploid_SS_unique) # 119615
+diploid_SS_unique <- na.omit(diploid_SS_unique)
+nrow(diploid_SS_unique) # 119615
+
+
+diploid_SS_unique_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(diploid_SS_unique_bg) # 580,794
+
+diploid_SS_unique_bg$length <- diploid_SS_unique_bg$end - diploid_SS_unique_bg$start
+
+# ID.dataframe <- read.delim("blast/_blast-GO-unfolded.tab", header = FALSE, sep = "\t")
+# ID.dataframe <- ID.dataframe[,c(2, 3)]
+# colnames(ID.dataframe) <- c("product.accession","GO.ID")
+
+# GeneID to GOID
+ID.dataframe <- diploid_SS_unique_bg[,c("GeneID","GOID")]
+GOslim.dataframe <- diploid_SS_unique_bg[,c("GOID","GOSlim")]
+
+# Get DEG and all gene list
+DEG           <- unique(diploid_SS_unique$GeneID)
+ALL           <- unique(diploid_SS_unique_bg$GeneID)
+
+# create gene length vector for all genes in background
+find_all <- as.data.frame(ALL)
+colnames(find_all) <- "GeneID"
+LENGTH.vector <- find_all %>% left_join(dplyr::distinct(diploid_SS_unique_bg, GeneID, .keep_all = T))
+LENGTH.vector <- LENGTH.vector$length
+
+# Convert the DEG and ALL data objects to vectors
+DEG.vector <- c(t(DEG))
+ALL.vector <- c(t(ALL))
+
+# Construct a new vector: 0 next to every gene that is not in our DEG list and a 1 next to every gene that is in our DEG list.
+gene.vector=as.integer(ALL.vector%in%DEG.vector)
+names(gene.vector)=ALL.vector
+
+# Weigh the gene vector by gene length
+DEG.pwf<-nullp(gene.vector, ID.dataframe, bias.data=LENGTH.vector) #weight vector by length of gene
+
+# Find enriched GO terSS
+GO.wall<-goseq(DEG.pwf, ID.dataframe, gene2cat=ID.dataframe, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOID"
+
+# Attach GO slim terSS
+GO.slim <- left_join(GO, GOslim.dataframe, by = "GOID")
+GO.slim <- GO.slim[!duplicated(GO.slim$GOID), ] #not sure I need this step
+
+# Filtering for p < 0.05
+filtered.GO <- GO.slim %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+  arrange(., ontology, term, over_represented_pvalue)
+
+# Make plot object
+filtered.GO_plot <- filtered.GO %>%
+  filter(over_represented_pvalue != "NA") %>%
+  filter(numInCat >5) %>%
+  filter(ontology == "BP") %>%
+  arrange(., ontology, over_represented_pvalue)
+
+# Factor terSS so they are display in the correct order in the plot
+filtered.GO_plot$term <- factor(filtered.GO_plot$term, levels=rev(filtered.GO_plot$term))
+filtered.GO_plot$GOSlim <- factor(filtered.GO_plot$GOSlim, levels = c('cell adhesion', 'cell cycle and proliferation', 'cell organization and biogenesis', 'cell-cell signaling','transport', 'signal transduction', 'developmental processes', 'other metabolic processes', 'protein metabolism', 'RNA metabolism', 'stress response', 'death','other biological processes'), ordered = TRUE)
+
+# Assign color palettes for each GOslim category
+cell       <- brewer.pal(9, "Blues")
+develop    <- brewer.pal(9, "Purples")
+metabolism <- brewer.pal(9, "Greens")
+stress     <- brewer.pal(9, "YlOrRd")
+other      <- brewer.pal(9, "YlOrRd")
+
+# Assign colors for the plot (remove ones that aren't represented)
+plot_colors <- c(rev(cell[(9-4):9]),develop[7],rev(metabolism[(8-2):8]),stress[5:6],'gray30')
+
+# plot significantly enriched GO terSS by pvalue
+p2 <- ggplot(filtered.GO_plot, aes(x=term, y=-log10(over_represented_pvalue), fill = GOSlim)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values = plot_colors) +
+             # scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip()
+
+p2
+
+# plot significantly enriched GO terSS by Slim Category
+pie2  <- ggplot(filtered.GO_plot, aes(x=factor(1),y=GOSlim, fill=GOSlim)) +
+              geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie2
+
+ggsave("GOterm_annotation/diploid_SS_unique/GOseq_diploid_SS_bar_BP.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/diploid_SS_unique/GOseq_diploid_SS_pie_BP.png",
+       plot   = pie2,
+       dpi    = 1600,
+       device = "png",
+       width  = 10,
+       height = 5,
+       units  = "in")
+
+write.csv(filtered.GO_plot , file = "GOterm_annotation/diploid_SS_unique/GOseq_significant_diploid_SS_BP.csv")
+
+```
+
+### GOterms: triploid, single-stressor, unique DEG only only in triploids, BP
+```{r}
+
+triploid_SS_unique <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_SS_unique.txt", 
+                               header = TRUE, quote = "", sep = "\t") 
+nrow(triploid_SS_unique) # 18580
+triploid_SS_unique <- na.omit(triploid_SS_unique)
+nrow(triploid_SS_unique) # 18580
+
+
+triploid_SS_unique_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(triploid_SS_unique_bg) # 580,794
+
+triploid_SS_unique_bg$length <- triploid_SS_unique_bg$end - triploid_SS_unique_bg$start
+
+# ID.dataframe <- read.delim("blast/_blast-GO-unfolded.tab", header = FALSE, sep = "\t")
+# ID.dataframe <- ID.dataframe[,c(2, 3)]
+# colnames(ID.dataframe) <- c("product.accession","GO.ID")
+
+# GeneID to GOID
+ID.dataframe <- triploid_SS_unique_bg[,c("GeneID","GOID")]
+GOslim.dataframe <- triploid_SS_unique_bg[,c("GOID","GOSlim")]
+
+# Get DEG and all gene list
+DEG           <- unique(triploid_SS_unique$GeneID)
+ALL           <- unique(triploid_SS_unique_bg$GeneID)
+
+# create gene length vector for all genes in background
+find_all <- as.data.frame(ALL)
+colnames(find_all) <- "GeneID"
+LENGTH.vector <- find_all %>% left_join(dplyr::distinct(triploid_SS_unique_bg, GeneID, .keep_all = T))
+LENGTH.vector <- LENGTH.vector$length
+
+# Convert the DEG and ALL data objects to vectors
+DEG.vector <- c(t(DEG))
+ALL.vector <- c(t(ALL))
+
+# Construct a new vector: 0 next to every gene that is not in our DEG list and a 1 next to every gene that is in our DEG list.
+gene.vector=as.integer(ALL.vector%in%DEG.vector)
+names(gene.vector)=ALL.vector
+
+# Weigh the gene vector by gene length
+DEG.pwf<-nullp(gene.vector, ID.dataframe, bias.data=LENGTH.vector) #weight vector by length of gene
+
+# Find enriched GO terSS
+GO.wall<-goseq(DEG.pwf, ID.dataframe, gene2cat=ID.dataframe, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOID"
+
+# Attach GO slim terSS
+GO.slim <- left_join(GO, GOslim.dataframe, by = "GOID")
+GO.slim <- GO.slim[!duplicated(GO.slim$GOID), ] #not sure I need this step
+
+# Filtering for p > 0.05
+filtered.GO <- GO.slim %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+  arrange(., ontology, term, over_represented_pvalue)
+
+# Make plot object
+filtered.GO_plot <- filtered.GO %>%
+  filter(over_represented_pvalue != "NA") %>%
+  filter(numInCat >5) %>%
+  filter(ontology == "BP") %>%
+  arrange(., ontology, over_represented_pvalue)
+
+# Factor terSS so they are display in the correct order in the plot
+filtered.GO_plot$term <- factor(filtered.GO_plot$term, levels=rev(filtered.GO_plot$term))
+filtered.GO_plot$GOSlim <- factor(filtered.GO_plot$GOSlim, levels = c('cell adhesion', 'cell cycle and proliferation', 'cell organization and biogenesis', 'cell-cell signaling','transport', 'signal transduction', 'developmental processes', 'other metabolic processes', 'protein metabolism', 'RNA metabolism', 'stress response', 'death','other biological processes'), ordered = TRUE)
+
+# Assign color palettes for each GOslim category
+cell       <- brewer.pal(9, "Blues")
+develop    <- brewer.pal(9, "Purples")
+metabolism <- brewer.pal(9, "Greens")
+stress     <- brewer.pal(9, "YlOrRd")
+other      <- brewer.pal(9, "YlOrRd")
+
+# Assign colors for the plot (remove ones that aren't represented)
+plot_colors <- c(rev(cell[(9-5):9]),develop[7],rev(metabolism[(8-2):8]),stress[5:6],'gray30')
+
+
+filtered.GO_plot$GOSlim[c(38,61)] <- 'stress response'
+
+# plot significantly enriched GO terSS by pvalue
+p2 <- ggplot(filtered.GO_plot, aes(x=term, y=-log10(over_represented_pvalue), fill = GOSlim)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values = plot_colors) +
+             # scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip()
+
+p2
+
+# plot significantly enriched GO terSS by Slim Category
+pie2  <- ggplot(filtered.GO_plot, aes(x=factor(1),y=GOSlim, fill=GOSlim)) +
+              geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie2
+
+ggsave("GOterm_annotation/triploid_SS_unique/GOseq_triploid_SS_bar_BP.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/triploid_SS_unique/GOseq_triploid_SS_pie_BP.png",
+       plot   = pie2,
+       dpi    = 1600,
+       device = "png",
+       width  = 10,
+       height = 5,
+       units  = "in")
+
+write.csv(filtered.GO_plot , file = "GOterm_annotation/triploid_SS_unique/GOseq_significant_triploid_SS_BP.csv")
+
+```
+
+### GOterms: diploid, multistressor, unique DEG only only in diploids, BP
+```{r}
+
+diploid_MS_unique <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_MS_unique.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(diploid_MS_unique) # 4323
+
+diploid_MS_unique_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(diploid_MS_unique_bg) # 580,794
+
+diploid_MS_unique_bg$length <- diploid_MS_unique_bg$end - diploid_MS_unique_bg$start
+
+# ID.dataframe <- read.delim("blast/_blast-GO-unfolded.tab", header = FALSE, sep = "\t")
+# ID.dataframe <- ID.dataframe[,c(2, 3)]
+# colnames(ID.dataframe) <- c("product.accession","GO.ID")
+
+# GeneID to GOID
+ID.dataframe <- diploid_MS_unique_bg[,c("GeneID","GOID")]
+GOslim.dataframe <- diploid_MS_unique_bg[,c("GOID","GOSlim")]
+
+# Get DEG and all gene list
+DEG           <- unique(diploid_MS_unique$GeneID)
+ALL           <- unique(diploid_MS_unique_bg$GeneID)
+
+# create gene length vector for all genes in background
+find_all <- as.data.frame(ALL)
+colnames(find_all) <- "GeneID"
+LENGTH.vector <- find_all %>% left_join(dplyr::distinct(diploid_MS_unique_bg, GeneID, .keep_all = T))
+LENGTH.vector <- LENGTH.vector$length
+
+# Convert the DEG and ALL data objects to vectors
+DEG.vector <- c(t(DEG))
+ALL.vector <- c(t(ALL))
+
+# Construct a new vector: 0 next to every gene that is not in our DEG list and a 1 next to every gene that is in our DEG list.
+gene.vector=as.integer(ALL.vector%in%DEG.vector)
+names(gene.vector)=ALL.vector
+
+# Weigh the gene vector by gene length
+DEG.pwf<-nullp(gene.vector, ID.dataframe, bias.data=LENGTH.vector) #weight vector by length of gene
+
+# Find enriched GO terms
+GO.wall<-goseq(DEG.pwf, ID.dataframe, gene2cat=ID.dataframe, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOID"
+
+# Attach GO slim terms
+GO.slim <- left_join(GO, GOslim.dataframe, by = "GOID")
+GO.slim <- GO.slim[!duplicated(GO.slim$GOID), ] #not sure I need this step
+
+# Filtering for p > 0.05
+filtered.GO <- GO.slim %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+  arrange(., ontology, term, over_represented_pvalue)
+
+# Make plot object
+filtered.GO_plot <- filtered.GO %>%
+  filter(over_represented_pvalue != "NA") %>%
+  filter(numInCat >5) %>%
+  filter(ontology == "BP") %>%
+  arrange(., ontology, over_represented_pvalue)
+
+# Factor terms so they are display in the correct order in the plot
+filtered.GO_plot$term <- factor(filtered.GO_plot$term, levels=rev(filtered.GO_plot$term))
+filtered.GO_plot$GOSlim <- factor(filtered.GO_plot$GOSlim, levels = c('cell adhesion', 'cell cycle and proliferation', 'cell organization and biogenesis', 'cell-cell signaling','transport', 'signal transduction', 'developmental processes', 'other metabolic processes', 'protein metabolism', 'RNA metabolism', 'stress response', 'death','other biological processes'), ordered = TRUE)
+
+# Assign color palettes for each GOslim category
+cell       <- brewer.pal(9, "Blues")
+develop    <- brewer.pal(9, "Purples")
+metabolism <- brewer.pal(9, "Greens")
+stress     <- brewer.pal(9, "YlOrRd")
+other      <- brewer.pal(9, "YlOrRd")
+
+# Assign colors for the plot (remove ones that aren't represented)
+plot_colors <- c(rev(cell[(9-5):9]),develop[7],rev(metabolism[8]),stress[5:6],'gray30')
+
+# plot significantly enriched GO terms by pvalue
+p2 <- ggplot(filtered.GO_plot, aes(x=term, y=-log10(over_represented_pvalue), fill = GOSlim)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values = plot_colors) +
+             # scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip()
+
+p2
+
+# plot significantly enriched GO terms by Slim Category
+pie2  <- ggplot(filtered.GO_plot, aes(x=factor(1),y=GOSlim, fill=GOSlim)) +
+              geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie2
+
+ggsave("GOterm_annotation/diploid_MS_unique/GOseq_diploid_bar_BP.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/diploid_MS_unique/GOseq_diploid_pie_BP.png",
+       plot   = pie2,
+       dpi    = 1600,
+       device = "png",
+       width  = 10,
+       height = 5,
+       units  = "in")
+
+write.csv(filtered.GO_plot , file = "GOterm_annotation/diploid_MS_unique/GOseq_significant_diploid_BP.csv")
+
+```
+
+### GOterms: triploid, multistressor, unique DEG only in triploids, BP
+```{r}
+triploid_MS_unique <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_MS_unique.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(triploid_MS_unique) # 10963
+
+triploid_MS_unique_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(triploid_MS_unique_bg) # 577,330
+
+triploid_MS_unique_bg$length <- triploid_MS_unique_bg$end - triploid_MS_unique_bg$start
+
+# ID.dataframe <- read.delim("blast/_blast-GO-unfolded.tab", header = FALSE, sep = "\t")
+# ID.dataframe <- ID.dataframe[,c(2, 3)]
+# colnames(ID.dataframe) <- c("product.accession","GO.ID")
+
+# GeneID to GOID
+ID.dataframe <- triploid_MS_unique_bg[,c("GeneID","GOID")]
+GOslim.dataframe <- triploid_MS_unique_bg[,c("GOID","GOSlim")]
+
+# Get DEG and all gene list
+DEG           <- unique(triploid_MS_unique$GeneID)
+ALL           <- unique(triploid_MS_unique_bg$GeneID)
+
+# create gene length vector for all genes in background
+find_all <- as.data.frame(ALL)
+colnames(find_all) <- "GeneID"
+LENGTH.vector <- find_all %>% left_join(dplyr::distinct(triploid_MS_unique_bg, GeneID, .keep_all = T))
+LENGTH.vector <- LENGTH.vector$length
+
+# Convert the DEG and ALL data objects to vectors
+DEG.vector <- c(t(DEG))
+ALL.vector <- c(t(ALL))
+
+# Construct a new vector: 0 next to every gene that is not in our DEG list and a 1 next to every gene that is in our DEG list.
+gene.vector=as.integer(ALL.vector%in%DEG.vector)
+names(gene.vector)=ALL.vector
+
+# Weigh the gene vector by gene length
+DEG.pwf<-nullp(gene.vector, ID.dataframe, bias.data=LENGTH.vector) #weight vector by length of gene
+
+# Find enriched GO terms
+GO.wall<-goseq(DEG.pwf, ID.dataframe, gene2cat=ID.dataframe, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOID"
+
+# Attach GO slim terms
+GO.slim <- left_join(GO, GOslim.dataframe, by = "GOID")
+GO.slim <- GO.slim[!duplicated(GO.slim$GOID), ] #not sure I need this step
+
+# Filtering for p > 0.05
+filtered.GO <- GO.slim %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+  arrange(., ontology, term, over_represented_pvalue)
+
+# Create Plot Object
+filtered.GO_plot <- filtered.GO %>%
+  filter(over_represented_pvalue != "NA") %>%
+  filter(numInCat >5) %>%
+  filter(ontology == "BP") %>%
+  arrange(., ontology, over_represented_pvalue)
+
+# Factor terms so they are display in the correct order in the plot
+filtered.GO_plot$term <- factor(filtered.GO_plot$term, levels=rev(filtered.GO_plot$term))
+filtered.GO_plot$GOSlim <- factor(filtered.GO_plot$GOSlim, levels = c('cell adhesion', 'cell cycle and proliferation', 'cell organization and biogenesis', 'cell-cell signaling','transport', 'signal transduction', 'developmental processes', 'other metabolic processes', 'protein metabolism', 'RNA metabolism', 'stress response', 'death','other biological processes'), ordered = TRUE)
+
+# Assign color palettes for each GOslim category
+cell       <- brewer.pal(9, "Blues")
+develop    <- brewer.pal(9, "Purples")
+metabolism <- brewer.pal(9, "Greens")
+stress     <- brewer.pal(9, "YlOrRd")
+other      <- brewer.pal(9, "YlOrRd")
+
+# Assign colors for the plot (remove ones that aren't represented)
+plot_colors <- c(rev(cell[(9-5):9]),develop[7],rev(metabolism[(8-2):8]),stress[5],'gray30')
+
+# plot significantly enriched GO terms by pvalue
+p1 <- ggplot(filtered.GO_plot, aes(x=term, y=-log10(over_represented_pvalue), fill = GOSlim)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values = plot_colors) +
+             # scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip()
+
+p1
+
+# plot significantly enriched GO terms by Slim Category
+pie1  <- ggplot(filtered.GO_plot, aes(x=factor(1),y=GOSlim, fill=GOSlim)) +
+              geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie1
+
+# Save plots
+ggsave("GOterm_annotation/diploid_MS_unique/GOseq_triploid_bar_BP.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 10,
+       height = 5,
+       units  = "in")
+
+
+ggsave("GOterm_annotation/triploid_MS_unique/GOseq_triploid_pie_BP.png",
+       plot   = pie1,
+       dpi    = 1600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+write.csv(filtered.GO_plot , file = "GOterm_annotation/triploid_MS_unique/GOseq_significant_triploid_BP.csv")
+
+```
+
+### GOterms: ploidy, control, significant DEG, BP
+```{r}
+
+control_ploidy <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(control_ploidy) # 4323
+
+control_ploidy_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_bg.txt", 
+                               header = TRUE, sep = "\t") 
+nrow(control_ploidy_bg) # 580,794
+
+control_ploidy_bg$length <- control_ploidy_bg$end - control_ploidy_bg$start
+
+# ID.dataframe <- read.delim("blast/_blast-GO-unfolded.tab", header = FALSE, sep = "\t")
+# ID.dataframe <- ID.dataframe[,c(2, 3)]
+# colnames(ID.dataframe) <- c("product.accession","GO.ID")
+
+# GeneID to GOID
+ID.dataframe <- control_ploidy_bg[,c("GeneID","GOID")]
+GOslim.dataframe <- control_ploidy_bg[,c("GOID","GOSlim")]
+
+# Get DEG and all gene list
+DEG           <- unique(control_ploidy$GeneID)
+ALL           <- unique(control_ploidy_bg$GeneID)
+
+# create gene length vector for all genes in background
+find_all <- as.data.frame(ALL)
+colnames(find_all) <- "GeneID"
+LENGTH.vector <- find_all %>% left_join(dplyr::distinct(control_ploidy_bg, GeneID, .keep_all = T))
+LENGTH.vector <- LENGTH.vector$length
+
+# Convert the DEG and ALL data objects to vectors
+DEG.vector <- c(t(DEG))
+ALL.vector <- c(t(ALL))
+
+# Construct a new vector: 0 next to every gene that is not in our DEG list and a 1 next to every gene that is in our DEG list.
+gene.vector=as.integer(ALL.vector%in%DEG.vector)
+names(gene.vector)=ALL.vector
+
+# Weigh the gene vector by gene length
+DEG.pwf<-nullp(gene.vector, ID.dataframe, bias.data=LENGTH.vector) #weight vector by length of gene
+
+# Find enriched GO terms
+GO.wall<-goseq(DEG.pwf, ID.dataframe, gene2cat=ID.dataframe, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOID"
+
+# Attach GO slim terms
+GO.slim <- left_join(GO, GOslim.dataframe, by = "GOID")
+GO.slim <- GO.slim[!duplicated(GO.slim$GOID), ] #not sure I need this step
+
+# Filtering for p > 0.05
+filtered.GO <- GO.slim %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+  arrange(., ontology, term, over_represented_pvalue)
+
+# Make plot object
+filtered.GO_plot <- filtered.GO %>%
+  filter(over_represented_pvalue != "NA") %>%
+  filter(numInCat >5) %>%
+  filter(ontology == "BP") %>%
+  arrange(., ontology, over_represented_pvalue)
+
+# Factor terms so they are display in the correct order in the plot
+filtered.GO_plot$term <- factor(filtered.GO_plot$term, levels=rev(filtered.GO_plot$term))
+filtered.GO_plot$GOSlim <- factor(filtered.GO_plot$GOSlim, levels = c('cell adhesion', 'cell cycle and proliferation', 'cell organization and biogenesis', 'cell-cell signaling','transport', 'signal transduction', 'developmental processes', 'other metabolic processes', 'protein metabolism', 'RNA metabolism', 'stress response', 'death','other biological processes'), ordered = TRUE)
+
+# Assign color palettes for each GOslim category
+cell       <- brewer.pal(9, "Blues")
+develop    <- brewer.pal(9, "Purples")
+metabolism <- brewer.pal(9, "Greens")
+stress     <- brewer.pal(9, "YlOrRd")
+other      <- brewer.pal(9, "YlOrRd")
+
+# Assign colors for the plot (remove ones that aren't represented)
+plot_colors <- c(rev(cell[(9-4):9]),develop[7],rev(metabolism[(8-2):8]),stress[5:6],'gray30')
+
+# plot significantly enriched GO terms by pvalue
+p2 <- ggplot(filtered.GO_plot, aes(x=term, y=-log10(over_represented_pvalue), fill = GOSlim)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values = plot_colors) +
+             # scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip()
+
+p2
+
+# plot significantly enriched GO terms by Slim Category
+pie2  <- ggplot(filtered.GO_plot, aes(x=factor(1),y=GOSlim, fill=GOSlim)) +
+              geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie2
+
+ggsave("GOterm_annotation/control_ploidy/GOseq_control_ploidy_bar_BP.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/control_ploidy/GOseq_control_ploidy_pie_BP.png",
+       plot   = pie2,
+       dpi    = 1600,
+       device = "png",
+       width  = 10,
+       height = 5,
+       units  = "in")
+
+write.csv(filtered.GO_plot , file = "GOterm_annotation/control_ploidy/GOseq_significant_control_ploidy_BP.csv")
+
+```
+
+
+### GOterms: MASTER list plot
+```{r}
+
+master      <- read_excel("GOterm_annotation/GOseq_significant_updated_MASTER.xlsx", sheet = "master", col_names = TRUE)
+plot_colors <- read_excel("GOterm_annotation/GOseq_significant_updated_MASTER.xlsx", sheet = "plot_colors", col_names = TRUE)
+
+master$GOcat <- factor(master$GOcat, levels = plot_colors$GOcat, ordered=TRUE)
+
+diploid_SS_unique <- master %>% filter(comparison == "diploid_SS")
+diploid_MS_unique <- master %>% filter(comparison == "diploid_MS")
+triploid_SS_unique <- master %>% filter(comparison == "triploid_SS")
+triploid_MS_unique <- master %>% filter(comparison == "triploid_MS")
+
+
+# plot significantly enriched GO terms by Slim Category
+pie1  <- ggplot(diploid_SS_unique, aes(x=factor(1), fill=GOcat)) +
+              geom_bar(width = 1, show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors$GOcat_color[c(1:5,7:14)]) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie1
+
+pie2  <- ggplot(diploid_MS_unique, aes(x=factor(1), fill=GOcat)) +
+              geom_bar(width = 1, show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors$GOcat_color[c(1:5,9,11:14)]) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie2
+
+pie3  <- ggplot(triploid_SS_unique, aes(x=factor(1), fill=GOcat)) +
+              geom_bar(width = 1, show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors$GOcat_color[c(1:13)]) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie3
+
+pie4  <- ggplot(triploid_MS_unique, aes(x=factor(1), fill=GOcat)) +
+              geom_bar(width = 1, show.legend = TRUE) +
+              scale_fill_manual(values = plot_colors$GOcat_color[c(1:5,7:11,14)]) + labs(NULL) +
+              coord_polar("y", start=0) + my_theme
+pie4
+
+
+# Save plots
+ggsave("GOterm_annotation/diploid_SS_unique/GOseq_diploid_SS_unique_BP_pie.png",
+       plot   = pie1,
+       dpi    = 1600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/diploid_MS_unique/GOseq_diploid_MS_unique_BP_pie.png",
+       plot   = pie2,
+       dpi    = 1600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+ggsave("GOterm_annotation/triploid_SS_unique/GOseq_triploid_SS_unique_BP_pie.png",
+       plot   = pie3,
+       dpi    = 1600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+
+ggsave("GOterm_annotation/triploid_MS_unique/GOseq_triploid_MS_unique_BP_pie.png",
+       plot   = pie4,
+       dpi    = 1600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+```
+
+
+

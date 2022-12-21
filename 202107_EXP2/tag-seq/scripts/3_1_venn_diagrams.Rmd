@@ -1,0 +1,383 @@
+---
+title: "3_1_venn_diagrams"
+author: "Matt George; mngeorge@uw.edu"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = FALSE, cache = TRUE)
+```
+
+```{bash, engine.path="C:/Windows/System32/bash.exe"}
+echo $PATH
+```
+
+# Need to detach bioconductor (from last script) for this script to work
+```{r}
+#Detach all  packages
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
+### Load libraries
+```{r load_libraries, inlcude = TRUE}
+
+## clear
+rm(list=ls())
+
+# List of packages we want to install (run every time)
+load.lib<-c("RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","beepr","gplots","ggvenn")
+
+# Select only the packages that aren't currently installed (run every time)
+install.lib <- load.lib[!load.lib %in% installed.packages()]
+
+# And finally we install the missing packages, including their dependency.
+for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# After the installation process completes, we load all packages.
+sapply(load.lib,require,character=TRUE)
+
+#Set ggplot theme
+my_theme <- theme(line              = element_line(size=1.5),
+                  rect              = element_rect(size=1.5),
+                  text              = element_text(size=14,color="black"),
+                  panel.background  = element_blank(),
+                  panel.grid.major  = element_blank(), 
+                  panel.grid.minor  = element_blank(),
+                  axis.text.x       = element_text(size=16,color="black"),
+                  axis.text.y       = element_text(size=16,color="black"),
+                  axis.title.x      = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y      = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x      = element_line(color="black"),
+                  axis.ticks.y      = element_line(color="black"),
+                  # axis.line         = element_line(color = "black", size = 0.1),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  legend.key        = element_blank()) # removes background of legend bullets
+
+blank_theme <-  theme_minimal()+
+                theme(
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank(),
+                panel.border = element_blank(),
+                panel.grid=element_blank(),
+                axis.ticks = element_blank(),
+                plot.title=element_text(size=14, face="bold")
+                )
+```
+
+#Load data
+```{r load_data, inlcude = TRUE}
+
+# Load LOCID to gene description tables, compare, find gigas and mito genes
+control_ploidy       <- read.delim("output/filtered/HISAT2_multiqc_biplot/control_ploidy/control_ploidy-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+heat_ploidy          <- read.delim("output/filtered/HISAT2_multiqc_biplot/heat_ploidy/heat_ploidy-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+desiccation_ploidy   <- read.delim("output/filtered/HISAT2_multiqc_biplot/desiccation_ploidy/desiccation_ploidy-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+diploid_heat         <- read.delim("output/filtered/HISAT2_multiqc_biplot/diploid_heat/diploid_heat-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+diploid_desiccation  <- read.delim("output/filtered/HISAT2_multiqc_biplot/diploid_desiccation/diploid_desiccation-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+triploid_heat        <- read.delim("output/filtered/HISAT2_multiqc_biplot/triploid_heat/triploid_heat-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+triploid_desiccation <- read.delim("output/filtered/HISAT2_multiqc_biplot/triploid_desiccation/triploid_desiccation-sig-genes-apeglm-pval-only.csv", sep = " ", header = TRUE)
+
+# Load LOCID master table
+LOCID_Roslin_gigas_gene_mito_table        <- read.delim("data/LOCID_Roslin_gigas_gene_mito.txt", sep = " ", header = TRUE)
+LOCID_Roslin_gigas_gene_mito_table$geneID <- as.numeric(substr(LOCID_Roslin_gigas_gene_mito_table$LOCID, 4, 12))
+```
+
+```{r}
+# Convert LOCID to geneID
+control_ploidy$geneID       <- as.numeric(substr(control_ploidy$gene, 4, 12))
+heat_ploidy$geneID          <- as.numeric(substr(heat_ploidy$gene, 4, 12))
+desiccation_ploidy$geneID   <- as.numeric(substr(desiccation_ploidy$gene, 4, 12))
+diploid_heat$geneID         <- as.numeric(substr(diploid_heat$gene, 4, 12))
+diploid_desiccation$geneID  <- as.numeric(substr(diploid_desiccation$gene, 4, 12))
+triploid_heat$geneID        <- as.numeric(substr(triploid_heat$gene, 4, 12))
+triploid_desiccation$geneID <- as.numeric(substr(triploid_desiccation$gene, 4, 12))
+
+# # strip tables down to only
+# control_ploidy       <- control_ploidy[,c("geneID","count")]
+# heat_ploidy          <- heat_ploidy[,c("geneID","count")]
+# desiccation_ploidy   <- desiccation_ploidy[,c("geneID","count")]
+# diploid_heat         <- diploid_heat[,c("geneID","count")]
+# diploid_desiccation  <- diploid_desiccation[,c("geneID","count")]
+# triploid_heat        <- triploid_heat[,c("geneID","count")]
+# triploid_desiccation <- triploid_desiccation[,c("geneID","count")]
+# 
+# colnames(control_ploidy)       <- c("geneID", "control_ploidy")
+# colnames(heat_ploidy)          <- c("geneID", "heat_ploidy")
+# colnames(desiccation_ploidy)   <- c("geneID", "desiccation_ploidy")
+# colnames(diploid_heat)         <- c("geneID", "diploid_heat")
+# colnames(diploid_desiccation)  <- c("geneID", "diploid_desiccation")
+# colnames(triploid_heat)        <- c("geneID", "triploid_heat")
+# colnames(triploid_desiccation) <- c("geneID", "triploid_desiccation")
+
+control_ploidy       <- na.omit(control_ploidy)
+heat_ploidy          <- na.omit(heat_ploidy)
+desiccation_ploidy   <- na.omit(desiccation_ploidy)
+diploid_heat         <- na.omit(diploid_heat)
+diploid_desiccation  <- na.omit(diploid_desiccation)
+triploid_heat        <- na.omit(triploid_heat)
+triploid_desiccation <- na.omit(triploid_desiccation)
+
+```
+
+
+```{r}
+# No longer need this for ggvenn
+
+# # create master list for all comparisons
+# gene_list <- c(control_ploidy$geneID, heat_ploidy$geneID, desiccation_ploidy$geneID, diploid_heat$geneID, 
+#                diploid_desiccation$geneID, triploid_heat$geneID, triploid_desiccation$geneID) 
+# gene_list <- as.data.frame(gene_list)
+# colnames(gene_list) <- "geneID"
+# nrow(gene_list) # 10,916
+# 
+# # unique geneIDs only
+# gene_list_unique <- unique(gene_list)
+# nrow(gene_list_unique) # 7,381
+
+# # combine master list w/ comparison, 1 = present, 0 = absent
+# gene_list_unique <- left_join(gene_list_unique, control_ploidy, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, heat_ploidy, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, desiccation_ploidy, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, diploid_heat, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, diploid_desiccation, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, triploid_heat, by = "geneID")
+# gene_list_unique <- left_join(gene_list_unique, triploid_desiccation, by = "geneID")
+# 
+# gene_list_unique[is.na(gene_list_unique)] <- 0
+# rownames(gene_list_unique) <- unique(gene_list_unique$geneID)
+
+```
+
+```{r}
+## Venn diagram
+
+# venn_list <- gene_list_unique[,c(5:8)]
+# venn(venn_list)
+
+## Compare 4 treatments in one VENN
+venn_list <- list(
+              dip_desiccation  = diploid_desiccation$geneID,
+              dip_heat         = diploid_heat$geneID, 
+              trip_heat        = triploid_heat$geneID,
+              trip_desiccation = triploid_desiccation$geneID)
+
+
+p1 <- ggvenn(venn_list , fill_alpha = 0.6, show_percentage = TRUE, text_size = 2.5, text_color = "white") + 
+             scale_fill_manual(values = c("blue","royalblue1","orangered1","red"))
+p1
+
+## Compare ploidy across multiple stressor (v control condition)
+venn_list_multi <- list(
+                    dip_desiccation  = diploid_desiccation$geneID,
+                    trip_desiccation = triploid_desiccation$geneID)
+
+p2 <- ggvenn(venn_list_multi, fill_alpha = 0.6, show_percentage = TRUE, text_size = 2.5, text_color = "white") + 
+             scale_fill_manual(values = c("blue","red"))
+p2
+
+## Compare ploidy across single stressor (v control condition)
+venn_list_single <- list(
+                    dip_heat         = diploid_heat$geneID,
+                    trip_heat        = triploid_heat$geneID)
+
+p3 <- ggvenn(venn_list_single, fill_alpha = 0.6, show_percentage = TRUE, text_size = 2.5, text_color = "white") + 
+             scale_fill_manual(values = c("blue","red"))
+p3
+
+## Unique DEGs between diploid and triploid single stressor
+diploid_heat_unique  <- anti_join(diploid_heat, triploid_heat, by = "geneID") %>% arrange(log2FoldChange)
+triploid_heat_unique <- anti_join(triploid_heat, diploid_heat, by = "geneID") %>% arrange(log2FoldChange)
+write.table(diploid_heat_unique, file = "output/filtered/HISAT2_multiqc_biplot/DEG_diploid_single_unique.csv", row.names = FALSE)
+write.table(triploid_heat_unique, file = "output/filtered/HISAT2_multiqc_biplot/DEG_triploid_single_unique.csv", row.names = FALSE)
+
+## Unique DEGs between diploid and triploid multi-stressor
+diploid_desiccation_unique  <- anti_join(diploid_desiccation, triploid_desiccation, by = "geneID") %>% arrange(log2FoldChange)
+triploid_desiccation_unique <- anti_join(triploid_desiccation, diploid_desiccation, by = "geneID") %>% arrange(log2FoldChange)
+write.table(diploid_desiccation_unique, file = "output/filtered/HISAT2_multiqc_biplot/DEG_diploid_multi_unique.csv", row.names = FALSE)
+write.table(triploid_desiccation_unique, file = "output/filtered/HISAT2_multiqc_biplot/DEG_triploid_multi_unique.csv", row.names = FALSE)
+
+### Pie chart of unknown of up or down expression
+dip_count_plus <- as.numeric(nrow(diploid_desiccation_unique[diploid_desiccation_unique$plus_minus == "1",]))
+dip_count_minus <- as.numeric(nrow(diploid_desiccation_unique[diploid_desiccation_unique$plus_minus == "-1",]))
+trip_count_plus <- as.numeric(nrow(triploid_desiccation_unique[triploid_desiccation_unique$plus_minus == "1",]))
+trip_count_minus <- as.numeric(nrow(triploid_desiccation_unique[triploid_desiccation_unique$plus_minus == "-1",]))
+
+bp1  <- ggplot(diploid_desiccation_unique, aes(x=factor(1),y=plus_minus, fill=as.character(plus_minus))) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("indianred","lightskyblue")) + labs(NULL) +
+        coord_polar("y", start=0) + blank_theme + theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+bp1
+
+bp2  <- ggplot(triploid_desiccation_unique, aes(x=factor(1),y=plus_minus, fill=as.character(plus_minus))) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("indianred","lightskyblue")) + labs(NULL) +
+        coord_polar("y", start=0) + blank_theme + theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+bp2
+
+bp3  <- ggplot(diploid_heat_unique, aes(x=factor(1),y=plus_minus, fill=as.character(plus_minus))) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("indianred","lightskyblue")) + labs(NULL) +
+        coord_polar("y", start=0) + blank_theme + theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+bp3
+
+bp4  <- ggplot(triploid_heat_unique, aes(x=factor(1),y=plus_minus, fill=as.character(plus_minus))) +
+        geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
+        scale_fill_manual(values = c("indianred","lightskyblue")) + labs(NULL) +
+        coord_polar("y", start=0) + blank_theme + theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+bp4
+
+### Characterized sigs bar chart
+diploid_desiccation_unique_plot <- diploid_desiccation_unique %>% filter(cat == "characterized") %>% arrange(log2FoldChange)
+diploid_desiccation_unique_plot$gene <- factor(diploid_desiccation_unique_plot$gene, levels = diploid_desiccation_unique_plot$gene, ordered = TRUE) 
+
+triploid_desiccation_unique_plot <- triploid_desiccation_unique %>% filter(cat == "characterized") %>% arrange(desc(log2FoldChange))
+triploid_desiccation_unique_plot$gene <- factor(triploid_desiccation_unique_plot$gene, levels = triploid_desiccation_unique_plot$gene, ordered = TRUE)
+
+num_keep <- nrow(diploid_desiccation_unique_plot)
+if(nrow(diploid_desiccation_unique_plot)>20){num_keep <- 10} else {num_keep <- nrow(diploid_desiccation_unique_plot)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(diploid_desiccation_unique_plot)-num_keep+1), nrow(diploid_desiccation_unique_plot)))
+
+bp5 <- ggplot(diploid_desiccation_unique_plot[rows_keep,], 
+              aes(x=diploid_desiccation_unique_plot$gene[rows_keep], y=log2FoldChange, fill=as.character(plus_minus))) +
+              geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+              # scale_fill_discrete(values=c("salmon1","royalblue1")) +
+              # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+              # scale_x_continuous(breaks = NULL) + xlab("") +
+              coord_flip() + my_theme
+bp5
+
+num_keep <- nrow(triploid_desiccation_unique_plot)
+rows_keep = seq(1:num_keep)
+if(nrow(triploid_desiccation_unique_plot)>20){num_keep <- 10} else {num_keep <- nrow(triploid_desiccation_unique_plot)/2}
+rows_keep <- c(seq(1:num_keep), seq((nrow(triploid_desiccation_unique_plot)-num_keep+1), nrow(triploid_desiccation_unique_plot)))
+
+bp6 <- ggplot(triploid_desiccation_unique_plot[rows_keep,], 
+              aes(x=triploid_desiccation_unique_plot$gene[rows_keep], y=log2FoldChange, fill=as.character(plus_minus))) +
+              geom_bar(width = 1, stat = "identity", position = "dodge", color="black", size = 0.3, show.legend = F) +
+              scale_fill_manual(values=c("salmon1","royalblue1")) +
+              # scale_y_continuous(breaks = seq(-4, 8, by = 2), limits = c(-5.5,9)) +
+              # scale_x_continuous(breaks = NULL) + xlab("") +
+              coord_flip() + my_theme
+bp6
+
+# Save plots
+ggsave("output/filtered/HISAT2_multiqc_biplot/DEG_venn_diagram.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/DEG_venn_diagram_multi_stressor.png",
+       plot   = p2,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/DEG_venn_diagram_single_stressor.png",
+       plot   = p3,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/diploid_desiccation_unique_DEG_pie.png",
+       plot   = bp1,
+       dpi    = 1600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/triploid_desiccation_unique_DEG_pie.png",
+       plot   = bp2,
+       dpi    = 1600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/diploid_heat_unique_DEG_pie.png",
+       plot   = bp3,
+       dpi    = 1600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/triploid_heat_unique_DEG_pie.png",
+       plot   = bp4,
+       dpi    = 1600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/diploid_desiccation_unique_DEG_bar.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 4,
+       units  = "in")
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/triploid_desiccation_unique_DEG_bar.png",
+       plot   = bp6,
+       dpi    = 600,
+       device = "png",
+       width  = 6,
+       height = 6,
+       units  = "in")
+
+```
+
+```{r}
+
+# nrow(control_ploidy[control_ploidy$plus_minus == '1', ])
+
+total <- rbind(control_ploidy, 
+               heat_ploidy,
+               desiccation_ploidy,
+               diploid_heat,
+               diploid_desiccation,
+               triploid_heat,
+               triploid_desiccation)
+
+total$analysis <- factor(total$analysis, levels = c('control_ploidy', 'heat_ploidy', 'desiccation_ploidy', 'diploid_heat',
+                                                    'diploid_desiccation', 'triploid_heat', 'triploid_desiccation'), ordered = T)
+
+
+total$plus_minus <- factor(total$plus_minus, levels = c('1','-1'), ordered = T)
+
+bp5 <- ggplot(total, aes(x=analysis, y=count, fill=plus_minus)) +
+        geom_bar(stat = "identity", show.legend = F) +
+        scale_fill_manual(values = c("royalblue3","salmon3")) +
+        scale_y_continuous(breaks = seq(0, 5000, by = 1000), limits = c(0,5500)) +
+        my_theme
+
+bp5
+
+ggsave("output/filtered/HISAT2_multiqc_biplot/DEG_expression_barplot.png",
+       plot   = bp5,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+
+```

@@ -15,13 +15,13 @@ echo $PATH
 # Make file structure
 ```{bash engine.path="C:/Windows/System32/bash.exe", include=FALSE}
 
-mkdir GOterm_annotation/control_ploidy/
-mkdir GOterm_annotation/heat_ploidy/
-mkdir GOterm_annotation/desiccation_ploidy/
-mkdir GOterm_annotation/control_ploidy/
-mkdir GOterm_annotation/diploid_desiccation/
-mkdir GOterm_annotation/triploid_heat/
-mkdir GOterm_annotation/triploid_desiccation/
+mkdir GOterm_annotation/c-ontrol_ploidy/
+mkdir GOterm_annotation/h-eat_ploidy/
+mkdir GOterm_annotation/d-esiccation_ploidy/
+mkdir GOterm_annotation/c-ontrol_ploidy/
+mkdir GOterm_annotation/d-iploid_desiccation/
+mkdir GOterm_annotation/t-riploid_heat/
+mkdir GOterm_annotation/t-riploid_desiccation/
 
 ```
 
@@ -57,8 +57,8 @@ sapply(load.lib,require,character=TRUE)
 #Set ggplot theme
 ```{r ggplot_theme, include=FALSE}
 
-my_theme <- theme(line              = element_line(size=1.5),
-                  rect              = element_rect(size=1.5),
+my_theme <- theme(line              = element_line(size=1),
+                  rect              = element_rect(size=1),
                   text              = element_text(size=9,color="black"),
                   panel.background  = element_blank(),
                   panel.grid.major  = element_blank(), 
@@ -70,7 +70,7 @@ my_theme <- theme(line              = element_line(size=1.5),
                   axis.ticks.x      = element_line(color="black"),
                   axis.ticks.y      = element_line(color="black"),
                   # axis.line         = element_line(color = "black", size = 0.1),
-                  panel.border      = element_rect(color = "black", fill=NA, size=1.5),
+                  panel.border      = element_rect(color = "black", fill=NA, size=1),
                   legend.key        = element_blank()) # removes background of legend bullets
 ```
 
@@ -94,11 +94,11 @@ my_theme <- theme(line              = element_line(size=1.5),
 ```{r}
 control_ploidy <- read.table("gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy.txt", 
                                header = TRUE, sep = "\t") 
-nrow(control_ploidy) # 3789
+nrow(control_ploidy) # 1675
 
 control_ploidy_bg <- read.delim("gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_bg.txt", 
                                header = TRUE, sep = "\t") 
-nrow(control_ploidy_bg) # 576696
+nrow(control_ploidy_bg) # 582458
 
 ```
 
@@ -242,7 +242,7 @@ write.csv(sigRes.control_ploidy_BP_Annot_noT, "GOterm_annotation/control_ploidy/
 ```
 
 ```{r}
-
+## Run topGO + KS test
 all_genes       <- unique(control_ploidy[,c(5,2)]) #Extract transcript ID
 DEG_list        <- all_genes$padj
 names(DEG_list) <- all_genes$product_accession
@@ -251,66 +251,75 @@ names(DEG_list) <- all_genes$product_accession
 # names(all_genes_list) <- geneNames #PLOIDYGenes
 # str(all_genes_list)
 
-```
-
-```{r}
-options(scipen = 999)
-
 selection <- function(allScore){ return(allScore < 0.05)} # function that returns TRUE/FALSE for p-values<0.05
 
-# allGO2genes <- annFUN.org(whichOnto="BP", feasibleGenes=NULL, mapping="org.Hs.eg.db", ID="symbol")
-
-
 GOdata <- new("topGOdata",
-          ontology="BP",
-          allGenes=DEG_list,
-          annot=annFUN.gene2GO,
-          gene2GO=control_ploidy_bg_topGO,
-          geneSel=selection,
-          nodeSize=10)
+              ontology = "BP",
+              allGenes = DEG_list,
+              annot    = annFUN.gene2GO,
+              gene2GO  = control_ploidy_bg_topGO,
+              geneSel  = selection,
+              nodeSize = 10)
 
 results.ks <- runTest(GOdata, algorithm="classic", statistic="ks")
 
-# control_ploidy_topGO <- new("topGOdata", ontology = "BP", allGenes = control_ploidy_gene_list,
-#                             annot = annFUN.gene2GO, gene2GO = control_ploidy_bg_topGO) #Create biological process topGO object
-
-
 ```
 
 ```{r}
 
-goEnrichment <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes = length(results.ks@score))
-goEnrichment$KS <- as.numeric(goEnrichment$KS)
-goEnrichment <- goEnrichment[goEnrichment$KS<0.05,]
-goEnrichment <- goEnrichment[,c("GO.ID","Term","KS")]
+# Generate summary table of ks scores
+goEnrichment      <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes = length(results.ks@score))
+goEnrichment$KS   <- as.numeric(goEnrichment$KS) # not sure why goEnrichment$KS is text - seems dumb
+goEnrichment      <- goEnrichment[goEnrichment$KS<0.05,] # Filter by significant
+goEnrichment      <- goEnrichment[,c("GO.ID","Term","KS")] # Change column titles
 
-goEnrichment$Term <- gsub(" [a-z]*\\.\\.\\.$", "", goEnrichment$Term)
-goEnrichment$Term <- gsub("\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- gsub("[a-z]*\\.\\.\\.$", "", goEnrichment$Term) # [a-z]*
+# goEnrichment$Term <- gsub("\\.\\.\\.\\.\\.\\.\\.$", "", goEnrichment$Term)
 goEnrichment$Term <- paste(goEnrichment$GO.ID, goEnrichment$Term, sep=", ")
 goEnrichment$Term <- factor(goEnrichment$Term, levels=rev(goEnrichment$Term))
-goEnrichment <- goEnrichment[1:20,]
-goEnrichment$cat <- 'other'
+# goEnrichment      <- goEnrichment[1:20,] # Plot only top 20
+goEnrichment$cat  <- 'other'# cat = GOterm keyword category
 
-# seperate by category
-regulation     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*regulation*"), Term)))
-regulation$cat <- "regulation"
+# Assign color labels by GOterm keyword
+# add cat column w/ GOterm keyword
+metabolism    <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*metabol*"), Term)))
+if(nrow(metabolism) > 0){metabolism$cat <- "metabolism"} 
+regulation      <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*regulation*"), Term)))
+if(nrow(regulation) > 0){regulation$cat  <- "regulation"}
+development     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*develop*"), Term)))
+if(nrow(development) > 0){development$cat <- "development"}
+differentiation <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*diff*"), Term)))
+if(nrow(differentiation) > 0){differentiation$cat <- "development"}
 
+# Find 
+goEnrichment <- anti_join(goEnrichment, metabolism, by = "GO.ID") %>% bind_rows(metabolism)
+goEnrichment <- anti_join(goEnrichment, development, by = "GO.ID") %>% bind_rows(development)
+goEnrichment <- anti_join(goEnrichment, differentiation, by = "GO.ID") %>% bind_rows(differentiation)
 goEnrichment <- anti_join(goEnrichment, regulation, by = "GO.ID") %>% bind_rows(regulation)
 
-goEnrichment[1:2,'cat'] <- 'regulation'
+# Manual assignment
+goEnrichment$cat[1:2] <- 'regulation'
 
-p1 <- ggplot(goEnrichment, aes(x=Term, y=-log10(KS), fill=cat)) +
-             stat_summary(geom = "bar", fun = mean, position = "dodge") +
+# Colors
+# regulation = "royalblue1"
+# metabolism = "palegreen1"
+# development = "salmon1"
+# other = "gray79"
+
+# Plot
+p1 <- ggplot(goEnrichment, aes(x=Term, y=-log10(KS), fill = cat)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
              xlab("Biological process") +
              ylab("Enrichment") +
-             scale_y_continuous(breaks = round(seq(0, max(-log10(goEnrichment$KS)), by = 2), 1)) +
-             guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             # scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
              coord_flip() +
              my_theme
 
 p1
 
-ggsave("GOterm_annotation/control_ploidy/control_ploidy_Kolmogorov-Smirnov.png",
+ggsave("GOterm_annotation/control_ploidy/control_ploidy_Kolmogorov-Smirnov-BP.png",
        plot   = p1,
        dpi    = 600,
        device = "png",
@@ -319,6 +328,180 @@ ggsave("GOterm_annotation/control_ploidy/control_ploidy_Kolmogorov-Smirnov.png",
        units  = "in")
 ```
 
+```{r}
+## Run topGO + KS test
+all_genes       <- unique(control_ploidy[,c(5,2)]) #Extract transcript ID
+DEG_list        <- all_genes$padj
+names(DEG_list) <- all_genes$product_accession
+# DEG_list        <- factor(as.integer(geneNames %in% DEG_list))
+# all_genes_list <- factor(as.integer(geneNames %in% all_genes))
+# names(all_genes_list) <- geneNames #PLOIDYGenes
+# str(all_genes_list)
+
+selection <- function(allScore){ return(allScore < 0.05)} # function that returns TRUE/FALSE for p-values<0.05
+
+GOdata <- new("topGOdata",
+              ontology = "CC",
+              allGenes = DEG_list,
+              annot    = annFUN.gene2GO,
+              gene2GO  = control_ploidy_bg_topGO,
+              geneSel  = selection,
+              nodeSize = 10)
+
+results.ks <- runTest(GOdata, algorithm="classic", statistic="ks")
+
+```
+
+```{r}
+
+# Generate summary table of ks scores
+goEnrichment      <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes = length(results.ks@score))
+goEnrichment$KS   <- as.numeric(goEnrichment$KS) # not sure why goEnrichment$KS is text - seems dumb
+goEnrichment      <- goEnrichment[goEnrichment$KS<0.05,] # Filter by significant
+goEnrichment      <- goEnrichment[,c("GO.ID","Term","KS")] # Change column titles
+
+goEnrichment$Term <- gsub("[a-z]*\\.\\.\\.$", "", goEnrichment$Term) # [a-z]*
+# goEnrichment$Term <- gsub("\\.\\.\\.\\.\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- paste(goEnrichment$GO.ID, goEnrichment$Term, sep=", ")
+goEnrichment$Term <- factor(goEnrichment$Term, levels=rev(goEnrichment$Term))
+# goEnrichment      <- goEnrichment[1:20,] # Plot only top 20
+goEnrichment$cat  <- 'other'# cat = GOterm keyword category
+
+# Assign color labels by GOterm keyword
+# add cat column w/ GOterm keyword
+metabolism    <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*metabol*"), Term)))
+if(nrow(metabolism) > 0){metabolism$cat <- "metabolism"} 
+regulation      <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*regulation*"), Term)))
+if(nrow(regulation) > 0){regulation$cat  <- "regulation"}
+development     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*develop*"), Term)))
+if(nrow(development) > 0){development$cat <- "development"}
+differentiation <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*diff*"), Term)))
+if(nrow(differentiation) > 0){differentiation$cat <- "development"}
+
+# Find 
+goEnrichment <- anti_join(goEnrichment, metabolism, by = "GO.ID") %>% bind_rows(metabolism)
+goEnrichment <- anti_join(goEnrichment, development, by = "GO.ID") %>% bind_rows(development)
+goEnrichment <- anti_join(goEnrichment, differentiation, by = "GO.ID") %>% bind_rows(differentiation)
+goEnrichment <- anti_join(goEnrichment, regulation, by = "GO.ID") %>% bind_rows(regulation)
+
+# Manual assignment
+goEnrichment$cat[1:2] <- 'regulation'
+
+# Colors
+# regulation = "royalblue1"
+# metabolism = "palegreen1"
+# development = "salmon1"
+# other = "gray79"
+
+# Plot
+p1 <- ggplot(goEnrichment, aes(x=Term, y=-log10(KS), fill = cat)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip() +
+             my_theme
+
+p1
+
+ggsave("GOterm_annotation/control_ploidy/control_ploidy_Kolmogorov-Smirnov-CC.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+```
+
+
+```{r}
+## Run topGO + KS test
+all_genes       <- unique(control_ploidy[,c(5,2)]) #Extract transcript ID
+DEG_list        <- all_genes$padj
+names(DEG_list) <- all_genes$product_accession
+# DEG_list        <- factor(as.integer(geneNames %in% DEG_list))
+# all_genes_list <- factor(as.integer(geneNames %in% all_genes))
+# names(all_genes_list) <- geneNames #PLOIDYGenes
+# str(all_genes_list)
+
+selection <- function(allScore){ return(allScore < 0.05)} # function that returns TRUE/FALSE for p-values<0.05
+
+GOdata <- new("topGOdata",
+              ontology = "MF",
+              allGenes = DEG_list,
+              annot    = annFUN.gene2GO,
+              gene2GO  = control_ploidy_bg_topGO,
+              geneSel  = selection,
+              nodeSize = 10)
+
+results.ks <- runTest(GOdata, algorithm="classic", statistic="ks")
+
+```
+
+```{r}
+
+# Generate summary table of ks scores
+goEnrichment      <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes = length(results.ks@score))
+goEnrichment$KS   <- as.numeric(goEnrichment$KS) # not sure why goEnrichment$KS is text - seems dumb
+goEnrichment      <- goEnrichment[goEnrichment$KS<0.05,] # Filter by significant
+goEnrichment      <- goEnrichment[,c("GO.ID","Term","KS")] # Change column titles
+
+goEnrichment$Term <- gsub("[a-z]*\\.\\.\\.$", "", goEnrichment$Term) # [a-z]*
+# goEnrichment$Term <- gsub("\\.\\.\\.\\.\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- paste(goEnrichment$GO.ID, goEnrichment$Term, sep=", ")
+goEnrichment$Term <- factor(goEnrichment$Term, levels=rev(goEnrichment$Term))
+# goEnrichment      <- goEnrichment[1:20,] # Plot only top 20
+goEnrichment$cat  <- 'other'# cat = GOterm keyword category
+
+# Assign color labels by GOterm keyword
+# add cat column w/ GOterm keyword
+metabolism    <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*metabol*"), Term)))
+if(nrow(metabolism) > 0){metabolism$cat <- "metabolism"} 
+regulation      <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*regulation*"), Term)))
+if(nrow(regulation) > 0){regulation$cat  <- "regulation"}
+development     <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*develop*"), Term)))
+if(nrow(development) > 0){development$cat <- "development"}
+differentiation <- with(goEnrichment, subset(goEnrichment, subset = grepl(glob2rx("*diff*"), Term)))
+if(nrow(differentiation) > 0){differentiation$cat <- "development"}
+
+# Find 
+goEnrichment <- anti_join(goEnrichment, metabolism, by = "GO.ID") %>% bind_rows(metabolism)
+goEnrichment <- anti_join(goEnrichment, development, by = "GO.ID") %>% bind_rows(development)
+goEnrichment <- anti_join(goEnrichment, differentiation, by = "GO.ID") %>% bind_rows(differentiation)
+goEnrichment <- anti_join(goEnrichment, regulation, by = "GO.ID") %>% bind_rows(regulation)
+
+# Manual assignment
+goEnrichment$cat[1:2] <- 'regulation'
+
+# Colors
+# regulation = "royalblue1"
+# metabolism = "palegreen1"
+# development = "salmon1"
+# other = "gray79"
+
+# Plot
+p1 <- ggplot(goEnrichment, aes(x=Term, y=-log10(KS), fill = cat)) +
+             stat_summary(geom = "bar", fun = mean, position = "dodge", color="black", size = 0.3) +
+             xlab("Biological process") +
+             ylab("Enrichment") +
+             scale_fill_manual(values=c("salmon1","royalblue1")) +
+             scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0,9)) +
+             # guides(colour=guide_legend(override.aes=list(size=2.5))) +
+             coord_flip() +
+             my_theme
+
+p1
+
+ggsave("GOterm_annotation/control_ploidy/control_ploidy_Kolmogorov-Smirnov-MF.png",
+       plot   = p1,
+       dpi    = 600,
+       device = "png",
+       width  = 7,
+       height = 5,
+       units  = "in")
+```
 
 ## Semantic Similarity Plot
 ```{r eval=FALSE, include=FALSE}
