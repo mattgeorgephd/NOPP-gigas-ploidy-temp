@@ -1,4 +1,88 @@
 GO.ID,Term,Annotated,Significant,Expected,classic
+GO:0017055,negative regulation of RNA polymerase II...,5,5,0.04,0.000000000022
+GO:0060633,negative regulation of transcription ini...,5,5,0.04,0.000000000022
+GO:2000143,negative regulation of DNA-templated tra...,5,5,0.04,0.000000000022
+GO:0014816,skeletal muscle satellite cell different...,180,13,1.34,0.000000001063
+GO:0045898,regulation of RNA polymerase II transcri...,8,5,0.06,0.000000001191
+GO:0008348,negative regulation of antimicrobial hum...,11,5,0.08,0.000000009647
+GO:0035914,skeletal muscle cell differentiation,225,13,1.67,0.000000015796
+GO:0051597,response to methylmercury,24,6,0.18,0.000000018931
+GO:0033002,muscle cell proliferation,326,15,2.42,0.000000025947
+GO:0002921,negative regulation of humoral immune re...,15,5,0.11,0.000000061204
+GO:0014719,skeletal muscle satellite cell activatio...,173,11,1.29,0.000000077980
+GO:0032102,negative regulation of response to exter...,359,15,2.67,0.000000091630
+GO:0014841,skeletal muscle satellite cell prolifera...,177,11,1.32,0.000000098443
+GO:0014856,skeletal muscle cell proliferation,180,11,1.34,0.000000116784
+GO:0006268,DNA unwinding involved in DNA replicatio...,20,5,0.15,0.000000306555
+GO:0044826,viral genome integration into host DNA,90,8,0.67,0.000000376098
+GO:0051123,RNA polymerase II preinitiation complex ...,21,5,0.16,0.000000399923
+GO:0019043,establishment of viral latency,93,8,0.69,0.000000484790
+GO:0075713,establishment of integrated proviral lat...,93,8,0.69,0.000000484790
+GO:0042552,myelination,258,12,1.92,0.000000592412
+GO:0060260,regulation of transcription initiation f...,23,5,0.17,0.000000653350
+GO:0019042,viral latency,98,8,0.73,0.000000725668
+GO:0014855,striated muscle cell proliferation,220,11,1.63,0.000000868254
+GO:0032288,myelin assembly,71,7,0.53,0.000001010328
+GO:0048881,mechanosensory lateral line system devel...,25,5,0.19,0.000001019188
+GO:0048915,posterior lateral line system developmen...,25,5,0.19,0.000001019188
+GO:0048925,lateral line system development,27,5,0.2,0.000001530003
+GO:0033292,T-tubule organization,13,4,0.1,0.000002013184
+GO:0036371,protein localization to T-tubule,13,4,0.1,0.000002013184
+GO:0086015,SA node cell action potential,13,4,0.1,0.000002013184
+GO:0086018,SA node cell to atrial cardiac muscle ce...,13,4,0.1,0.000002013184
+GO:0086046,membrane depolarization during SA node c...,13,4,0.1,0.000002013184
+GO:0086070,SA node cell to atrial cardiac muscle ce...,13,4,0.1,0.000002013184
+GO:0098907,regulation of SA node cell action potent...,13,4,0.1,0.000002013184
+GO:0098910,regulation of atrial cardiac muscle cell...,13,4,0.1,0.000002013184
+GO:0043277,apoptotic cell clearance,195,10,1.45,0.000002192762
+GO:0070897,transcription preinitiation complex asse...,29,5,0.22,0.000002223585
+GO:0002832,negative regulation of response to bioti...,80,7,0.59,0.000002280673
+GO:2000142,regulation of DNA-templated transcriptio...,30,5,0.22,0.000002652209
+GO:0010881,regulation of cardiac muscle contraction...,14,4,0.1,0.000002802038
+GO:0007272,ensheathment of neurons,305,12,2.27,0.000003388526
+GO:0008366,axon ensheathment,305,12,2.27,0.000003388526
+GO:0002831,regulation of response to biotic stimulu...,482,15,3.58,0.000003683991
+GO:0071103,DNA conformation change,86,7,0.64,0.000003714950
+GO:1903779,regulation of cardiac conduction,56,6,0.42,0.000003745598
+GO:1902742,apoptotic process involved in developmen...,175,9,1.3,0.000006952498
+GO:0055001,muscle cell development,582,16,4.33,0.000008331140
+GO:0002759,regulation of antimicrobial humoral resp...,38,5,0.28,0.000008900713
+GO:0002920,regulation of humoral immune response,99,7,0.74,0.000009486339
+GO:0007379,segment specification,66,6,0.49,0.000009853397
+GO:0032101,regulation of response to external stimu...,1114,23,8.28,0.000010517800
+GO:0036309,protein localization to M-band,19,4,0.14,0.000010537659
+GO:0046718,viral entry into host cell,141,8,1.05,0.000011109831
+GO:0006910,phagocytosis, recognition,188,9,1.4,0.000012374183
+GO:0048641,regulation of skeletal muscle tissue dev...,146,8,1.09,0.000014324361
+GO:0043654,recognition of apoptotic cell,149,8,1.11,0.000016604396
+GO:0044419,biological process involved in interspec...,2038,33,15.15,0.000020077809
+GO:0043388,positive regulation of DNA binding,47,5,0.35,0.000025762112
+GO:0015074,DNA integration,159,8,1.18,0.000026528274
+GO:1901861,regulation of muscle tissue development,165,8,1.23,0.000034576263
+GO:0010880,regulation of release of sequestered cal...,26,4,0.19,0.000039018797
+GO:0014808,release of sequestered calcium ion into ...,26,4,0.19,0.000039018797
+GO:0070296,sarcoplasmic reticulum calcium ion trans...,26,4,0.19,0.000039018797
+GO:1903514,release of sequestered calcium ion into ...,26,4,0.19,0.000039018797
+GO:0034109,homotypic cell-cell adhesion,330,11,2.45,0.000040209747
+GO:0051701,biological process involved in interacti...,274,10,2.04,0.000042400502
+GO:1901021,positive regulation of calcium ion trans...,27,4,0.2,0.000045538588
+GO:0043652,engulfment of apoptotic cell,172,8,1.28,0.000046450361
+GO:0060538,skeletal muscle organ development,529,14,3.93,0.000046557558
+GO:0010025,wax biosynthetic process,10,3,0.07,0.000046746264
+GO:0010166,wax metabolic process,10,3,0.07,0.000046746264
+GO:0006909,phagocytosis,531,14,3.95,0.000048481304
+GO:0001525,angiogenesis,754,17,5.6,0.000054067427
+GO:0014813,skeletal muscle satellite cell commitmen...,2,2,0.01,0.000054977444
+GO:0048886,neuromast hair cell differentiation,2,2,0.01,0.000054977444
+GO:0048923,posterior lateral line neuromast hair ce...,2,2,0.01,0.000054977444
+GO:1990784,response to dsDNA,2,2,0.01,0.000054977444
+GO:1990786,cellular response to dsDNA,2,2,0.01,0.000054977444
+GO:0007519,skeletal muscle tissue development,483,13,3.59,0.000073470348
+GO:0000394,RNA splicing, via endonucleolytic cleava...,31,4,0.23,0.000079765463
+GO:0003283,atrial septum development,31,4,0.23,0.000079765463
+GO:0006388,tRNA splicing, via endonucleolytic cleav...,31,4,0.23,0.000079765463
+GO:0007601,visual perception,302,10,2.24,0.000095215700
+GO:0044409,entry into host,191,8,1.42,0.000096848874
 GO:0010882,regulation of cardiac muscle contraction...,33,4,0.25,0.00010
 GO:0086014,atrial cardiac muscle cell action potent...,33,4,0.25,0.00010
 GO:0086026,atrial cardiac muscle cell to AV node ce...,33,4,0.25,0.00010

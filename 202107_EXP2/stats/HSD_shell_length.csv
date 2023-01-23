@@ -1,9 +1,9 @@
-response,ploidy,groups,
-baseline,D,90.04166667,a
-baseline,T,76.75,c
-control,D,87.78181818,a
-control,T,78.5625,c
-desiccation,D,86.248,a
-desiccation,T,81.944,bc
-heat,D,85.93333333,ab
-heat,T,83.48888889,abc
+"response" "groups"
+"baseline.D" 90.0416666666667 "a"
+"control.D" 87.7818181818182 "a"
+"desiccation.D" 86.248 "a"
+"heat.D" 85.9333333333333 "ab"
+"heat.T" 83.4888888888889 "abc"
+"desiccation.T" 81.944 "bc"
+"control.T" 78.5625 "c"
+"baseline.T" 76.75 "c"

@@ -1,0 +1,286 @@
+biosample_accession	library_ID	title	library_strategy	library_source	library_selection	library_layout	platform	instrument_model	design_description	filetype	filename	filename2	filename3	filename4	assembly	fasta_file
+SAMN32287689	D54_S145	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D54_S145_L001_R1_001.fastq.gz	D54_S145_L002_R1_001.fastq.gz				
+SAMN32287690	D55_S146	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D55_S146_L001_R1_001.fastq.gz	D55_S146_L002_R1_001.fastq.gz				
+SAMN32287691	D56_S136	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D56_S136_L001_R1_001.fastq.gz	D56_S136_L002_R1_001.fastq.gz				
+SAMN32287692	D57_S143	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D57_S143_L001_R1_001.fastq.gz	D57_S143_L002_R1_001.fastq.gz				
+SAMN32287693	D58_S144	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D58_S144_L001_R1_001.fastq.gz	D58_S144_L002_R1_001.fastq.gz				
+SAMN32287694	D59_S142	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	D59_S142_L001_R1_001.fastq.gz	D59_S142_L002_R1_001.fastq.gz				
+SAMN32287695	M41_S161	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M41_S161_L001_R1_001.fastq.gz	M41_S161_L002_R1_001.fastq.gz				
+SAMN32287696	M42_S169	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M42_S169_L001_R1_001.fastq.gz	M42_S169_L002_R1_001.fastq.gz				
+SAMN32287697	M43_S160	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M43_S160_L001_R1_001.fastq.gz	M43_S160_L002_R1_001.fastq.gz				
+SAMN32287698	M44_S163	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M44_S163_L001_R1_001.fastq.gz	M44_S163_L002_R1_001.fastq.gz				
+SAMN32287699	M45_S140	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M45_S140_L001_R1_001.fastq.gz	M45_S140_L002_R1_001.fastq.gz				
+SAMN32287700	M46_S141	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M46_S141_L001_R1_001.fastq.gz	M46_S141_L002_R1_001.fastq.gz				
+SAMN32287701	M47_S162	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M47_S162_L001_R1_001.fastq.gz	M47_S162_L002_R1_001.fastq.gz				
+SAMN32287702	M48_S137	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M48_S137_L001_R1_001.fastq.gz	M48_S137_L002_R1_001.fastq.gz				
+SAMN32287703	M49_S139	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M49_S139_L001_R1_001.fastq.gz	M49_S139_L002_R1_001.fastq.gz				
+SAMN32287704	M89_S138	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M89_S138_L001_R1_001.fastq.gz	M89_S138_L002_R1_001.fastq.gz				
+SAMN32287705	M90_S147	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	M90_S147_L001_R1_001.fastq.gz	M90_S147_L002_R1_001.fastq.gz				
+SAMN32287706	N41_S164	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N41_S164_L001_R1_001.fastq.gz	N41_S164_L002_R1_001.fastq.gz				
+SAMN32287707	N42_S167	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N42_S167_L001_R1_001.fastq.gz	N42_S167_L002_R1_001.fastq.gz				
+SAMN32287708	N43_S165	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N43_S165_L001_R1_001.fastq.gz	N43_S165_L002_R1_001.fastq.gz				
+SAMN32287709	N44_S171	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N44_S171_L001_R1_001.fastq.gz	N44_S171_L002_R1_001.fastq.gz				
+SAMN32287710	N45_S166	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N45_S166_L001_R1_001.fastq.gz	N45_S166_L002_R1_001.fastq.gz				
+SAMN32287711	N46_S170	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N46_S170_L001_R1_001.fastq.gz	N46_S170_L002_R1_001.fastq.gz				
+SAMN32287712	N47_S168	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N47_S168_L001_R1_001.fastq.gz	N47_S168_L002_R1_001.fastq.gz				
+SAMN32287713	N48_S194	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N48_S194_L001_R1_001.fastq.gz	N48_S194_L002_R1_001.fastq.gz				
+SAMN32287714	N49_S185	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N49_S185_L001_R1_001.fastq.gz	N49_S185_L002_R1_001.fastq.gz				
+SAMN32287715	N50_S187	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N50_S187_L001_R1_001.fastq.gz	N50_S187_L002_R1_001.fastq.gz				
+SAMN32287716	N51_S186	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N51_S186_L001_R1_001.fastq.gz	N51_S186_L002_R1_001.fastq.gz				
+SAMN32287717	N52_S184	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N52_S184_L001_R1_001.fastq.gz	N52_S184_L002_R1_001.fastq.gz				
+SAMN32287718	N53_S188	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N53_S188_L001_R1_001.fastq.gz	N53_S188_L002_R1_001.fastq.gz				
+SAMN32287719	N54_S193	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N54_S193_L001_R1_001.fastq.gz	N54_S193_L002_R1_001.fastq.gz				
+SAMN32287720	N55_S190	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N55_S190_L001_R1_001.fastq.gz	N55_S190_L002_R1_001.fastq.gz				
+SAMN32287721	N56_S192	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N56_S192_L001_R1_001.fastq.gz	N56_S192_L002_R1_001.fastq.gz				
+SAMN32287722	N57_S191	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N57_S191_L001_R1_001.fastq.gz	N57_S191_L002_R1_001.fastq.gz				
+SAMN32287723	N58_S195	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N58_S195_L001_R1_001.fastq.gz	N58_S195_L002_R1_001.fastq.gz				
+SAMN32287724	N59_S189	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	N59_S189_L001_R1_001.fastq.gz	N59_S189_L002_R1_001.fastq.gz				
+SAMN32287725	R41_S181	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R41_S181_L001_R1_001.fastq.gz	R41_S181_L002_R1_001.fastq.gz				
+SAMN32287726	R42_S175	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R42_S175_L001_R1_001.fastq.gz	R42_S175_L002_R1_001.fastq.gz				
+SAMN32287727	R43_S177	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R43_S177_L001_R1_001.fastq.gz	R43_S177_L002_R1_001.fastq.gz				
+SAMN32287728	R46_S178	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R46_S178_L001_R1_001.fastq.gz	R46_S178_L002_R1_001.fastq.gz				
+SAMN32287729	R47_S179	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R47_S179_L001_R1_001.fastq.gz	R47_S179_L002_R1_001.fastq.gz				
+SAMN32287730	R48_S176	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R48_S176_L001_R1_001.fastq.gz	R48_S176_L002_R1_001.fastq.gz				
+SAMN32287731	R50_S174	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R50_S174_L001_R1_001.fastq.gz	R50_S174_L002_R1_001.fastq.gz				
+SAMN32287732	R51_S205	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R51_S205_L001_R1_001.fastq.gz	R51_S205_L002_R1_001.fastq.gz				
+SAMN32287733	R52_S204	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R52_S204_L001_R1_001.fastq.gz	R52_S204_L002_R1_001.fastq.gz				
+SAMN32287734	R53_S199	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R53_S199_L001_R1_001.fastq.gz	R53_S199_L002_R1_001.fastq.gz				
+SAMN32287735	R54_S206	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R54_S206_L001_R1_001.fastq.gz	R54_S206_L002_R1_001.fastq.gz				
+SAMN32287736	R55_S196	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R55_S196_L001_R1_001.fastq.gz	R55_S196_L002_R1_001.fastq.gz				
+SAMN32287737	R56_S197	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R56_S197_L001_R1_001.fastq.gz	R56_S197_L002_R1_001.fastq.gz				
+SAMN32287738	R57_S200	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R57_S200_L001_R1_001.fastq.gz	R57_S200_L002_R1_001.fastq.gz				
+SAMN32287739	R58_S198	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R58_S198_L001_R1_001.fastq.gz	R58_S198_L002_R1_001.fastq.gz				
+SAMN32287740	R59_S202	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R59_S202_L001_R1_001.fastq.gz	R59_S202_L002_R1_001.fastq.gz				
+SAMN32287741	R60_S201	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R60_S201_L001_R1_001.fastq.gz	R60_S201_L002_R1_001.fastq.gz				
+SAMN32287742	R61_S207	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R61_S207_L001_R1_001.fastq.gz	R61_S207_L002_R1_001.fastq.gz				
+SAMN32287743	R62_S203	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R62_S203_L001_R1_001.fastq.gz	R62_S203_L002_R1_001.fastq.gz				
+SAMN32287744	R78_S180	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	R78_S180_L001_R1_001.fastq.gz	R78_S180_L002_R1_001.fastq.gz				
+SAMN32287745	T55_S158	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T55_S158_L001_R1_001.fastq.gz	T55_S158_L002_R1_001.fastq.gz				
+SAMN32287746	T56_S155	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T56_S155_L001_R1_001.fastq.gz	T56_S155_L002_R1_001.fastq.gz				
+SAMN32287747	T57_S157	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T57_S157_L001_R1_001.fastq.gz	T57_S157_L002_R1_001.fastq.gz				
+SAMN32287748	T58_S152	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T58_S152_L001_R1_001.fastq.gz	T58_S152_L002_R1_001.fastq.gz				
+SAMN32287749	T59_S151	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T59_S151_L001_R1_001.fastq.gz	T59_S151_L002_R1_001.fastq.gz				
+SAMN32287750	T60_S149	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T60_S149_L001_R1_001.fastq.gz	T60_S149_L002_R1_001.fastq.gz				
+SAMN32287751	T61_S156	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T61_S156_L001_R1_001.fastq.gz	T61_S156_L002_R1_001.fastq.gz				
+SAMN32287752	T62_S148	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	T62_S148_L001_R1_001.fastq.gz	T62_S148_L002_R1_001.fastq.gz				
+SAMN32287753	X41_S183	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X41_S183_L001_R1_001.fastq.gz	X41_S183_L002_R1_001.fastq.gz				
+SAMN32287754	X42_S182	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X42_S182_L001_R1_001.fastq.gz	X42_S182_L002_R1_001.fastq.gz				
+SAMN32287755	X43_S173	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X43_S173_L001_R1_001.fastq.gz	X43_S173_L002_R1_001.fastq.gz				
+SAMN32287756	X44_S172	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X44_S172_L001_R1_001.fastq.gz	X44_S172_L002_R1_001.fastq.gz				
+SAMN32287757	X45_S159	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X45_S159_L001_R1_001.fastq.gz	X45_S159_L002_R1_001.fastq.gz				
+SAMN32287758	X46_S153	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X46_S153_L001_R1_001.fastq.gz	X46_S153_L002_R1_001.fastq.gz				
+SAMN32287759	X47_S150	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X47_S150_L001_R1_001.fastq.gz	X47_S150_L002_R1_001.fastq.gz				
+SAMN32287760	X48_S154	Tag-seq of Crassostrea gigas following marine heatwave exposure	RNA-Seq	TRANSCRIPTOMIC	PolyA	single	ILLUMINA	Illumina NovaSeq 6000	"QuantSeq 3' mRNA-Seq (Tag-seq) protocol (v.015UG009V0251, Lexogen, Vienna, Austria)"	fastq	X48_S154_L001_R1_001.fastq.gz	X48_S154_L002_R1_001.fastq.gz				
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																
+																

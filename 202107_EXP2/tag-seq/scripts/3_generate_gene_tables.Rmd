@@ -46,7 +46,7 @@ mkdir GFF/
 rm(list=ls())
 
 # List of packages we want to install (run every time)
-load.lib<-c("RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","beepr")
+load.lib<-c("RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","beepr","gplots")
 
 # Select only the packages that aren't currently installed (run every time)
 install.lib <- load.lib[!load.lib %in% installed.packages()]
@@ -57,29 +57,6 @@ for(lib in install.lib) install.packages(lib,dependencies=TRUE)
 sapply(load.lib,require,character=TRUE)
 
                         
-```
-
-# Download blast results and genome features from gannet 
-```{bash engine.path="C:/Windows/System32/bash.exe", include=FALSE}
-
-#wget -r \
-#--no-directories --no-parent \
-#-P . \
-#-A blast/20210605-cgigas-roslin-mito-blastx.outfmt6 https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20210605-blast/ \
-#--no-check-certificate
-
-#wget -r \
-#--no-directories --no-parent \
-#-P . \
-#-A blast/uniprot-SP-GO.sorted https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20210605-blast/ \
-#--no-check-certificate
-
-wget -r \
---no-directories --no-parent \
--P . \
--A GFF/cgigas_uk_roslin_v1_mRNA.gff https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20220908-GFF/ \
---no-check-certificate
-
 ```
 
 #Load data
@@ -127,6 +104,37 @@ triploid_desiccation <- triploid_desiccation %>% select(gene, padj, log2FoldChan
 
 triploid_desiccation_bg <- read.delim("output/filtered/HISAT2_multiqc_biplot/triploid_desiccation/TRIPLOID_DESICCATION-ALL-DEG-apeglm.csv", sep = " ", header = TRUE)
 triploid_desiccation_bg <- triploid_desiccation_bg %>% select(gene, padj, log2FoldChange, description)
+
+diploid_MS_unique <- read.delim("output/filtered/HISAT2_multiqc_biplot/DEG_diploid_multi_unique.csv", sep = " ", header = TRUE)
+diploid_MS_unique <- diploid_MS_unique %>% select(gene, padj, log2FoldChange, description)
+
+triploid_MS_unique <- read.delim("output/filtered/HISAT2_multiqc_biplot/DEG_triploid_multi_unique.csv", sep = " ", header = TRUE)
+triploid_MS_unique <- triploid_MS_unique %>% select(gene, padj, log2FoldChange, description)
+
+
+```
+
+
+# Download blast results and genome features from gannet 
+```{bash engine.path="C:/Windows/System32/bash.exe", include=FALSE}
+
+#wget -r \
+#--no-directories --no-parent \
+#-P . \
+#-A blast/20210605-cgigas-roslin-mito-blastx.outfmt6 https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20210605-blast/ \
+#--no-check-certificate
+
+#wget -r \
+#--no-directories --no-parent \
+#-P . \
+#-A blast/uniprot-SP-GO.sorted https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20210605-blast/ \
+#--no-check-certificate
+
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A GFF/cgigas_uk_roslin_v1_mRNA.gff https://gannet.fish.washington.edu/panopea/NOPP-gigas-ploidy-temp/20220908-GFF/ \
+--no-check-certificate
 
 ```
 
@@ -280,8 +288,16 @@ while read -r line
 done < "$file" > "$output_file"
 ```
 
-# Generate GOslim library
+# Generate GOslim library (install in bash: conda install -c bioconda gsort)
 ```{bash, engine.path="C:/Windows/System32/bash.exe"}
+
+pwd
+
+eval "$(/home/mattgeorgephd/miniconda3/bin/conda shell.bash hook)"
+conda activate
+
+eval "$(/usr/bin/awk shell.bash hook)"
+awk activate
 
 cd blast/
 #Reorganize and sort columns
@@ -333,6 +349,9 @@ diploid_desiccation_bg$description  <- gsub(",", ";", diploid_desiccation_bg$des
 triploid_heat_bg$description        <- gsub(",", ";", triploid_heat_bg$description)
 triploid_desiccation_bg$description <- gsub(",", ";", triploid_desiccation_bg$description)
 
+diploid_MS_unique$description <- gsub(",", ";", diploid_MS_unique$description)
+triploid_MS_unique$description <- gsub(",", ";", triploid_MS_unique$description)
+
 ```
 
 # Count up and down regulated genes, generate table
@@ -343,7 +362,9 @@ direction <- data.frame('comparison' = c('control_ploidy'        ,
                                          'diploid_heat'          ,
                                          'diploid_desiccation'   ,
                                          'triploid_heat'         ,
-                                         'triploid_desiccation') , 
+                                         'triploid_desiccation'  ,
+                                         'diploid_MS_unique'     ,
+                                         'triploid_MS_unique') , 
                         'total'    = 0, 
                         'positive' = 0 )
 
@@ -367,6 +388,12 @@ direction$positive[6] <- length(triploid_heat$log2FoldChange[triploid_heat$log2F
 
 direction$total[7]    <- length(triploid_desiccation$log2FoldChange)
 direction$positive[7] <- length(triploid_desiccation$log2FoldChange[triploid_desiccation$log2FoldChange>0])
+
+direction$total[8]    <- length(diploid_MS_unique$log2FoldChange)
+direction$positive[8] <- length(diploid_MS_unique$log2FoldChange[diploid_MS_unique$log2FoldChange>0])
+
+direction$total[9]    <- length(triploid_MS_unique$log2FoldChange)
+direction$positive[9] <- length(triploid_MS_unique$log2FoldChange[triploid_MS_unique$log2FoldChange>0])
 
 direction$negative         <- direction$total - direction$positive
 direction$percent_negative <- round(direction$negative/direction$total*100,digits = 1)
@@ -416,11 +443,20 @@ triploid_desiccation                 <- anti_join(triploid_desiccation, triploid
 triploid_desiccation_uncharacterized <- with(triploid_desiccation, subset(triploid_desiccation, subset = grepl(grx, description)))
 triploid_desiccation_characterized   <- anti_join(triploid_desiccation, triploid_desiccation_uncharacterized, by = 'gene')
 
+diploid_MS_unique_NA                 <- with(diploid_MS_unique, subset(diploid_MS_unique, subset = grepl(glob2rx("LOCNA*"), gene)))
+diploid_MS_unique                    <- anti_join(diploid_MS_unique, diploid_MS_unique_NA, by = 'gene')
+diploid_MS_unique_uncharacterized    <- with(diploid_MS_unique, subset(diploid_MS_unique, subset = grepl(grx, description)))
+diploid_MS_unique_characterized      <- anti_join(diploid_MS_unique, diploid_MS_unique_uncharacterized, by = 'gene')
+
+triploid_MS_unique_NA                 <- with(triploid_MS_unique, subset(triploid_MS_unique, subset = grepl(glob2rx("LOCNA*"), gene)))
+triploid_MS_unique                    <- anti_join(triploid_MS_unique, triploid_MS_unique_NA, by = 'gene')
+triploid_MS_unique_uncharacterized    <- with(triploid_MS_unique, subset(triploid_MS_unique, subset = grepl(grx, description)))
+triploid_MS_unique_characterized      <- anti_join(triploid_MS_unique, triploid_MS_unique_uncharacterized, by = 'gene')
 
 # Count number of uncharacterized genes
-uncharacterized <- data.frame(known = rep(0, 7), 
-                              unknown = rep(0, 7), 
-                              percent_unknown = rep(0, 7))
+uncharacterized <- data.frame(known = rep(0, 9), 
+                              unknown = rep(0, 9), 
+                              percent_unknown = rep(0, 9))
 
 uncharacterized$known <- c(nrow(control_ploidy_characterized),
                            nrow(heat_ploidy_characterized),
@@ -428,7 +464,9 @@ uncharacterized$known <- c(nrow(control_ploidy_characterized),
                            nrow(diploid_heat_characterized),
                            nrow(diploid_desiccation_characterized),
                            nrow(triploid_heat_characterized),
-                           nrow(triploid_desiccation_characterized))
+                           nrow(triploid_desiccation_characterized),
+                           nrow(diploid_MS_unique_characterized),
+                           nrow(triploid_MS_unique_characterized))
 
 uncharacterized$unknown <- c(nrow(control_ploidy_uncharacterized),
                            nrow(heat_ploidy_uncharacterized),
@@ -436,7 +474,9 @@ uncharacterized$unknown <- c(nrow(control_ploidy_uncharacterized),
                            nrow(diploid_heat_uncharacterized),
                            nrow(diploid_desiccation_uncharacterized),
                            nrow(triploid_heat_uncharacterized),
-                           nrow(triploid_desiccation_uncharacterized))
+                           nrow(triploid_desiccation_uncharacterized),
+                           nrow(diploid_MS_unique_uncharacterized),
+                           nrow(triploid_MS_unique_uncharacterized))
 
 uncharacterized$percent_unknown <- (uncharacterized$unknown / (uncharacterized$unknown + uncharacterized$known))
 
@@ -446,7 +486,9 @@ row.names(uncharacterized) <- c('control_ploidy',
                                 'diploid_heat', 
                                 'diploid_desiccation', 
                                 'triploid_heat', 
-                                'triploid_desiccation')
+                                'triploid_desiccation',
+                                'diploid_MS_unique',
+                                'triploid_MS_unique')
 
 write.table(uncharacterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/uncharacterized_stats.txt", sep = ",", quote = FALSE, row.names = TRUE)
 
@@ -505,6 +547,8 @@ diploid_heat_characterized          <- left_join(diploid_heat_characterized     
 diploid_desiccation_characterized   <- left_join(diploid_desiccation_characterized  , gigas_feature_table_mRNA, by = 'gene')
 triploid_heat_characterized         <- left_join(triploid_heat_characterized        , gigas_feature_table_mRNA, by = 'gene')
 triploid_desiccation_characterized  <- left_join(triploid_desiccation_characterized , gigas_feature_table_mRNA, by = 'gene')
+diploid_MS_unique_characterized     <- left_join(diploid_MS_unique_characterized    , gigas_feature_table_mRNA, by = 'gene')
+triploid_MS_unique_characterized    <- left_join(triploid_MS_unique_characterized   , gigas_feature_table_mRNA, by = 'gene')
 
 control_ploidy        <- left_join(control_ploidy       , gigas_feature_table_mRNA, by = 'gene')
 heat_ploidy           <- left_join(heat_ploidy          , gigas_feature_table_mRNA, by = 'gene')
@@ -513,6 +557,8 @@ diploid_heat          <- left_join(diploid_heat         , gigas_feature_table_mR
 diploid_desiccation   <- left_join(diploid_desiccation  , gigas_feature_table_mRNA, by = 'gene')
 triploid_heat         <- left_join(triploid_heat        , gigas_feature_table_mRNA, by = 'gene')
 triploid_desiccation  <- left_join(triploid_desiccation , gigas_feature_table_mRNA, by = 'gene')
+diploid_MS_unique     <- left_join(diploid_MS_unique    , gigas_feature_table_mRNA, by = 'gene')
+triploid_MS_unique    <- left_join(triploid_MS_unique , gigas_feature_table_mRNA, by = 'gene')
 
 control_ploidy_bg_characterized        <- left_join(control_ploidy_bg_characterized       , gigas_feature_table_mRNA, by = 'gene')
 heat_ploidy_bg_characterized           <- left_join(heat_ploidy_bg_characterized          , gigas_feature_table_mRNA, by = 'gene')
@@ -543,6 +589,8 @@ diploid_heat                <- diploid_heat[complete.cases(diploid_heat),]
 diploid_desiccation         <- diploid_desiccation[complete.cases(diploid_desiccation),]
 triploid_heat               <- triploid_heat[complete.cases(triploid_heat),]
 triploid_desiccation        <- triploid_desiccation[complete.cases(triploid_desiccation),]
+diploid_MS_unique           <- diploid_MS_unique[complete.cases(diploid_MS_unique),]
+triploid_MS_unique          <- triploid_MS_unique[complete.cases(triploid_MS_unique),]
 
 control_ploidy_bg              <- control_ploidy_bg[complete.cases(control_ploidy_bg),]
 heat_ploidy_bg                 <- heat_ploidy_bg[complete.cases(heat_ploidy_bg),]
@@ -564,6 +612,8 @@ write.table(diploid_heat,         file = "gene_tables/filtered/HISAT2_multiqc_bi
 write.table(diploid_desiccation,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation.txt",  sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_heat,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat.txt",        sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_desiccation, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation.txt", sep = "\t", quote = FALSE, row.names = F)
+write.table(diploid_MS_unique,    file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_MS_unique.txt", sep = "\t", quote = FALSE, row.names = F)
+write.table(triploid_MS_unique,   file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_MS_unique.txt", sep = "\t", quote = FALSE, row.names = F)
 
 write.table(control_ploidy_characterized,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_characterized.txt",       sep = "\t", quote = FALSE, row.names = F)
 write.table(heat_ploidy_characterized,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_characterized.txt",          sep = "\t", quote = FALSE, row.names = F)
@@ -572,6 +622,8 @@ write.table(diploid_heat_characterized,         file = "gene_tables/filtered/HIS
 write.table(diploid_desiccation_characterized,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_characterized.txt",  sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_heat_characterized,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_characterized.txt",        sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_desiccation_characterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_characterized.txt", sep = "\t", quote = FALSE, row.names = F)
+write.table(diploid_MS_unique_characterized,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_MS_unique_characterized.txt",        sep = "\t", quote = FALSE, row.names = F)
+write.table(triploid_MS_unique_characterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_MS_unique_characterized.txt", sep = "\t", quote = FALSE, row.names = F)
 
 write.table(control_ploidy_uncharacterized,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_uncharacterized.txt",       sep = "\t", quote = FALSE, row.names = F)
 write.table(heat_ploidy_uncharacterized,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_uncharacterized.txt",          sep = "\t", quote = FALSE, row.names = F)
@@ -580,6 +632,8 @@ write.table(diploid_heat_uncharacterized,         file = "gene_tables/filtered/H
 write.table(diploid_desiccation_uncharacterized,  file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_desiccation_uncharacterized.txt",  sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_heat_uncharacterized,        file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_heat_uncharacterized.txt",        sep = "\t", quote = FALSE, row.names = F)
 write.table(triploid_desiccation_uncharacterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_desiccation_uncharacterized.txt", sep = "\t", quote = FALSE, row.names = F)
+write.table(diploid_MS_unique_uncharacterized,    file = "gene_tables/filtered/HISAT2_multiqc_biplot/diploid_MS_unique_uncharacterized.txt",    sep = "\t", quote = FALSE, row.names = F)
+write.table(triploid_MS_unique_uncharacterized, file = "gene_tables/filtered/HISAT2_multiqc_biplot/triploid_MS_unique_uncharacterized.txt",     sep = "\t", quote = FALSE, row.names = F)
 
 write.table(control_ploidy$gene,       file = "gene_tables/filtered/HISAT2_multiqc_biplot/control_ploidy_all_LOCID.txt",      sep = "\t", quote = FALSE, row.names = F, col.names = F)
 write.table(heat_ploidy$gene,          file = "gene_tables/filtered/HISAT2_multiqc_biplot/heat_ploidy_all_LOCID.txt",         sep = "\t", quote = FALSE, row.names = F, col.names = F)

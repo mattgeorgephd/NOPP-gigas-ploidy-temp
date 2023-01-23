@@ -1,0 +1,7 @@
+count,groups
+diploid.heat,58.1322464672771,a
+diploid.control,55.6318366563655,a
+triploid.desiccation,53.1320009331023,a
+triploid.heat,49.2326501187223,a
+triploid.control,48.1586282911845,a
+diploid.desiccation,42.52266102123,a
