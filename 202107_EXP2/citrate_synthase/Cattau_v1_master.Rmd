@@ -105,7 +105,7 @@ protein_data$P<-(protein_data$protein)/1000/1000 #ug/ml-> ug/uL-> mg/uL  also eq
 
 t<-45 #min
 m<-33 #slope from CS standard curve
-b<-2.2 # intercept from CS standard curve
+b<-2.2 #intercept from CS standard curve
 V<-50 #uL from CS procedure 
 D<-1 #dilution coefficient, should be 1 since we did not dilute
 
@@ -117,43 +117,49 @@ Full_dataset$CS_activity<-(Full_dataset$nmol/(t*V))*D/Full_dataset$P
 ```      
 
 #Attach Morphometric Data
+Join the results (CS and BSA data) to morphometric data gathered during the experiment,
 n=68 
 ```{r}
-#filter data
-morph
+treatments<-read.csv("/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/treatments.csv")
 
 filter_my_data<-morph %>%
   filter(morph$ID %in% Full_dataset$ID)
 
-filter_my_data<-filter_my_data[-c(3,9,13,15,19)] #remove columns without data
+filter_my_data2<-filter_my_data[c(1,2,5,6,10,11,12,14,16,17)] #remove columns without data
 #keep: ploidy, trt, shell_length, shell_width, shell_height, mortality, shell volume, cal_dry_weight, ploidy.trt, tank
 
-Full_data<-left_join(filter_my_data, Full_dataset, by="ID")
+Full_data<-full_join(filter_my_data2, treatments, by="ID")
 
-Full_data #complete dataset
+Full_data2<-full_join(Full_data, Full_dataset, by="ID")
+
+Full_data3<-Full_data2[complete.cases(Full_data2),] #remove NAs
+
 
 #add mortality data
 #mortality
-final_mort<-c(94.318, 90.909, 85.227, 77.272, 90.909, 63.636) #calculated from Master File
-final_list<-c("D-control", "D-heat", "D-desiccation", "T-control", "T-heat", "T-desiccation")
-mortality<-data.frame(final_mort, final_list)
+mortality<-read.csv("/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/survival_oc.csv")
+final_mort<-mortality$X..survival
+final_list<-mortality$trt
+mortality2<-data.frame(final_mort, final_list)
 ```
 
 
 #Data Visualization
 ```{r}
-final_plot<-ggplot(data=Full_data,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
+ploidy_linear_plot<-ggplot(data=Full_data3,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 
-boxplot<-ggplot(data=results_unique, aes(x=factor(trt_list), y=CS_activity))+
-  geom_boxplot(aes(x=factor(trt_list), y=CS_activity, color=ploidy))+
+boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
+  geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
   theme_bw()+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
   xlab("Treatment Group")+ 
-  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=19)+
-  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=17)+
-  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=23)+geom_line(data=xxy, aes(x=final_list, y=final_mort/3, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,34),
+  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=10)+
+  stat_compare_means(comparisons=list(c("D-heat", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=9)+
+  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=10)+
+   stat_compare_means(comparisons=list(c("D-control", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=9)+
+  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=13)+geom_line(data=mortality2, aes(x=final_list, y=final_mort/7, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,15),
     # Add a second axis and specify its features
-    sec.axis = sec_axis(~.*3, name="% survival")
+    sec.axis = sec_axis(~.*7, name="% survival")
   ) +theme(axis.title.y.right = element_text(color="red"))
 
 boxplot
