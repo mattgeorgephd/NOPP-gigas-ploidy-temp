@@ -17,6 +17,10 @@ library(ggplot2)
 library(dplyr)
 library(ggpubr)
 library(knitr)
+library(lme4)
+library(tidyverse)
+library(bestNormalize)
+library(agricolae)
 ```
 
 #Load Raw Citrate Synthase Absorbance data and Protein Data from spectrophotometer 
@@ -153,8 +157,8 @@ boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
   theme_bw()+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
   xlab("Treatment Group")+ 
-  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=10)+
-  stat_compare_means(comparisons=list(c("D-heat", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=9)+
+  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=8)+
+  stat_compare_means(comparisons=list(c("D-heat", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=7)+
   stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=10)+
    stat_compare_means(comparisons=list(c("D-control", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=9)+
   stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=13)+geom_line(data=mortality2, aes(x=final_list, y=final_mort/7, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,15),
@@ -164,3 +168,37 @@ boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
 
 boxplot
 ```
+
+#Statisical Analysis
+for verifying results in boxplot with F-tests and for regression analysis
+```{r}
+#is the data balanced
+balance<-ggplot(data=Full_data3)+geom_bar(aes(x=trt, color=ploidy))+ylim(0,15)+theme_minimal()
+# data is not balanced, used Multilevel models
+#model1<-lmer(formula = CS_activity ~ 1 + trt + ploidy + calc_dry_weight +(1|tank), data=Full_data3)
+test_me<-Full_data3$CS_activity
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+#looks good, no need for transformation
+small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) #point 59 is an outlier
+large_model<-aov(CS_activity~ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)#trt=treatments are the only variable that is significant
+combinedANOVA<-lm(CS_activity~trt, data=Full_data3)
+#car::Anova()
+table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
+#Table 1 below
+combined.lsm<-emmeans::emmeans(combinedANOVA, pairwise~trt)
+combined.contrasts<-emmeans::contrast(combined.lsm, "eff")
+combined.contrasts
+
+#multi-variant compairison
+tx<-with(Full_data3, interaction(trt, ploidy))
+amod<-aov(CS_activity ~ tx, data=Full_data3)
+mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
+```
+Based on the HSD (Honestly Significantly Different Test) Triploid Desiccation and Diploid desiccation groups are significantly different (and elevated in CS anzyme activity) relative to their control and heat only groups. 
