@@ -26,8 +26,8 @@ library(multcompView)
 
 #Load Raw Citrate Synthase Absorbance data and Protein Data from spectrophotometer 
 ```{r}
-CS_absorbance<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/Rawdata_Absorbance_CS.csv")
-BSA_absorbance<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/BSA_absorbance.csv")
+CS_absorbance<-read.csv(file="https://raw.githubusercontent.com/ocattau/CS-manuscript/main/raw-data/Rawdata_Absorbance_CS.csv")
+BSA_absorbance<-read.csv(file="https://raw.githubusercontent.com/ocattau/CS-manuscript/main/raw-data/BSA_absorbance.csv")
 ```
 
 #Load morphometric data and labels for oyster numbers
@@ -37,12 +37,13 @@ morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas
 
 #Look at Background Control for significance
 ```{r}
-CS_background<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/CS_12_10_22_background.csv") 
+CS_background<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/CS_12_10_22_background.csv") 
 
 CS_BACKGROUND_ANOVA<-lm(CS_background$Absorbance...405..0.1s...A.~bck, data=CS_background)
 car::Anova(CS_BACKGROUND_ANOVA)  
 
 background_plot<-ggplot(data=CS_background, aes(x=Repeat, y=CS_background$Absorbance...405..0.1s...A., color=(bck)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1)   ) 
+
 background_plot
 ```
 background control is significantly different from the standard CS values which means that I do not have to subtract the background from the sample readings. Also you can see in 'background plot' that the background readings did not increase while the CS readings did. 
@@ -125,7 +126,7 @@ Full_dataset$CS_activity<-(Full_dataset$nmol/(t*V))*D/Full_dataset$P
 Join the results (CS and BSA data) to morphometric data gathered during the experiment,
 n=68 
 ```{r}
-treatments<-read.csv("/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/treatments.csv")
+treatments<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/treatments.csv")
 
 filter_my_data<-morph %>%
   filter(morph$ID %in% Full_dataset$ID)
@@ -231,5 +232,8 @@ Based on the HSD (Honestly Significantly Different Test) Triploid desiccation an
 ```{r}
 respirometry<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/respirometry/output/processed_summary_oyster.csv")
 
+filter_my_data<-morph %>%
+  filter(morph$ID %in% Full_dataset$ID)
 
+resp_data<-
 ```
