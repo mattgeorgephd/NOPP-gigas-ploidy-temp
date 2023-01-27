@@ -21,6 +21,7 @@ library(lme4)
 library(tidyverse)
 library(bestNormalize)
 library(agricolae)
+library(multcompView)
 ```
 
 #Load Raw Citrate Synthase Absorbance data and Protein Data from spectrophotometer 
@@ -147,14 +148,62 @@ final_list<-mortality$trt
 mortality2<-data.frame(final_mort, final_list)
 ```
 
+#Statisical Analysis
+for verifying results in boxplot HSD and t-tests
+```{r}
+#is the data balanced
+balance<-ggplot(data=Full_data3)+geom_bar(aes(x=trt, color=ploidy))+ylim(0,15)+theme_minimal()
+# data is not balanced, used Multilevel models
 
-#Data Visualization
+#does the data need transformation?
+test_me<-Full_data3$CS_activity
+norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
+if(norm_test$p.value<0.05)     {
+        normalized <- bestNormalize(test_me)
+        test_me <- normalized$x.t # overwrite
+        qqnorm(test_me) # check linearity of transformed data
+        qqline(test_me)
+        print(shapiro.test(test_me))
+        print("transformed!",quote=FALSE)}
+```
+looks good, no need for transformation
+
+Model Testing for Significance
+```{r}
+small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) #point 59 is an outlier
+large_model<-aov(CS_activity~ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)#trt=treatments are the only variable that is significant
+combinedANOVA<-lm(CS_activity~trt, data=Full_data3)
+car::Anova(combinedANOVA, type=3)
+
+#trt is significant, look at groups
+table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
+table1
+
+#multi-variant comparison
+tx<-with(Full_data3, interaction(trt, ploidy))
+amod<-aov(CS_activity ~ tx, data=Full_data3)
+mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
+mortality2$sig_groups<-c("b", "a", "b", "b", "a", "b")
+
+STATS = Full_data3 %>% group_by(trt) %>% 
+  summarize(Q75 = quantile(CS_activity, probs = 0.75),
+            Q25 = quantile(CS_activity, probs = 0.25),
+            MaxVal = max(CS_activity), .groups = "keep") %>% 
+  mutate(WhiskUp = 1.05* (Q75 + 1.5 * (Q75 - Q25)))
+pans2 = distinct(Full_data3, trt) %>%
+  arrange(trt) %>% 
+  inner_join(STATS, by = c("trt"))
+pans2$label = c("b", "a", "b", "b", "a", "b")
+```
+
+
+#Data visualization 
 ```{r}
 ploidy_linear_plot<-ggplot(data=Full_data3,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 
-boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
+boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy))+
   geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
-  theme_bw()+
+  theme_bw()+geom_point(alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
   xlab("Treatment Group")+ 
   stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=8)+
@@ -166,39 +215,14 @@ boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
     sec.axis = sec_axis(~.*7, name="% survival")
   ) +theme(axis.title.y.right = element_text(color="red"))
 
-boxplot
-```
+boxplot #with significance brakets
 
-#Statisical Analysis
-for verifying results in boxplot with F-tests and for regression analysis
-```{r}
-#is the data balanced
-balance<-ggplot(data=Full_data3)+geom_bar(aes(x=trt, color=ploidy))+ylim(0,15)+theme_minimal()
-# data is not balanced, used Multilevel models
-#model1<-lmer(formula = CS_activity ~ 1 + trt + ploidy + calc_dry_weight +(1|tank), data=Full_data3)
-test_me<-Full_data3$CS_activity
-norm_test <- shapiro.test(test_me) # p-value fail = good, don't need transformation
-if(norm_test$p.value<0.05)     {
-        normalized <- bestNormalize(test_me)
-        test_me <- normalized$x.t # overwrite
-        qqnorm(test_me) # check linearity of transformed data
-        qqline(test_me)
-        print(shapiro.test(test_me))
-        print("transformed!",quote=FALSE)}
-#looks good, no need for transformation
-small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) #point 59 is an outlier
-large_model<-aov(CS_activity~ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)#trt=treatments are the only variable that is significant
-combinedANOVA<-lm(CS_activity~trt, data=Full_data3)
-#car::Anova()
-table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
-#Table 1 below
-combined.lsm<-emmeans::emmeans(combinedANOVA, pairwise~trt)
-combined.contrasts<-emmeans::contrast(combined.lsm, "eff")
-combined.contrasts
+boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy))+
+  geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
+  theme_minimal()+geom_point(data=Full_data3, aes(color=ploidy), alpha=0.5)+
+  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
+  xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,13), sec.axis=sec_axis(~.*8, name="% survival"))+theme(axis.title.y.right=element_text(color="red"))+geom_line(data=mortality2, aes(x=final_list, y=final_mort/8, group=1),color="red", linetype="dashed", inherit.aes = FALSE) 
 
-#multi-variant compairison
-tx<-with(Full_data3, interaction(trt, ploidy))
-amod<-aov(CS_activity ~ tx, data=Full_data3)
-mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
+boxplot2 #with letters for significance 
 ```
-Based on the HSD (Honestly Significantly Different Test) Triploid Desiccation and Diploid desiccation groups are significantly different (and elevated in CS anzyme activity) relative to their control and heat only groups. 
+Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are significantly different (and elevated in CS enzyme activity) relative to their control and heat only groups. 
