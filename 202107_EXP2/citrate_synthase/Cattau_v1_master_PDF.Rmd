@@ -37,7 +37,7 @@ morph<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas
 
 #Look at Background Control for significance
 ```{r}
-CS_background<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/CS_12_10_22_background.csv")#from 12.19.22
+CS_background<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/citrate_synthase/Raw Data/CS_12_10_22_background.csv") 
 
 CS_BACKGROUND_ANOVA<-lm(CS_background$Absorbance...405..0.1s...A.~bck, data=CS_background)
 car::Anova(CS_BACKGROUND_ANOVA)  
@@ -226,3 +226,10 @@ boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy
 boxplot2 #with letters for significance 
 ```
 Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are significantly different (and elevated in CS enzyme activity) relative to their control and heat only groups. 
+
+#Are CS and Respiration (umol/L/hour) positively correlated?
+```{r}
+respirometry<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/respirometry/output/processed_summary_oyster.csv")
+
+
+```
