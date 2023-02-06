@@ -9,7 +9,7 @@ Coding Resources for paper named X authored by Olivia Cattau, Matt George and St
 University of Washington School of Aquatic and Fisheries Sciences
 Primary Contact: Olivia Catttau
 
-For Calculating and Analysis of Citrate Sythase Enzyme Activity in Pacific Oysters (C. gigas)
+For Calculating and Analysis of Citrate Synthase Enzyme Activity in Pacific Oysters (C. gigas)
 
 #Load Libraries for the entire script
 ```{r}
@@ -43,7 +43,6 @@ CS_BACKGROUND_ANOVA<-lm(CS_background$Absorbance...405..0.1s...A.~bck, data=CS_b
 car::Anova(CS_BACKGROUND_ANOVA)  
 
 background_plot<-ggplot(data=CS_background, aes(x=Repeat, y=CS_background$Absorbance...405..0.1s...A., color=(bck)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula=y~x)+scale_x_continuous(breaks=seq(1, 10, by=1)   ) 
-
 background_plot
 ```
 background control is significantly different from the standard CS values which means that I do not have to subtract the background from the sample readings. Also you can see in 'background plot' that the background readings did not increase while the CS readings did. 
@@ -54,7 +53,7 @@ anova1<-lm(delta.OD~plate*X1*X10*repeat., data=CS_absorbance)
 anova(anova1)
 summary(anova1) #plate effects not significant
 ```
-no plate effects, can use entire data set
+no plate effects (p=0.3319), can use entire data set
 
 #View Controls
 plot CS standards to calculate standard curve equation
@@ -76,9 +75,10 @@ $OD=X10-X1$
 $x=OD$ so that $nmol CS = 33*OD +2.2$
 ```{r}
 control_table<-CS_absorbance %>% 
-  filter(plate != 5) %>% #plate 5 had errors
-  group_by(ID) %>%
-  summarise(avg1=mean(X1), avg2=mean(X10)) 
+  #filter(plate != 5) %>% #plate 5 had errors
+  group_by(ID) %>% #group by oyster label (for combining replicates)
+  summarise(avg1=mean(X1), avg2=mean(X10)) %>% #average OD
+  filter(ID != 'R52') #outlier from anova analysis 
 
 CS_absorbance2<-mutate(control_table, OD = avg2-avg1)
 
@@ -169,12 +169,19 @@ if(norm_test$p.value<0.05)     {
 ```
 looks good, no need for transformation
 
-Model Testing for Significance
+#Model Testing for Significance
 ```{r}
-small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) #point 59 is an outlier
-large_model<-aov(CS_activity~ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)#trt=treatments are the only variable that is significant
-combinedANOVA<-lm(CS_activity~trt, data=Full_data3)
-car::Anova(combinedANOVA, type=3)
+small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) 
+plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
+#point 59 is an outlier, removed in line 81
+
+large_model<-aov(CS_activity~P+ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)
+summary(large_model) #trt=treatments are the only variable that is significant
+plot(large_model, 4) 
+
+ploidyANOVA<-lm(CS_activity~ploidy, data=Full_data3)
+car::Anova(ploidyANOVA, type=3)
+#CS activity is not significantly different between ploidy groups 
 
 #trt is significant, look at groups
 table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
@@ -184,7 +191,7 @@ table1
 tx<-with(Full_data3, interaction(trt, ploidy))
 amod<-aov(CS_activity ~ tx, data=Full_data3)
 mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
-mortality2$sig_groups<-c("b", "a", "b", "b", "a", "b")
+mortality2$sig_groups<-c("c", "a", "bc", "c", "ab", "c")
 
 STATS = Full_data3 %>% group_by(trt) %>% 
   summarize(Q75 = quantile(CS_activity, probs = 0.75),
@@ -194,7 +201,7 @@ STATS = Full_data3 %>% group_by(trt) %>%
 pans2 = distinct(Full_data3, trt) %>%
   arrange(trt) %>% 
   inner_join(STATS, by = c("trt"))
-pans2$label = c("b", "a", "b", "b", "a", "b")
+pans2$label = c("c", "a", "bc", "c", "ab", "c")
 ```
 
 
@@ -225,15 +232,26 @@ boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy
   xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,13), sec.axis=sec_axis(~.*8, name="% survival"))+theme(axis.title.y.right=element_text(color="red"))+geom_line(data=mortality2, aes(x=final_list, y=final_mort/8, group=1),color="red", linetype="dashed", inherit.aes = FALSE) 
 
 boxplot2 #with letters for significance 
+
+protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)
+protein_plot #no correlation between protein and CS activity 
 ```
-Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are significantly different (and elevated in CS enzyme activity) relative to their control and heat only groups. 
+Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are not significantly different from each other but they are significantly different than both control groups as well as Triploid heated group. Only the diploid desiccation treatment was significantly different than all other groups with the Triploid desiccation treatment not being different from the Diploid heated group. 
 
 #Are CS and Respiration (umol/L/hour) positively correlated?
 ```{r}
 respirometry<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/respirometry/output/processed_summary_oyster.csv")
 
-filter_my_data<-morph %>%
-  filter(morph$ID %in% Full_dataset$ID)
+resp_data<- respirometry %>%
+  group_by(group_list) %>%
+  summarise(avgRES = mean(umol_L_h))
 
-resp_data<-
+resp_data1<-Full_data3 %>%
+  group_by(trt) %>%
+  summarise(avgCS = mean(CS_activity))
+
+respdata<-cbind(resp_data, resp_data1, mortality2)
+
+resp_plot<-ggplot(data=respdata, aes(x=avgRES, y=avgCS))+geom_point(aes(color=group_list), size=5)+theme_minimal()+geom_smooth()
 ```
+As a whole, respirometry is not positively correlated with CS. But if you removed the Triploid heat only group it is positively correlated. 
