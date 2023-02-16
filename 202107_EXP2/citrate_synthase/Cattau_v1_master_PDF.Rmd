@@ -60,7 +60,7 @@ plot CS standards to calculate standard curve equation
 ```{r}
 CS_controls<-filter(CS_absorbance, ID == 0 | ID == 8 | ID == 16 | ID == 24 | ID == 32 |ID == 40) 
 
-CS_controls2<-(CS_absorbance[c(2:6),]) #y=96x -0.29
+CS_controls2<-(CS_absorbance[c(2:6),]) 
 
 #plot CS standards
 standard_plot<-ggplot(data=CS_controls,(aes(x=X1, y=as.numeric(ID))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 1) )+xlab("A @ 570nm")+ylab("standard values")+theme_bw()+stat_regline_equation(label.x=0.25, label.y=20)
@@ -171,11 +171,17 @@ looks good, no need for transformation
 
 #Model Testing for Significance
 ```{r}
-small_model<-aov(CS_activity~ploidy*trt*P, data=Full_data3) 
+supp1<-read.csv(file="https://raw.githubusercontent.com/ocattau/CS-manuscript/main/raw-data/supp1.csv")
+
+small_model<-aov(nmol~ploidy*heat, data=supp1) 
+summary(small_model)
+car::Anova(small_model, type=3) #use type 3 for interaction terms
 plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
 #point 59 is an outlier, removed in line 81
 
-large_model<-aov(CS_activity~P+ploidy+trt+tank+sample_date+shell_volume+day, data=Full_data3)
+#test for significance accross morphometic data
+large_model<-aov(nmol~BSA+ploidy+trt+tank+sample_date+shell_volume+day+heat, data=supp1)
+car::Anova(large_model, type=2)
 summary(large_model) #trt=treatments are the only variable that is significant
 plot(large_model, 4) 
 
@@ -184,13 +190,16 @@ car::Anova(ploidyANOVA, type=3)
 #CS activity is not significantly different between ploidy groups 
 
 #trt is significant, look at groups
-table1<-do.call(rbind.data.frame, (TukeyHSD(aov(combinedANOVA))))
-table1
+trtANOVA<-lm(CS_activity~trt, data=Full_data3)
+car::Anova(trtANOVA, type=3)
+table1<-do.call(rbind.data.frame, (TukeyHSD(aov(trtANOVA))))
+table1 #significant codes for trt groups
 
 #multi-variant comparison
 tx<-with(Full_data3, interaction(trt, ploidy))
 amod<-aov(CS_activity ~ tx, data=Full_data3)
 mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
+mult_comp
 mortality2$sig_groups<-c("c", "a", "bc", "c", "ab", "c")
 
 STATS = Full_data3 %>% group_by(trt) %>% 
@@ -208,6 +217,7 @@ pans2$label = c("c", "a", "bc", "c", "ab", "c")
 #Data visualization 
 ```{r}
 ploidy_linear_plot<-ggplot(data=Full_data3,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
+#ploidy does not determine CS activity
 
 boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy))+
   geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
