@@ -180,7 +180,7 @@ plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
 #point 59 is an outlier, removed in line 81
 
 #test for significance accross morphometic data
-large_model<-aov(nmol~BSA+ploidy+trt+tank+sample_date+shell_volume+day+heat, data=supp1)
+large_model<-aov(nmol~BSA+ploidy+trt+tank+sample_date+shell_volume+day+heat+calc_dry_weight, data=supp1)
 car::Anova(large_model, type=2)
 summary(large_model) #trt=treatments are the only variable that is significant
 plot(large_model, 4) 
@@ -262,6 +262,6 @@ resp_data1<-Full_data3 %>%
 
 respdata<-cbind(resp_data, resp_data1, mortality2)
 
-resp_plot<-ggplot(data=respdata, aes(x=avgRES, y=avgCS))+geom_point(aes(color=group_list), size=5)+theme_minimal()+geom_smooth()
+resp_plot<-ggplot(data=respdata, aes(x=avgRES, y=avgCS))+geom_point(aes(color=group_list), size=5)+theme_minimal()+geom_smooth()+stat_regline_equation(label.x=25, label.y=2.0)
 ```
 As a whole, respirometry is not positively correlated with CS. But if you removed the Triploid heat only group it is positively correlated. 
