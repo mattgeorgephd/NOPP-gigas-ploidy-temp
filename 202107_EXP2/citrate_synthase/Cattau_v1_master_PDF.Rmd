@@ -2,7 +2,7 @@
 title: "Citrate Synthase (for publication)"
 author: "Olivia Cattau"
 date: '2023-01-06'
-output: pdf_document
+output: md_document
 email: ocattau@uw.edu | oliviacattau@gmail.com
 ---
 Coding Resources for paper named X authored by Olivia Cattau, Matt George and Steven Roberts
@@ -75,7 +75,6 @@ $OD=X10-X1$
 $x=OD$ so that $nmol CS = 33*OD +2.2$
 ```{r}
 control_table<-CS_absorbance %>% 
-  #filter(plate != 5) %>% #plate 5 had errors
   group_by(ID) %>% #group by oyster label (for combining replicates)
   summarise(avg1=mean(X1), avg2=mean(X10)) %>% #average OD
   filter(ID != 'R52') #outlier from anova analysis 
@@ -150,7 +149,7 @@ mortality2<-data.frame(final_mort, final_list)
 ```
 
 #Statisical Analysis
-for verifying results in boxplot HSD and t-tests
+is the data balanced? Does the data need transformation?
 ```{r}
 #is the data balanced
 balance<-ggplot(data=Full_data3)+geom_bar(aes(x=trt, color=ploidy))+ylim(0,15)+theme_minimal()
@@ -171,22 +170,22 @@ looks good, no need for transformation
 
 #Model Testing for Significance
 ```{r}
-supp1<-read.csv(file="https://raw.githubusercontent.com/ocattau/CS-manuscript/main/raw-data/supp1.csv")
+supp1<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/supp1.csv") #changed trt to heat for easy coding
 
 small_model<-aov(nmol~ploidy*heat, data=supp1) 
 summary(small_model)
 car::Anova(small_model, type=3) #use type 3 for interaction terms
 plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
-#point 59 is an outlier, removed in line 81
+#point 59 is an outlier, removed in line 80
 
-#test for significance accross morphometic data
+#test for significance across morphometric data
 large_model<-aov(nmol~BSA+ploidy+trt+tank+sample_date+shell_volume+day+heat+calc_dry_weight, data=supp1)
 car::Anova(large_model, type=2)
-summary(large_model) #trt=treatments are the only variable that is significant
+summary(large_model) #trt=treatments are the only variable that is significant...verify individual HSD results in line 194
 plot(large_model, 4) 
 
 ploidyANOVA<-lm(CS_activity~ploidy, data=Full_data3)
-car::Anova(ploidyANOVA, type=3)
+car::Anova(ploidyANOVA, type=2)
 #CS activity is not significantly different between ploidy groups 
 
 #trt is significant, look at groups
@@ -243,7 +242,8 @@ boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy
 
 boxplot2 #with letters for significance 
 
-protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)
+protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)+theme_minimal()+
+                   stat_cor(label.y = 1)
 protein_plot #no correlation between protein and CS activity 
 ```
 Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are not significantly different from each other but they are significantly different than both control groups as well as Triploid heated group. Only the diploid desiccation treatment was significantly different than all other groups with the Triploid desiccation treatment not being different from the Diploid heated group. 
