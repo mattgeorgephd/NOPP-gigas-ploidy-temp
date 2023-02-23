@@ -261,9 +261,16 @@ boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy
   geom_boxplot(aes(x=factor(trt, level=c('D-control', 'D-heat', 'D-desiccation', 'T-control', 'T-heat', 'T-desiccation')), y=CS_activity, color=ploidy))+
   theme_minimal()+geom_point(data=Full_data3, aes(color=ploidy), alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,10))
+  xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,8))
 
 boxplot2 #with letters for significance 
+
+boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
+  geom_boxplot(aes(x=factor(trt), y=CS_activity))+
+  theme_minimal()+geom_point(data=Full_data3, alpha=0.5)+
+  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
+  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy, scales="free")
+boxplot3
 
 protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)+theme_minimal()+
                    stat_cor(label.y = 1)
