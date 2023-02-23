@@ -22,6 +22,7 @@ library(tidyverse)
 library(bestNormalize)
 library(agricolae)
 library(multcompView)
+library(survival) 
 ```
 
 #Load Raw Citrate Synthase Absorbance data and Protein Data from spectrophotometer 
@@ -64,7 +65,6 @@ CS_controls2<-(CS_absorbance[c(2:6),])
 
 #plot CS standards
 standard_plot<-ggplot(data=CS_controls,(aes(x=X1, y=as.numeric(ID))))+geom_point()+geom_smooth(method="lm", se=FALSE, formula = y ~ poly(x, 1) )+xlab("A @ 570nm")+ylab("standard values")+theme_bw()+stat_regline_equation(label.x=0.25, label.y=20)
-standard_plot
 ```
 
 #Extract Equation from standard curve
@@ -172,7 +172,7 @@ looks good, no need for transformation
 ```{r}
 supp1<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/supp1.csv") #changed trt to heat for easy coding
 
-small_model<-aov(nmol~ploidy*heat, data=supp1) 
+small_model<-aov(nmol~ploidy*heat*desiccation, data=supp1) 
 summary(small_model)
 car::Anova(small_model, type=3) #use type 3 for interaction terms
 plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
@@ -214,14 +214,35 @@ pans2 = distinct(Full_data3, trt) %>%
 pans2$label = c("c", "a", "bc", "c", "ab", "c")
 ```
 
+#Kaplan Meier Survival Analysis 
+Ho: In terms of survivability, there is no difference between the two groups.
+
+Hi: There is a survival differential between the groups.
+
+```{r}
+kaplan_mort<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/kaplan_meier_km.csv")
+
+fit_trt<-survdiff(Surv(time, status) ~trt, kaplan_mort) #p=2e-05
+
+fit_ploidy<-survdiff(Surv(time, status) ~ploidy, kaplan_mort) #p=0.02
+
+fit_combo<-survdiff(Surv(time, status) ~combo, kaplan_mort) #p= 1e-06 
+
+desiccation_only<- kaplan_mort %>%
+  filter(trt==c("MS"))
+ 
+fit_desiccation_only<-survdiff(Surv(time, status) ~combo, desiccation_only)
+
+```
 
 #Data visualization 
 ```{r}
 ploidy_linear_plot<-ggplot(data=Full_data3,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 #ploidy does not determine CS activity
 
+
 boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy))+
-  geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
+  geom_boxplot(aes(x=reorder(trt, depth), y=CS_activity, color=ploidy))+
   theme_bw()+geom_point(alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
   xlab("Treatment Group")+ 
@@ -237,10 +258,10 @@ boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy)
 boxplot #with significance brakets
 
 boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy))+
-  geom_boxplot(aes(x=factor(trt), y=CS_activity, color=ploidy))+
+  geom_boxplot(aes(x=factor(trt, level=c('D-control', 'D-heat', 'D-desiccation', 'T-control', 'T-heat', 'T-desiccation')), y=CS_activity, color=ploidy))+
   theme_minimal()+geom_point(data=Full_data3, aes(color=ploidy), alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,13), sec.axis=sec_axis(~.*8, name="% survival"))+theme(axis.title.y.right=element_text(color="red"))+geom_line(data=mortality2, aes(x=final_list, y=final_mort/8, group=1),color="red", linetype="dashed", inherit.aes = FALSE) 
+  xlab("Treatment Group") + geom_text(data = pans2, aes(y = WhiskUp, label = label ), position = position_dodge(width = .75))+scale_y_continuous(limits=c(0,10))
 
 boxplot2 #with letters for significance 
 
@@ -254,6 +275,14 @@ Based on the HSD (Honestly Significantly Different Test) Triploid desiccation an
 ```{r}
 respirometry<-read.csv(file="https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/respirometry/output/processed_summary_oyster.csv")
 
+trt_master<-read.csv(file="/Users/oliviacattau/Documents/GitHub/NOPP-gigas-ploidy-temp/202107_EXP2/respirometry/output/trt_list.csv")
+
+#group by time
+resp_data2<-respirometry %>%
+  group_by(trt_list) %>% 
+  summarise(avgRES = mean(umol_L_h))
+
+#group by treatment
 resp_data<- respirometry %>%
   group_by(group_list) %>%
   summarise(avgRES = mean(umol_L_h))
@@ -264,6 +293,16 @@ resp_data1<-Full_data3 %>%
 
 respdata<-cbind(resp_data, resp_data1, mortality2)
 
-resp_plot<-ggplot(data=respdata, aes(x=avgRES, y=avgCS))+geom_point(aes(color=group_list), size=5)+theme_minimal()+geom_smooth()+stat_regline_equation(label.x=25, label.y=2.0)
+respdata2<-left_join(resp_data2, trt_master)
+
+resp_plot1<-ggplot(data=respdata, aes(x=avgRES, y=avgCS))+geom_point(aes(color=group_list), size=5)+theme_minimal()+geom_smooth()+stat_regline_equation(label.x=25, label.y=2.0)
+
+trt_levels<-c('D_control_-10', 'T_control_-10', 'D_heat_only_-10', 'T_heat_only_-10', 'D_desiccation_-10', 'T_desiccation_-10','D_control_1', 'T_control_1', 'D_heat_only_1', 'T_heat_only_1', 'D_desiccation_1', 'T_desiccation_1', 'D_control_2', 'T_control_2', 'D_heat_only_2', 'T_heat_only_2', 'D_desiccation_2', 'T_desiccation_2','D_control_6', 'T_control_6', 'D_heat_only_6', 'T_heat_only_6', 'D_desiccation_6', 'T_desiccation_6', 'D_control_10', 'T_control_10', 'D_heat_only_10', 'T_heat_only_10', 'D_desiccation_10', 'T_desiccation_10')
+
+resp_plot2<-ggplot(respdata2, aes(x=time, y=avgRES, colour=group_list))+geom_point()+theme_minimal()+geom_line()
+
+resp_plot3<-ggplot(respdata2, aes(x=factor(trt_list, level=trt_levels), y=avgRES, colour=trt))+geom_smooth()+geom_point(size=3)+theme_minimal()
+
+resp_ploidy<-ggplot(respdata2, aes(x=number, y=avgRES, color=ploidy)) +geom_point() +geom_smooth()+stat_regline_equation(label.x=7, label.y=50)
 ```
 As a whole, respirometry is not positively correlated with CS. But if you removed the Triploid heat only group it is positively correlated. 
