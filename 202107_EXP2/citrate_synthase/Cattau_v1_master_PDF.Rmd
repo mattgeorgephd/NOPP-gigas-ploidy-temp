@@ -125,7 +125,7 @@ Full_dataset$CS_activity<-(Full_dataset$nmol/(t*V))*D/Full_dataset$P
 Join the results (CS and BSA data) to morphometric data gathered during the experiment,
 n=68 
 ```{r}
-treatments<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/treatments.csv")
+treatments<-read.csv("https://raw.githubusercontent.com/mattgeorgephd/NOPP-gigas-ploidy-temp/main/202107_EXP2/citrate_synthase/Raw%20Data/treatments2.csv")
 
 filter_my_data<-morph %>%
   filter(morph$ID %in% Full_dataset$ID)
@@ -257,7 +257,7 @@ boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy)
 
 boxplot #with significance brakets
 
-boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy))+
+boxplot2<-ggplot(data=Full_data3, aes(x=trt, y=CS_activity, label=ploidy))+
   geom_boxplot(aes(x=factor(trt, level=c('D-control', 'D-heat', 'D-desiccation', 'T-control', 'T-heat', 'T-desiccation')), y=CS_activity, color=ploidy))+
   theme_minimal()+geom_point(data=Full_data3, aes(color=ploidy), alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
@@ -265,11 +265,11 @@ boxplot2<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, label=ploidy
 
 boxplot2 #with letters for significance 
 
-boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity))+
-  geom_boxplot(aes(x=factor(trt), y=CS_activity))+
+boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+
+  geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat only", "heat + desiccation")), y=CS_activity))+
   theme_minimal()+geom_point(data=Full_data3, alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy, scales="free")
+  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)
 boxplot3
 
 protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)+theme_minimal()+
