@@ -23,18 +23,18 @@ D-desiccation,N56,D-HD,HD,heat + desiccation,diploid
 D-desiccation,N57,D-HD,HD,heat + desiccation,diploid
 D-desiccation,N58,D-HD,HD,heat + desiccation,diploid
 D-desiccation,N59,D-HD,HD,heat + desiccation,diploid
-D-heat,M41,D-H,H,heat only,diploid
-D-heat,M42,D-H,H,heat only,diploid
-D-heat,M43,D-H,H,heat only,diploid
-D-heat,M44,D-H,H,heat only,diploid
-D-heat,M47,D-H,H,heat only,diploid
-D-heat,N41,D-H,H,heat only,diploid
-D-heat,N42,D-H,H,heat only,diploid
-D-heat,N43,D-H,H,heat only,diploid
-D-heat,N44,D-H,H,heat only,diploid
-D-heat,N45,D-H,H,heat only,diploid
-D-heat,N46,D-H,H,heat only,diploid
-D-heat,N47,D-H,H,heat only,diploid
+D-heat,M41,D-H,H,heat,diploid
+D-heat,M42,D-H,H,heat,diploid
+D-heat,M43,D-H,H,heat,diploid
+D-heat,M44,D-H,H,heat,diploid
+D-heat,M47,D-H,H,heat,diploid
+D-heat,N41,D-H,H,heat,diploid
+D-heat,N42,D-H,H,heat,diploid
+D-heat,N43,D-H,H,heat,diploid
+D-heat,N44,D-H,H,heat,diploid
+D-heat,N45,D-H,H,heat,diploid
+D-heat,N46,D-H,H,heat,diploid
+D-heat,N47,D-H,H,heat,diploid
 T-control,T55,T-C,C,control,triploid
 T-control,T56,T-C,C,control,triploid
 T-control,T57,T-C,C,control,triploid
@@ -59,15 +59,15 @@ T-desiccation,R59,T-HD,HD,heat + desiccation,triploid
 T-desiccation,R60,T-HD,HD,heat + desiccation,triploid
 T-desiccation,R61,T-HD,HD,heat + desiccation,triploid
 T-desiccation,R62,T-HD,HD,heat + desiccation,triploid
-T-heat,R41,T-H,H,heat only,triploid
-T-heat,R42,T-H,H,heat only,triploid
-T-heat,R43,T-H,H,heat only,triploid
-T-heat,R46,T-H,H,heat only,triploid
-T-heat,R47,T-H,H,heat only,triploid
-T-heat,R48,T-H,H,heat only,triploid
-T-heat,R50,T-H,H,heat only,triploid
-T-heat,R78,T-H,H,heat only,triploid
-T-heat,X41,T-H,H,heat only,triploid
-T-heat,X42,T-H,H,heat only,triploid
-T-heat,X43,T-H,H,heat only,triploid
-T-heat,X44,T-H,H,heat only,triploid
+T-heat,R41,T-H,H,heat,triploid
+T-heat,R42,T-H,H,heat,triploid
+T-heat,R43,T-H,H,heat,triploid
+T-heat,R46,T-H,H,heat,triploid
+T-heat,R47,T-H,H,heat,triploid
+T-heat,R48,T-H,H,heat,triploid
+T-heat,R50,T-H,H,heat,triploid
+T-heat,R78,T-H,H,heat,triploid
+T-heat,X41,T-H,H,heat,triploid
+T-heat,X42,T-H,H,heat,triploid
+T-heat,X43,T-H,H,heat,triploid
+T-heat,X44,T-H,H,heat,triploid
