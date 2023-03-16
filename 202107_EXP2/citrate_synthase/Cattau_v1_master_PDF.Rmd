@@ -170,21 +170,27 @@ looks good, no need for transformation
 
 #Model Testing for Significance
 ```{r}
-supp1<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/supp1.csv") #changed trt to heat for easy coding
+supp1<-read.csv(file="/Users/oliviacattau/Documents/GitHub/CS-manuscript/raw-data/supp1.csv") #heat= 2n-H, 2n-HD, 3n-H, 3n-HD 
 
-small_model<-aov(nmol~ploidy*heat*desiccation, data=supp1) 
-summary(small_model)
-car::Anova(small_model, type=3) #use type 3 for interaction terms
-plot(small_model, 4) #All data with Cook's distance > 0.5 will be removed
+ploidy_heat_interactions_model<-aov(nmol~ploidy*heat*desiccation, data=supp1) 
+summary(ploidy_heat_interactions_model)
+plot(ploidy_heat_interactions_model, 4) #All data with Cook's distance > 0.5 will be removed
 #point 59 is an outlier, removed in line 80
+#desiccation more important than heat, no interaction between ploidy and heat treatments 
 
-small_model2<-lm(nmol~stress, data=supp1)
+temperature_model<-lm(nmol~stress, data=supp1)
+summary(temperature_model)
+table2<-do.call(rbind.data.frame, (TukeyHSD(aov(temperature_model))))
+#desiccation but not heat is significant
 
 #test for significance across morphometric data
-large_model<-aov(nmol~BSA+ploidy+trt+tank+sample_date+shell_volume+day+heat+calc_dry_weight, data=supp1)
-car::Anova(large_model, type=2)
-summary(large_model) #trt=treatments are the only variable that is significant...verify individual HSD results in line 194
-plot(large_model, 4) 
+morphometric_model<-aov(nmol~ploidy+shell_volume+shell_height+ shell_length + shell_width, data=supp1)
+car::Anova(morphometric_model, type=2)
+summary(morphometric_model) #trt=treatments are the only variable that is significant...verify individual HSD results in line 194
+plot(morphometric_model, 4) 
+
+dry_weight_model<-aov(nmol~calc_dry_weight,  data=supp1)#dry weight only
+summary(dry_weight_model)
 
 ploidyANOVA<-lm(CS_activity~ploidy, data=Full_data3)
 car::Anova(ploidyANOVA, type=2)
@@ -230,8 +236,39 @@ fit_combo<-survdiff(Surv(time, status) ~combo, kaplan_mort) #p= 1e-06
 
 desiccation_only<- kaplan_mort %>%
   filter(trt==c("MS"))
+
+not_Ms<- kaplan_mort %>%
+  filter(trt!=c("MS"))
+
+triploid_only<-kaplan_mort %>%
+  filter(trt!=c("control")) %>%
+  filter(ploidy==c("T"))
  
-fit_desiccation_only<-survdiff(Surv(time, status) ~combo, desiccation_only)
+fit_desiccation_only<-survdiff(Surv(time, status) ~combo, desiccation_only) #p=0.008
+
+fit_MS<-survdiff(Surv(time, status) ~combo, not_Ms) #p=0.4
+
+fit_triploid_only<-survdiff(Surv(time, status)~combo, triploid_only) #p= 6e-05 
+
+SS_MS<-kaplan_mort%>%
+  filter(trt!=c("control"))
+  
+SS_control<-kaplan_mort%>%
+  filter(trt!=c("MS"))
+  
+MS_control<-kaplan_mort%>%
+  filter(trt!=c("SS"))
+
+SS_only<-kaplan_mort%>%
+  filter(trt==c("SS"))
+  
+fit_SS_MS<-survdiff(Surv(time, status) ~combo, SS_MS)#p= 1e-05
+
+fit_SS_control<-survdiff(Surv(time, status) ~combo, SS_control)#p= 0.4 
+
+fit_MS_control<-survdiff(Surv(time, status) ~combo, MS_control)#p= 3e-05 
+
+fit_SS_only<-survdiff(Surv(time, status) ~combo, SS_only) #p=0.8
 
 ```
 
@@ -239,23 +276,6 @@ fit_desiccation_only<-survdiff(Surv(time, status) ~combo, desiccation_only)
 ```{r}
 ploidy_linear_plot<-ggplot(data=Full_data3,(aes(x=protein, y=CS_activity, color=ploidy)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE, formula = y ~ x ) + ylab("CS Activity (nmol/(mg*min))") +xlab("Protein (ug/mL)")
 #ploidy does not determine CS activity
-
-
-boxplot<-ggplot(data=Full_data3, aes(x=factor(trt), y=CS_activity, color=ploidy))+
-  geom_boxplot(aes(x=reorder(trt, depth), y=CS_activity, color=ploidy))+
-  theme_bw()+geom_point(alpha=0.5)+
-  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group")+ 
-  stat_compare_means(comparisons=list(c("T-heat", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=8)+
-  stat_compare_means(comparisons=list(c("D-heat", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=7)+
-  stat_compare_means(comparisons=list(c("T-control", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=10)+
-   stat_compare_means(comparisons=list(c("D-control", "D-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=9)+
-  stat_compare_means(comparisons=list(c("D-desiccation", "T-desiccation")), method = "wilcox.test", aes(label="..p.signif.."), label.y=13)+geom_line(data=mortality2, aes(x=final_list, y=final_mort/7, group=1),color="red", linetype="dashed")+scale_y_continuous(limits=c(0,15),
-    # Add a second axis and specify its features
-    sec.axis = sec_axis(~.*7, name="% survival")
-  ) +theme(axis.title.y.right = element_text(color="red"))
-
-boxplot #with significance brakets
 
 boxplot2<-ggplot(data=Full_data3, aes(x=trt, y=CS_activity, label=ploidy))+
   geom_boxplot(aes(x=factor(trt, level=c('D-control', 'D-heat', 'D-desiccation', 'T-control', 'T-heat', 'T-desiccation')), y=CS_activity, color=ploidy))+
@@ -266,11 +286,13 @@ boxplot2<-ggplot(data=Full_data3, aes(x=trt, y=CS_activity, label=ploidy))+
 boxplot2 #with letters for significance 
 
 boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+
-  geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat only", "heat + desiccation")), y=CS_activity))+
+  geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat", "heat + desiccation")), y=CS_activity))+
   theme_minimal()+geom_point(data=Full_data3, alpha=0.5)+
   ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)
+  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
 boxplot3
+
+library(stringr)
 
 protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)+theme_minimal()+
                    stat_cor(label.y = 1)
