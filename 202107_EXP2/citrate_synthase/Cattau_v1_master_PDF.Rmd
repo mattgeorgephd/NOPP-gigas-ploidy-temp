@@ -208,6 +208,8 @@ amod<-aov(CS_activity ~ tx, data=Full_data3)
 mult_comp<-HSD.test(amod, "tx", group=TRUE, console=TRUE)
 mult_comp
 mortality2$sig_groups<-c("c", "a", "bc", "c", "ab", "c")
+mortality2$trt<-c("control", "heat + desiccation", "heat","control", "heat + desiccation", "heat")
+mortality2$ploidy<-c("D", "D", "D", "T", "T", "T")
 
 STATS = Full_data3 %>% group_by(trt) %>% 
   summarize(Q75 = quantile(CS_activity, probs = 0.75),
@@ -285,18 +287,48 @@ boxplot2<-ggplot(data=Full_data3, aes(x=trt, y=CS_activity, label=ploidy))+
 
 boxplot2 #with letters for significance 
 
-boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+
-  geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat", "heat + desiccation")), y=CS_activity))+
-  theme_minimal()+geom_point(data=Full_data3, alpha=0.5)+
-  ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+
-  xlab("Treatment Group") + scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
-boxplot3
+
+boxplot3<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat", "heat + desiccation")), y=CS_activity))+theme_minimal()+geom_point(data=Full_data3, alpha=0.5)+ ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+xlab("Treatment Group") +scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))
+
+boxplot3 #bw plot for publication
+
+boxplot4<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat", "heat + desiccation")), y=CS_activity, fill=group_short))+theme_minimal()+ theme(legend.position = "none")+geom_point(data=Full_data3, alpha=0.5)+ ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+xlab("Treatment Group") +scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("#999999",
+                               "orange",
+                               "red",
+                               "green",
+                               "brown"))
+boxplot4 #colors for presentation
+
+boxplot5<-ggplot(data=Full_data3, aes(x=factor(trt_short), y=CS_activity))+geom_boxplot(aes(x=factor(trt_short, level=c("control", "heat", "heat + desiccation")), y=CS_activity, fill=ploidy))+theme_minimal()+ theme(legend.position = "none") +geom_point(data=Full_data3, alpha=0.5)+ ylab(expression('CS activity nmol' (min^-1) (mg^-1)))+xlab("Treatment Group") +scale_y_continuous(limits=c(0,8))+facet_wrap(~ploidy2)+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("royalblue",
+                               "orange",
+                               "brown"))
+
 
 library(stringr)
 
 protein_plot<-ggplot(data=Full_data3,(aes(x=protein, y=nmol, label=ID)))+geom_point()+theme_bw()+geom_smooth(method="lm", se=TRUE, formula = y ~ log(x) ) + ylab("CS Activity nmol") +xlab("Protein (mg/uL)")+geom_text(hjust=1.5, vjust=0)+theme_minimal()+
                    stat_cor(label.y = 1)
 protein_plot #no correlation between protein and CS activity 
+
+mort_bar<-ggplot(data=mortality2,aes(ploidy, final_mort, fill=trt))+geom_bar(stat="identity", alpha=0.75, colour="black")+theme_minimal()+ylab("survival")+ xlab("treatments")+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("grey",
+                               "orange",
+                               "red"))
+
+mort_bar2<-ggplot(data=mortality2, aes(final_list, final_mort, fill=trt))+geom_bar(aes(factor(final_list, c("D-control", "D-heat", "D-desiccation", "T-control", "T-heat", "T-desiccation"))), stat="identity", alpha=0.75, colour="black")+theme_minimal()+ylab("survival")+ xlab("treatments")+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 14))+scale_fill_manual(values=c("grey",
+                               "orange",
+                               "red"))
+
+mort_bar3<-ggplot(data=mortality2,aes(ploidy, final_mort, fill=ploidy))+geom_bar(stat="identity", alpha=0.9, colour="black", aes(factor(trt, c("control", "heat", "heat + desiccation"))))+theme_minimal()+ylab("survival")+ xlab("treatments")+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("royalblue",
+                               "orange",
+                               "red"))
+
+mort_bar4<-ggplot(data=mortality2,aes(ploidy, final_mort, fill=trt))+geom_bar(stat="identity", alpha=0.9, colour="black")+theme_minimal()+ylab("survival")+ xlab("treatments")+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("royalblue",
+                               "orange",
+                               "red"))
+
+mort_bar5<-ggplot(data=mortality2,aes(ploidy, final_mort, fill=ploidy))+geom_bar(stat="identity", alpha=0.9)+theme_minimal()+ylab("survival")+ xlab("treatments")+scale_x_discrete(labels = function(x) str_wrap(x, width = 10))+ theme(text = element_text(size = 15))+scale_fill_manual(values=c("royalblue",
+                               "orange",
+                               "red"))
 ```
 Based on the HSD (Honestly Significantly Different Test) Triploid desiccation and Diploid desiccation groups are not significantly different from each other but they are significantly different than both control groups as well as Triploid heated group. Only the diploid desiccation treatment was significantly different than all other groups with the Triploid desiccation treatment not being different from the Diploid heated group. 
 
