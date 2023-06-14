@@ -41,7 +41,7 @@ my_theme <- theme(line              = element_line(size=1.5),
 current_path <- getActiveDocumentContext()$path
 # setwd(dirname(current_path )); setwd('feeding_rate'); getwd()
 
-FR_plot     <- read_excel("mortality.xlsx", sheet = "plot2", col_names = TRUE)
+FR_plot     <- read_excel("mortality.xlsx", sheet = "plot_surival", col_names = TRUE)
 trt_list    <- read_excel("mortality.xlsx", sheet = "trt_list", col_names = TRUE)
 FR_plot$trt <- factor(FR_plot$trt,levels=trt_list$trt_list,ordered=TRUE)
 

@@ -5,7 +5,7 @@ date: '2023-01-06'
 output: md_document
 email: ocattau@uw.edu | oliviacattau@gmail.com
 ---
-Coding Resources for paper named X authored by Olivia Cattau, Matt George and Steven Roberts
+Coding Resources for paper named "Citrate-Synthase Response and Multilpe-Stress in Pacific Oysters" authored by Olivia Cattau, Matt George and Steven Roberts
 University of Washington School of Aquatic and Fisheries Sciences
 Primary Contact: Olivia Catttau
 
@@ -366,4 +366,13 @@ resp_plot3<-ggplot(respdata2, aes(x=factor(trt_list, level=trt_levels), y=avgRES
 
 resp_ploidy<-ggplot(respdata2, aes(x=number, y=avgRES, color=ploidy)) +geom_point() +geom_smooth()+stat_regline_equation(label.x=7, label.y=50)
 ```
-As a whole, respirometry is not positively correlated with CS. But if you removed the Triploid heat only group it is positively correlated. 
+As a whole, respirometry is not positively correlated with CS. But if you removed the Triploid heat only group it is positively correlated.
+
+```{r}
+Full_data3 %>%
+  group_by(trt_short) %>%
+  summarise(avg = mean(CS_activity))
+
+
+```
+
